@@ -1,0 +1,239 @@
+cat > /home/nancy/Escritorio/Chronit/App/Python/database.py << 'EOF'
+import sqlite3
+import json
+from datetime import datetime
+from contextlib import contextmanager
+
+DB_PATH = '/app/data/chronit.db'
+
+@contextmanager
+def get_db():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    try:
+        yield conn
+        conn.commit()
+    finally:
+        conn.close()
+
+def init_db():
+    """Inicializa todas las tablas"""
+    with get_db() as conn:
+        # Sesiones de carrera (reinicia vueltas)
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS race_sessions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                start_time TEXT NOT NULL,
+                end_time TEXT,
+                status TEXT DEFAULT 'active',
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Transponders/karts registrados
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS transponders (
+                id INTEGER PRIMARY KEY,
+                driver_name TEXT,
+                kart_number TEXT,
+                team_name TEXT,
+                registered_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Vueltas registradas
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS laps (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                session_id INTEGER NOT NULL,
+                transponder_id INTEGER NOT NULL,
+                lap_number INTEGER NOT NULL,
+                physical_laps INTEGER NOT NULL,
+                timestamp TEXT NOT NULL,
+                total_seconds REAL NOT NULL,
+                lap_seconds REAL,
+                signal_h INTEGER,
+                signal_l INTEGER,
+                FOREIGN KEY (session_id) REFERENCES race_sessions(id)
+            )
+        ''')
+        
+        # Cola de sincronización (para cuando haya internet)
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS sync_queue (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                endpoint TEXT NOT NULL,
+                data TEXT NOT NULL,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                synced INTEGER DEFAULT 0
+            )
+        ''')
+        
+        # Configuración local
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS settings (
+                key TEXT PRIMARY KEY,
+                value TEXT,
+                updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Insertar configuración por defecto
+        conn.execute('''
+            INSERT OR IGNORE INTO settings (key, value) VALUES 
+            ('current_session_id', '0'),
+            ('sync_url', ''),
+            ('track_name', 'Circuito Principal')
+        ''')
+
+def get_current_session():
+    """Obtiene la sesión activa o None"""
+    with get_db() as conn:
+        result = conn.execute('''
+            SELECT * FROM race_sessions 
+            WHERE status = 'active' 
+            ORDER BY start_time DESC LIMIT 1
+        ''').fetchone()
+        return dict(result) if result else None
+
+def start_new_session(name):
+    """Inicia una nueva sesión de carrera"""
+    with get_db() as conn:
+        # Cerrar sesión anterior
+        conn.execute('''
+            UPDATE race_sessions 
+            SET status = 'completed', end_time = CURRENT_TIMESTAMP
+            WHERE status = 'active'
+        ''')
+        
+        # Crear nueva sesión
+        cursor = conn.execute('''
+            INSERT INTO race_sessions (name, start_time, status)
+            VALUES (?, CURRENT_TIMESTAMP, 'active')
+        ''', (name,))
+        
+        session_id = cursor.lastrowid
+        conn.execute('UPDATE settings SET value = ? WHERE key = "current_session_id"', (str(session_id),))
+        
+        return session_id
+
+def save_lap(session_id, transponder_id, physical_laps, lap_number, total_seconds, lap_seconds, signal_h, signal_l):
+    """Guarda una vuelta en la base de datos"""
+    with get_db() as conn:
+        # Verificar si es la primera vuelta del transponder en esta sesión
+        existing = conn.execute('''
+            SELECT id FROM laps 
+            WHERE session_id = ? AND transponder_id = ? AND lap_number = 0
+        ''', (session_id, transponder_id)).fetchone()
+        
+        if lap_number == 0 and not existing:
+            # Es la vuelta de salida
+            conn.execute('''
+                INSERT INTO laps (session_id, transponder_id, lap_number, physical_laps, 
+                                timestamp, total_seconds, lap_seconds, signal_h, signal_l)
+                VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?, NULL, ?, ?)
+            ''', (session_id, transponder_id, lap_number, physical_laps, total_seconds, signal_h, signal_l))
+        elif lap_number > 0:
+            # Vueltas normales
+            conn.execute('''
+                INSERT INTO laps (session_id, transponder_id, lap_number, physical_laps,
+                                timestamp, total_seconds, lap_seconds, signal_h, signal_l)
+                VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?, ?)
+            ''', (session_id, transponder_id, lap_number, physical_laps, total_seconds, lap_seconds, signal_h, signal_l))
+        
+        # Marcar para sincronización
+        lap_data = {
+            'session_id': session_id,
+            'transponder_id': transponder_id,
+            'lap_number': lap_number,
+            'physical_laps': physical_laps,
+            'total_seconds': total_seconds,
+            'lap_seconds': lap_seconds,
+            'timestamp': datetime.now().isoformat()
+        }
+        conn.execute('''
+            INSERT INTO sync_queue (endpoint, data) VALUES (?, ?)
+        ''', ('/api/laps', json.dumps(lap_data)))
+
+def get_leaderboard(session_id):
+    """Obtiene la tabla de posiciones actual"""
+    with get_db() as conn:
+        # Obtener última vuelta de cada transponder
+        results = conn.execute('''
+            SELECT 
+                l.transponder_id,
+                COALESCE(t.driver_name, 'Piloto ' || l.transponder_id) as driver_name,
+                COALESCE(t.kart_number, 'Kart ' || substr(l.transponder_id, -2)) as kart_number,
+                MAX(l.lap_number) as total_laps,
+                MIN(CASE WHEN l.lap_number > 0 THEN l.lap_seconds END) as best_lap,
+                MAX(l.lap_seconds) as worst_lap,
+                AVG(CASE WHEN l.lap_number > 0 THEN l.lap_seconds END) as avg_lap,
+                MIN(l.total_seconds) as first_detection,
+                (SELECT lap_seconds FROM laps l2 
+                 WHERE l2.transponder_id = l.transponder_id 
+                 AND l2.session_id = l.session_id 
+                 AND l2.lap_number > 0
+                 ORDER BY l2.lap_number DESC LIMIT 1) as last_lap
+            FROM laps l
+            LEFT JOIN transponders t ON l.transponder_id = t.id
+            WHERE l.session_id = ?
+            GROUP BY l.transponder_id
+            ORDER BY total_laps DESC, best_lap ASC
+        ''', (session_id,)).fetchall()
+        
+        # Calcular diferencia con el líder
+        leaderboard = []
+        best_total_laps = 0
+        best_best_lap = None
+        
+        for row in results:
+            row_dict = dict(row)
+            if row_dict['total_laps'] > best_total_laps:
+                best_total_laps = row_dict['total_laps']
+            if best_best_lap is None or (row_dict['best_lap'] and row_dict['best_lap'] < best_best_lap):
+                best_best_lap = row_dict['best_lap']
+            leaderboard.append(row_dict)
+        
+        # Calcular diferencias
+        for i, driver in enumerate(leaderboard):
+            driver['position'] = i + 1
+            driver['laps_behind'] = best_total_laps - driver['total_laps']
+            if driver['best_lap'] and best_best_lap:
+                driver['time_behind'] = driver['best_lap'] - best_best_lap
+            else:
+                driver['time_behind'] = None
+        
+        return leaderboard
+
+def register_transponder(transponder_id, driver_name, kart_number, team_name=''):
+    """Registra un transponder con información del piloto"""
+    with get_db() as conn:
+        conn.execute('''
+            INSERT OR REPLACE INTO transponders (id, driver_name, kart_number, team_name, registered_at)
+            VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+        ''', (transponder_id, driver_name, kart_number, team_name))
+
+def get_transponder_info(transponder_id):
+    """Obtiene información de un transponder"""
+    with get_db() as conn:
+        result = conn.execute('SELECT * FROM transponders WHERE id = ?', (transponder_id,)).fetchone()
+        return dict(result) if result else None
+
+def get_session_laps(session_id, transponder_id=None):
+    """Obtiene todas las vueltas de una sesión"""
+    with get_db() as conn:
+        if transponder_id:
+            results = conn.execute('''
+                SELECT * FROM laps 
+                WHERE session_id = ? AND transponder_id = ?
+                ORDER BY lap_number ASC
+            ''', (session_id, transponder_id)).fetchall()
+        else:
+            results = conn.execute('''
+                SELECT * FROM laps 
+                WHERE session_id = ?
+                ORDER BY transponder_id, lap_number ASC
+            ''', (session_id,)).fetchall()
+        return [dict(r) for r in results]
+EOF

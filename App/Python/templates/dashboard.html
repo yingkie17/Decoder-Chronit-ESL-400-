@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHRONIT Racing System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: #0d0d0d;
+            border-bottom: 1px solid #1f1f1f;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .nav-brand { font-size: 1.25rem; font-weight: 600; letter-spacing: 1px; }
+        .nav-brand span { color: #e5484d; }
+        
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+            flex: 1;
+            flex-wrap: wrap;
+        }
+        
+        .nav-links a {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.8rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            background: #1a1a1a;
+            color: #e5484d;
+        }
+        
+        .container {
+            padding: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .panel { display: none; }
+        .panel.active { display: block; }
+        
+        .card {
+            background: #0d0d0d;
+            border: 1px solid #1f1f1f;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #1f1f1f;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+        }
+        
+        .card-body { padding: 1rem; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 0.6rem 0.8rem; font-size: 0.7rem; color: #666; border-bottom: 1px solid #1f1f1f; }
+        td { padding: 0.6rem 0.8rem; font-size: 0.8rem; border-bottom: 1px solid #151515; }
+        tr:hover { background: #111; }
+        
+        .pos-1 { color: #ffd700; font-weight: 600; }
+        .pos-2 { color: #c0c0c0; }
+        .pos-3 { color: #cd7f32; }
+        .best-lap { color: #00c853; font-family: monospace; }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 280px; gap: 1.5rem; }
+        
+        .stat { display: flex; justify-content: space-between; padding: 0.4rem 0; font-size: 0.75rem; border-bottom: 1px solid #151515; }
+        .stat-value { font-family: monospace; color: #e5484d; font-weight: 500; }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover { background: #252525; border-color: #e5484d; }
+        .btn-primary { background: #e5484d; border-color: #e5484d; color: white; }
+        .btn-primary:hover { background: #d33a3f; }
+        .btn-sm { padding: 0.2rem 0.5rem; font-size: 0.7rem; }
+        
+        input, select {
+            width: 100%;
+            padding: 0.5rem;
+            background: #0a0a0a;
+            border: 1px solid #222;
+            color: #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .usb-status { display: flex; align-items: center; gap: 0.5rem; font-size: 0.7rem; padding: 0.4rem; background: #0a0a0a; border-radius: 6px; }
+        .usb-led { width: 8px; height: 8px; border-radius: 50%; background: #444; }
+        .usb-led.on { background: #00c853; box-shadow: 0 0 5px #00c853; }
+        .usb-led.off { background: #e5484d; }
+        
+        .refresh { font-size: 0.6rem; color: #444; text-align: right; padding: 0.3rem; }
+        
+        @media (max-width: 700px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .navbar { flex-direction: column; }
+            .nav-links { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-brand">CHRONIT<span>RACING</span></div>
+        <div class="nav-links">
+            <a class="active" data-panel="live">🏁 EN VIVO</a>
+            <a data-panel="drivers">👥 PILOTOS</a>
+            <a data-panel="transponders">📡 TRANSPONDERS</a>
+            <a data-panel="race-setup">🏎️ CONFIGURAR</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Panel En Vivo -->
+        <div id="panel-live" class="panel active">
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">🏁 POSICIONES EN VIVO</div>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead><tr><th>POS</th><th>PILOTO</th><th>TRANSPONDER</th><th>VTAS</th><th>MEJOR</th><th>ÚLTIMA</th><th>RESTANTES</th></tr></thead>
+                            <tbody id="leaderboardBody"><tr><td colspan="7" style="text-align:center;padding:2rem;">Esperando datos...</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div class="refresh" id="refreshTime">--</div>
+                </div>
+                
+                <div>
+                    <div class="card">
+                        <div class="card-header">📊 ESTADÍSTICAS</div>
+                        <div class="card-body">
+                            <div class="stat"><span>Circuito</span><span class="stat-value" id="circuitName">--</span></div>
+                            <div class="stat"><span>Vueltas</span><span class="stat-value" id="lapsLimit">--</span></div>
+                            <div class="stat"><span>Pilotos</span><span class="stat-value" id="totalDrivers">0</span></div>
+                            <div class="stat"><span>Finalizados</span><span class="stat-value" id="finishedDrivers">0</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">🔌 HARDWARE</div>
+                        <div class="card-body">
+                            <div class="usb-status"><div class="usb-led" id="usbLed"></div><span id="usbText">Verificando...</span></div>
+                            <button class="btn" id="resetUsbBtn" style="margin-top:0.5rem; width:100%;">🔌 Preparar USB</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Panel Pilotos -->
+        <div id="panel-drivers" class="panel">
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">👥 REGISTRAR PILOTO</div>
+                    <div class="card-body">
+                        <input type="number" id="driverTransponder" placeholder="ID Transponder">
+                        <input type="text" id="driverName" placeholder="Nombre">
+                        <input type="text" id="driverLastname" placeholder="Apellido">
+                        <button class="btn btn-primary" id="saveDriverBtn" style="width:100%;">💾 GUARDAR</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">📋 LISTA DE PILOTOS</div>
+                    <div style="overflow-x: auto; max-height: 300px;">
+                        <table><thead><tr><th>ID</th><th>Nombre</th><th>Transponder</th><th>Acción</th></tr></thead><tbody id="driversList"></tbody></table>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">🏁 INSCRIBIR A CARRERA</div>
+                <div class="card-body">
+                    <select id="selectDriverToAdd"><option value="">-- Seleccionar --</option></select>
+                    <button class="btn btn-primary" id="addDriverToRaceBtn" style="width:100%; margin-top:0.5rem;">➕ INSCRIBIR</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">🏎️ PILOTOS INSCRITOS</div>
+                <div style="overflow-x: auto;"><table><thead><tr><th>Piloto</th><th>Transponder</th><th>Acción</th></tr></thead><tbody id="raceDriversList"></tbody></table></div>
+            </div>
+        </div>
+        
+        <!-- Panel Transponders -->
+        <div id="panel-transponders" class="panel">
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">📡 AGREGAR MANUAL</div>
+                    <div class="card-body">
+                        <input type="number" id="manualTransponderId" placeholder="Código">
+                        <button class="btn btn-primary" id="addTransponderBtn" style="width:100%;">➕ AGREGAR</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">🔔 DETECTADOS (Semiautomático)</div>
+                    <div style="max-height: 300px; overflow-y: auto;"><table><thead><tr><th>ID</th><th>Acción</th></tr></thead><tbody id="detectedTranspondersList"></tbody></table></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">📋 TODOS LOS TRANSPONDERS</div>
+                <div style="overflow-x: auto;"><table><thead><tr><th>ID</th><th>Descripción</th><th>Asignado a</th></tr></thead><tbody id="allTranspondersList"></tbody></table></div>
+            </div>
+        </div>
+        
+        <!-- Panel Configurar -->
+        <div id="panel-race-setup" class="panel">
+            <div class="card">
+                <div class="card-header">🏁 NUEVA CARRERA / CIRCUITO</div>
+                <div class="card-body">
+                    <input type="text" id="newCircuitName" placeholder="Nombre del Circuito">
+                    <input type="number" id="newLapsLimit" value="10" placeholder="Vueltas">
+                    <button class="btn btn-primary" id="createNewRaceBtn" style="width:100%;">🏁 CREAR NUEVA CARRERA</button>
+                    <p style="font-size:0.65rem; color:#666; margin-top:0.5rem;">⚠️ Al crear una nueva carrera, el sistema se reiniciará.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="modal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
+        <div class="modal-content" style="background:#0d0d0d; border:1px solid #333; border-radius:12px; padding:1.5rem; max-width:400px;">
+            <h3 id="modalTitle">Confirmar</h3>
+            <p id="modalMessage">¿Estás seguro?</p>
+            <div class="modal-buttons" style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1rem;">
+                <button class="btn" id="modalCancel">Cancelar</button>
+                <button class="btn btn-primary" id="modalConfirm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let pendingAction = null;
+        
+        async function apiCall(url, options = {}) {
+            try {
+                const res = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...options });
+                return await res.json();
+            } catch(e) { console.error(e); return null; }
+        }
+        
+        function showModal(title, message, onConfirm) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerText = message;
+            document.getElementById('modal').style.display = 'flex';
+            pendingAction = onConfirm;
+        }
+        
+        document.getElementById('modalCancel').onclick = () => {
+            document.getElementById('modal').style.display = 'none';
+            pendingAction = null;
+        };
+        document.getElementById('modalConfirm').onclick = () => {
+            if (pendingAction) pendingAction();
+            document.getElementById('modal').style.display = 'none';
+            pendingAction = null;
+        };
+        
+        // Navegación
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const panelId = link.dataset.panel;
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                document.getElementById(`panel-${panelId}`).classList.add('active');
+                document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+                link.classList.add('active');
+                if (panelId === 'drivers') loadDrivers();
+                if (panelId === 'transponders') loadTransponders();
+            });
+        });
+        
+        // Cargar datos en vivo
+        async function loadLiveData() {
+            const data = await apiCall('/api/session/current');
+            if (data && data.active) {
+                document.getElementById('circuitName').innerText = data.session.circuit_name || '--';
+                document.getElementById('lapsLimit').innerText = data.session.laps_limit || '--';
+                document.getElementById('totalDrivers').innerText = data.leaderboard?.length || 0;
+                document.getElementById('finishedDrivers').innerText = data.leaderboard?.filter(d => d.is_finished).length || 0;
+                
+                const tbody = document.getElementById('leaderboardBody');
+                if (data.leaderboard?.length) {
+                    tbody.innerHTML = data.leaderboard.map(d => {
+                        let posClass = '';
+                        if (d.position === 1) posClass = 'pos-1';
+                        else if (d.position === 2) posClass = 'pos-2';
+                        else if (d.position === 3) posClass = 'pos-3';
+                        const best = d.best_lap ? d.best_lap.toFixed(3) : '--';
+                        const last = d.last_lap ? d.last_lap.toFixed(3) : '--';
+                        return `<tr><td class="${posClass}">${d.position}</td><td>${d.full_name || d.name}</td><td>${d.transponder_id}</td><td>${d.total_laps || 0}</td><td class="best-lap">${best}</td><td>${last}</td><td>${d.laps_remaining}</td></tr>`;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin datos</td></tr>';
+                }
+                document.getElementById('refreshTime').innerHTML = new Date().toLocaleTimeString();
+            }
+            
+            const usb = await apiCall('/api/usb/status');
+            const usbLed = document.getElementById('usbLed');
+            if (usb?.connected) { usbLed.className = 'usb-led on'; document.getElementById('usbText').innerText = `Conectado: ${usb.port}`; }
+            else { usbLed.className = 'usb-led off'; document.getElementById('usbText').innerText = 'Desconectado'; }
+        }
+        
+        // Pilotos
+        async function loadDrivers() {
+            const drivers = await apiCall('/api/drivers');
+            const tbody = document.getElementById('driversList');
+            if (drivers?.length) {
+                tbody.innerHTML = drivers.map(d => `<tr><td>${d.id}</td><td>${d.name} ${d.lastname || ''}</td><td>${d.transponder_id || '--'}</td><td><button class="btn btn-sm" onclick="deleteDriver(${d.id})">🗑️</button></td></tr>`).join('');
+            } else { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay pilotos</td></tr>'; }
+            
+            const session = await apiCall('/api/session/current');
+            if (session?.active) {
+                const raceDrivers = await apiCall(`/api/race/drivers/${session.session.id}`);
+                const raceTbody = document.getElementById('raceDriversList');
+                if (raceDrivers?.length) {
+                    raceTbody.innerHTML = raceDrivers.map(d => `<tr><td>${d.name} ${d.lastname || ''}</td><td>${d.transponder_id}</td><td><button class="btn btn-sm" onclick="removeFromRace(${d.driver_id})">❌</button></td></tr>`).join('');
+                } else { raceTbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Sin pilotos inscritos</td></tr>'; }
+            }
+            
+            const select = document.getElementById('selectDriverToAdd');
+            select.innerHTML = '<option value="">-- Seleccionar --</option>' + (drivers || []).map(d => `<option value="${d.id}" data-transponder="${d.transponder_id}">${d.name} ${d.lastname || ''} (${d.transponder_id})</option>`).join('');
+        }
+        
+        window.deleteDriver = async (id) => {
+            showModal('Eliminar Piloto', '¿Eliminar este piloto?', async () => {
+                await apiCall(`/api/drivers/${id}`, { method: 'DELETE' });
+                loadDrivers();
+                loadTransponders();
+            });
+        };
+        
+        window.removeFromRace = async (driverId) => {
+            const session = await apiCall('/api/session/current');
+            if (session?.active) {
+                await apiCall('/api/race/remove', { method: 'POST', body: JSON.stringify({ session_id: session.session.id, driver_id: driverId }) });
+                loadDrivers();
+            }
+        };
+        
+        document.getElementById('saveDriverBtn').onclick = async () => {
+            const data = {
+                transponder_id: parseInt(document.getElementById('driverTransponder').value),
+                name: document.getElementById('driverName').value,
+                lastname: document.getElementById('driverLastname').value
+            };
+            if (!data.transponder_id || !data.name) { alert('Complete ID y Nombre'); return; }
+            const res = await apiCall('/api/drivers', { method: 'POST', body: JSON.stringify(data) });
+            if (res?.success) {
+                alert('Piloto guardado');
+                document.getElementById('driverTransponder').value = '';
+                document.getElementById('driverName').value = '';
+                document.getElementById('driverLastname').value = '';
+                loadDrivers();
+                loadTransponders();
+            } else alert('Error');
+        };
+        
+        document.getElementById('addDriverToRaceBtn').onclick = async () => {
+            const select = document.getElementById('selectDriverToAdd');
+            const driverId = select.value;
+            if (!driverId) { alert('Seleccione un piloto'); return; }
+            const session = await apiCall('/api/session/current');
+            if (!session?.active) { alert('No hay carrera activa'); return; }
+            const drivers = await apiCall('/api/drivers');
+            const driver = drivers.find(d => d.id == driverId);
+            if (!driver) { alert('Piloto no encontrado'); return; }
+            const res = await apiCall('/api/race/add', { method: 'POST', body: JSON.stringify({ session_id: session.session.id, driver_id: parseInt(driverId), transponder_id: driver.transponder_id }) });
+            if (res?.success) { alert('Piloto inscrito'); loadDrivers(); } else alert('Error');
+        };
+        
+        // Transponders
+        async function loadTransponders() {
+            const detected = await apiCall('/api/transponders/unassigned');
+            const detectedTbody = document.getElementById('detectedTranspondersList');
+            if (detected?.length) {
+                detectedTbody.innerHTML = detected.map(t => `<tr><td>${t.id}</td><td><button class="btn btn-sm" onclick="assignTransponder(${t.id})">👤 Asignar</button></td></tr>`).join('');
+            } else { detectedTbody.innerHTML = '<tr><td colspan="2" style="text-align:center;">Sin transponders detectados</td></tr>'; }
+            
+            const all = await apiCall('/api/transponders/all');
+            const allTbody = document.getElementById('allTranspondersList');
+            if (all?.length) {
+                const drivers = await apiCall('/api/drivers');
+                allTbody.innerHTML = all.map(t => { const assigned = drivers?.find(d => d.transponder_id === t.id); return `<tr><td>${t.id}</td><td>${t.description || '--'}</td><td>${assigned ? `${assigned.name} ${assigned.lastname || ''}` : 'Sin asignar'}</td></tr>`; }).join('');
+            } else { allTbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No hay transponders registrados</td></tr>'; }
+        }
+        
+        window.assignTransponder = (id) => {
+            document.getElementById('driverTransponder').value = id;
+            document.querySelector('[data-panel="drivers"]').click();
+            alert(`Transponder ${id} listo para asignar. Completa el formulario.`);
+        };
+        
+        document.getElementById('addTransponderBtn').onclick = async () => {
+            const id = parseInt(document.getElementById('manualTransponderId').value);
+            if (!id) { alert('Ingrese código'); return; }
+            const res = await apiCall('/api/transponders/manual', { method: 'POST', body: JSON.stringify({ id }) });
+            if (res?.success) {
+                alert('Transponder agregado');
+                document.getElementById('manualTransponderId').value = '';
+                loadTransponders();
+            } else alert('Error o ya existe');
+        };
+        
+        // Nueva carrera
+        document.getElementById('createNewRaceBtn').onclick = () => {
+            const name = document.getElementById('newCircuitName').value;
+            const laps = document.getElementById('newLapsLimit').value;
+            if (!name) { alert('Ingrese nombre del circuito'); return; }
+            showModal('Nueva Carrera', `¿Crear carrera "${name}" con ${laps} vueltas?`, async () => {
+                await apiCall('/api/restart', { method: 'POST', body: JSON.stringify({ next_race_name: name, next_race_laps: parseInt(laps) }) });
+                alert('Reiniciando sistema...');
+                setTimeout(() => location.reload(), 3000);
+            });
+        };
+        
+        document.getElementById('resetUsbBtn').onclick = () => {
+            showModal('Preparar USB', '¿Preparar USB para desconectar con seguridad?', async () => {
+                await apiCall('/api/usb/reset', { method: 'POST' });
+                alert('USB preparado. Puede desconectar con seguridad.');
+            });
+        };
+        
+        loadLiveData();
+        setInterval(loadLiveData, 2000);
+    </script>
+</body>
+</html>

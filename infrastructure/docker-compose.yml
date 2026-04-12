@@ -1,0 +1,17 @@
+services:
+  hardware:
+    build: ../App/Python
+    privileged: true
+    stdin_open: true
+    tty: true
+    group_add:
+      - dialout
+    devices:
+      - "${SERIAL_PORT:-/dev/ttyUSB0}:${SERIAL_PORT:-/dev/ttyUSB0}"
+    restart: always
+    ports:
+      - "5000:5000"  # Exponer API para Next.js
+    volumes:
+      - ../App/Python/data:/app/data  # Persistir datos
+    environment:
+      - SERIAL_PORT=${SERIAL_PORT:-/dev/ttyUSB0}

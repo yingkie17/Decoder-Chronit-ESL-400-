@@ -1,0 +1,37 @@
+cd Escritorio/Chronit/infrastructure
+
+
+<<<<<  docker compose up --build hardware >>>>>>
+
+docker compose build 
+
+docker compose build --no-cache
+
+docker compose up
+
+
+>>>>>>nueva forma de prender<<<<<<<
+
+   1. Entra a la carpeta: cd /home/nancy/Escritorio/Chronit/infrastructure/
+
+   2. Dale permiso al script (solo se hace una vez): chmod +x start.sh
+
+   3. Prende el servidor: ./start.sh
+
+
+>>>>>>>>>>>Cómo aplicar el cambio y ver los resultados:
+Como has modificado el código de Python, Docker necesita actualizar el contenedor. Para hacerlo rápido sin borrar todo, corre esto:
+
+Bash
+# Dentro de la carpeta infrastructure
+docker compose up --build hardware <<<<<<<<<<<<<<<<<<<<
+
+
+
+
+Tu siguiente paso:
+Actualiza el main.py.
+
+Como cambiaste el código, recuerda reconstruir: docker compose up --build hardware.
+
+Pasa el transponder 24417.

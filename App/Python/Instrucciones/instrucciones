@@ -1,0 +1,251 @@
+cd /home/nancy/Escritorio/Chronit/infrastructure
+docker compose down
+docker compose up --build
+
+
+
+
+
+
+
+1. Script de inicio único (setup.sh)
+bash
+cat > /home/nancy/Escritorio/Chronit/setup.sh << 'EOF'
+#!/bin/bash
+
+# CHRONIT RACING SYSTEM - INSTALADOR PORTABLE
+# Ejecutar una sola vez: chmod +x setup.sh && ./setup.sh
+
+set -e
+
+echo "========================================="
+echo "🏁 CHRONIT RACING SYSTEM v6.0"
+echo "========================================="
+echo ""
+
+# Colores para output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+# Verificar Docker
+if ! command -v docker &> /dev/null; then
+    echo -e "${RED}❌ Docker no está instalado${NC}"
+    echo ""
+    echo "📥 Instalar Docker ejecutando:"
+    echo "   curl -fsSL https://get.docker.com | sudo sh"
+    echo "   sudo usermod -aG docker \$USER"
+    echo ""
+    echo "Luego cierra sesión y vuelve a entrar, o ejecuta: newgrp docker"
+    exit 1
+fi
+
+# Verificar Docker Compose
+if ! docker compose version &> /dev/null; then
+    echo -e "${YELLOW}⚠️ Docker Compose no disponible, instalando...${NC}"
+    sudo apt update && sudo apt install -y docker-compose-plugin
+fi
+
+# Crear estructura de directorios
+echo "📁 Creando estructura de directorios..."
+mkdir -p App/Python/{data,templates,static}
+mkdir -p infrastructure
+
+# Verificar puerto USB
+echo ""
+echo "🔍 Detectando puerto serial..."
+if [ -e /dev/ttyUSB0 ]; then
+    SERIAL_PORT="/dev/ttyUSB0"
+    echo -e "${GREEN}✅ Puerto encontrado: $SERIAL_PORT${NC}"
+elif [ -e /dev/ttyACM0 ]; then
+    SERIAL_PORT="/dev/ttyACM0"
+    echo -e "${GREEN}✅ Puerto encontrado: $SERIAL_PORT${NC}"
+else
+    echo -e "${YELLOW}⚠️ No se detectó puerto USB${NC}"
+    echo "   Conecta el ESL-400 y ejecuta: ls /dev/ttyUSB*"
+    SERIAL_PORT="/dev/ttyUSB0"  # Default
+fi
+
+# Crear archivo .env
+echo "SERIAL_PORT=$SERIAL_PORT" > infrastructure/.env
+echo -e "${GREEN}✅ Configuración guardada${NC}"
+
+# Crear script de inicio rápido
+cat > /home/nancy/Escritorio/Chronit/start.sh << 'STARTSCRIPT'
+#!/bin/bash
+cd "$(dirname "$0")/infrastructure"
+echo "🏁 Iniciando CHRONIT Racing System..."
+docker compose up --build
+STARTSCRIPT
+
+chmod +x /home/nancy/Escritorio/Chronit/start.sh
+
+# Crear script de parada
+cat > /home/nancy/Escritorio/Chronit/stop.sh << 'STOPSCRIPT'
+#!/bin/bash
+cd "$(dirname "$0")/infrastructure"
+echo "🛑 Deteniendo CHRONIT Racing System..."
+docker compose down
+STOPSCRIPT
+
+chmod +x /home/nancy/Escritorio/Chronit/stop.sh
+
+# Crear script para ver logs
+cat > /home/nancy/Escritorio/Chronit/logs.sh << 'LOGSCRIPT'
+#!/bin/bash
+cd "$(dirname "$0")/infrastructure"
+docker compose logs -f --tail=50
+LOGSCRIPT
+
+chmod +x /home/nancy/Escritorio/Chronit/logs.sh
+
+echo ""
+echo -e "${GREEN}=========================================${NC}"
+echo -e "${GREEN}✅ INSTALACIÓN COMPLETADA${NC}"
+echo -e "${GREEN}=========================================${NC}"
+echo ""
+echo "📋 Para usar el sistema:"
+echo ""
+echo "   🚀 Iniciar:    ./start.sh"
+echo "   🛑 Detener:    ./stop.sh"
+echo "   📊 Ver logs:   ./logs.sh"
+echo "   🌐 Web UI:     http://localhost:5000"
+echo ""
+echo "💾 Los datos se guardan automáticamente en:"
+echo "   App/Python/data/chronit.db"
+echo ""
+echo "📦 Para mover a otra computadora:"
+echo "   Simplemente copia toda la carpeta 'Chronit'"
+echo "   y ejecuta ./start.sh en la nueva máquina"
+echo ""
+STARTSCRIPT
+
+chmod +x /home/nancy/Escritorio/Chronit/setup.sh
+2. Script de instalación para Windows (setup.bat)
+bash
+cat > /home/nancy/Escritorio/Chronit/setup.bat << 'EOF'
+@echo off
+echo =========================================
+echo 🏁 CHRONIT RACING SYSTEM v6.0
+echo =========================================
+echo.
+
+REM Verificar Docker
+docker --version >nul 2>&1
+if errorlevel 1 (
+    echo ❌ Docker no esta instalado
+    echo.
+    echo 📥 Descargar Docker Desktop de:
+    echo    https://www.docker.com/products/docker-desktop/
+    pause
+    exit /b 1
+)
+
+echo ✅ Docker encontrado
+echo.
+
+REM Crear estructura
+echo 📁 Creando directorios...
+mkdir App\Python\data 2>nul
+mkdir App\Python\templates 2>nul
+mkdir infrastructure 2>nul
+
+REM Crear .env
+echo SERIAL_PORT=COM3 > infrastructure\.env
+
+REM Crear start.bat
+echo @echo off > start.bat
+echo cd /d "%%~dp0infrastructure" >> start.bat
+echo echo 🏁 Iniciando CHRONIT Racing System... >> start.bat
+echo docker compose up --build >> start.bat
+echo pause >> start.bat
+
+REM Crear stop.bat
+echo @echo off > stop.bat
+echo cd /d "%%~dp0infrastructure" >> stop.bat
+echo echo 🛑 Deteniendo CHRONIT Racing System... >> stop.bat
+echo docker compose down >> stop.bat
+echo pause >> stop.bat
+
+echo.
+echo =========================================
+echo ✅ INSTALACION COMPLETADA
+echo =========================================
+echo.
+echo 🚀 Ejecutar: start.bat
+echo 🌐 Web UI: http://localhost:5000
+echo.
+pause
+EOF
+3. Archivo README.md para usuarios
+bash
+cat > /home/nancy/Escritorio/Chronit/README.md << 'EOF'
+# 🏁 CHRONIT Racing System
+
+Sistema profesional de cronometraje para karts y deportes de motor.
+
+## 📋 Requisitos
+
+- **Docker** (instalación automática con el script)
+- **ESL-400 Decoder** conectado por USB
+- **Linux, Windows o macOS**
+
+## 🚀 Instalación (1 minuto)
+
+### Linux / macOS
+```bash
+chmod +x setup.sh
+./setup.sh
+./start.sh
+Windows
+bash
+setup.bat
+start.bat
+🌐 Acceso
+Interfaz web: http://localhost:5000
+
+API: http://localhost:5000/api
+
+📁 Estructura
+text
+Chronit/
+├── start.sh          # Iniciar sistema
+├── stop.sh           # Detener sistema
+├── logs.sh           # Ver logs
+├── App/
+│   └── Python/
+│       ├── data/     # Base de datos (persistente)
+│       └── templates/# Interfaz web
+└── infrastructure/
+    └── docker-compose.yml
+💾 Datos
+Los datos se guardan automáticamente en App/Python/data/chronit.db
+
+🔄 Mover a otra computadora
+Solo copia toda la carpeta Chronit y ejecuta ./start.sh
+
+No requiere configuración adicional.
+
+📡 API Endpoints
+Endpoint	Descripción
+/api/leaderboard	Tabla de posiciones
+/api/session/start	Iniciar carrera
+/api/session/current	Sesión actual
+/api/laps/{id}	Vueltas de sesión
+/api/transponder/register	Registrar piloto
+🛠️ Solución de problemas
+El puerto USB no se detecta
+bash
+ls /dev/ttyUSB*  # Linux
+# o
+ls /dev/ttyACM*
+Reiniciar el sistema
+bash
+./stop.sh && ./start.sh
+Ver logs en tiempo real
+bash
+./logs.sh
+📞 Soporte Para soporte técnico: yingkie17@gmail.com, bluestone.integrations@gamil.com
++591 76780010
+wwww.bluestoneintegrations.com
