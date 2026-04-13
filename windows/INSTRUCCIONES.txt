@@ -1,0 +1,32 @@
+=== CHRONIT Racing System - Guía Rápida ===
+
+🔧 INSTALACIÓN:
+1. Ejecuta CHRONIT_Setup_v3.0.exe
+2. Sigue las instrucciones del instalador
+3. Espera a que se complete la instalación
+
+🚀 USO:
+1. Haz doble clic en el icono del escritorio "CHRONIT Racing System"
+2. Espera a que Docker inicie (puede tomar unos segundos)
+3. Abre tu navegador en: http://localhost:5000
+4. Conecta el decoder ESL-400 por USB
+
+🎮 CONTROLES:
+- Iniciar carrera: Botón verde 🏁 INICIAR CARRERA
+- Pausar: Botón amarillo ⏸️ PAUSAR
+- Reanudar: Botón verde ▶️ REANUDAR
+- Repetir carrera: Botón gris 🔄 REPETIR CARRERA
+- Finalizar: Botón rojo 🏆 FINALIZAR
+
+🔌 CONEXIÓN DECODER:
+- Conecta el ESL-400 por USB antes de iniciar
+- Windows detectará automáticamente el puerto COM
+
+❓ PROBLEMAS:
+- Si no detecta el decoder, reinstala los drivers USB
+- Si la web no carga, espera 10 segundos y refresca (F5)
+
+📞 SOPORTE:
+Email: soporte@chronit.com
+
+© 2024 CHRONIT Racing System
