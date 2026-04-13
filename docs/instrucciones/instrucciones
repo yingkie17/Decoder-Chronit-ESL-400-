@@ -1,4 +1,4 @@
-cd /home/nancy/Escritorio/Chronit/infrastructure
+cd /home/nancy/Escritorio/ChronitRace/Chronit/infrastructure
 docker compose down
 docker compose up --build
 
@@ -49,8 +49,7 @@ fi
 
 # Crear estructura de directorios
 echo "📁 Creando estructura de directorios..."
-mkdir -p App/Python/{data,templates,static}
-mkdir -p infrastructure
+mkdir -p src/templates data infrastructure scripts docs/instrucciones tests
 
 # Verificar puerto USB
 echo ""
@@ -68,7 +67,7 @@ else
 fi
 
 # Crear archivo .env
-echo "SERIAL_PORT=$SERIAL_PORT" > infrastructure/.env
+echo "SERIAL_PORT=$SERIAL_PORT" > .env
 echo -e "${GREEN}✅ Configuración guardada${NC}"
 
 # Crear script de inicio rápido
@@ -113,7 +112,7 @@ echo "   📊 Ver logs:   ./logs.sh"
 echo "   🌐 Web UI:     http://localhost:5000"
 echo ""
 echo "💾 Los datos se guardan automáticamente en:"
-echo "   App/Python/data/chronit.db"
+echo "   data/chronit.db"
 echo ""
 echo "📦 Para mover a otra computadora:"
 echo "   Simplemente copia toda la carpeta 'Chronit'"
@@ -147,25 +146,27 @@ echo.
 
 REM Crear estructura
 echo 📁 Creando directorios...
-mkdir App\Python\data 2>nul
-mkdir App\Python\templates 2>nul
+mkdir src 2>nul
+mkdir src\templates 2>nul
+mkdir data 2>nul
 mkdir infrastructure 2>nul
+mkdir scripts 2>nul
 
-REM Crear .env
-echo SERIAL_PORT=COM3 > infrastructure\.env
+REM Crear .env en la raíz del proyecto
+echo SERIAL_PORT=COM3 > .env
 
 REM Crear start.bat
 echo @echo off > start.bat
 echo cd /d "%%~dp0infrastructure" >> start.bat
 echo echo 🏁 Iniciando CHRONIT Racing System... >> start.bat
-echo docker compose up --build >> start.bat
+echo docker compose --env-file "%%~dp0.env" up --build >> start.bat
 echo pause >> start.bat
 
 REM Crear stop.bat
 echo @echo off > stop.bat
 echo cd /d "%%~dp0infrastructure" >> stop.bat
 echo echo 🛑 Deteniendo CHRONIT Racing System... >> stop.bat
-echo docker compose down >> stop.bat
+echo docker compose --env-file "%%~dp0.env" down >> stop.bat
 echo pause >> stop.bat
 
 echo.
@@ -210,17 +211,16 @@ API: http://localhost:5000/api
 📁 Estructura
 text
 Chronit/
-├── start.sh          # Iniciar sistema
-├── stop.sh           # Detener sistema
-├── logs.sh           # Ver logs
-├── App/
-│   └── Python/
-│       ├── data/     # Base de datos (persistente)
-│       └── templates/# Interfaz web
-└── infrastructure/
-    └── docker-compose.yml
+├── src/                 # Código Python y templates
+├── infrastructure/      # Docker
+├── scripts/             # start.sh, utilidades
+├── docs/                # Documentación
+├── tests/
+├── data/                # chronit.db y estado
+├── .env
+└── README.md
 💾 Datos
-Los datos se guardan automáticamente en App/Python/data/chronit.db
+Los datos se guardan automáticamente en data/chronit.db
 
 🔄 Mover a otra computadora
 Solo copia toda la carpeta Chronit y ejecuta ./start.sh

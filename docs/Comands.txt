@@ -1,0 +1,36 @@
+cd /home/nancy/Escritorio/ChronitRace/Chronit/infrastructure
+
+<<<<<  docker compose up --build hardware >>>>>>
+
+docker compose build
+
+docker compose build --no-cache
+
+docker compose up
+
+
+>>>>>> Forma recomendada de arrancar (desde la raíz del repo) <<<<<<
+
+   1. Copia variables de entorno: cp .env.example .env  (y edita SERIAL_PORT si hace falta)
+
+   2. Permisos (solo una vez): chmod +x scripts/start.sh
+
+   3. Arranque con detección USB: ./scripts/start.sh
+
+   O manualmente:
+
+   1. cd /home/nancy/Escritorio/ChronitRace/Chronit/infrastructure/
+
+   2. docker compose up --build
+
+
+>>>>>>>>>>> Cómo aplicar cambios en el código Python:
+
+Tras modificar src/, reconstruye el contenedor:
+
+# Dentro de la carpeta infrastructure
+docker compose up --build hardware
+
+O desde la raíz:
+
+./scripts/start.sh --build

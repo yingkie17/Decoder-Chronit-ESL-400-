@@ -1,9 +1,10 @@
-# Base de datos (no subir datos locales)
+# Base de datos local (persistencia en data/)
 *.db
 *.sqlite
 *.sqlite3
-App/Python/data/*.db
-App/Python/data/*.sqlite
+data/*.db
+data/*.sqlite
+data/*.sqlite3
 
 # Archivos de Python
 __pycache__/
@@ -36,3 +37,6 @@ next_race_laps.txt
 # Docker
 *.pid
 *.flag
+
+# Artefactos sueltos
+docs/_legacy/cursor.appimage

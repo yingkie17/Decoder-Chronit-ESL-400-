@@ -48,6 +48,22 @@
             background: #1a1a1a;
             color: #e5484d;
         }
+        .control-bar {
+            background: #0d0d0d;
+            border-bottom: 1px solid #1f1f1f;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .btn-success { background: #00c85320; border-color: #00c853; color: #00c853; }
+        .btn-success:hover { background: #00c85330; }
+        .btn-warning { background: #ffaa0020; border-color: #ffaa00; color: #ffaa00; }
+        .btn-warning:hover { background: #ffaa0030; }
+        .btn-danger { background: #e5484d20; border-color: #e5484d; color: #e5484d; }
+        .btn-danger:hover { background: #e5484d30; }
         
         .container {
             padding: 1.5rem;
@@ -143,6 +159,15 @@
             <a data-panel="transponders">📡 TRANSPONDERS</a>
             <a data-panel="race-setup">🏎️ CONFIGURAR</a>
         </div>
+    </div>
+
+    <!-- BARRA DE CONTROL DE CARRERA -->
+    <div class="control-bar" style="background: #0d0d0d; border-bottom: 1px solid #1f1f1f; padding: 0.75rem 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center;">
+        <button class="btn btn-success" id="startRaceBtn">🏁 INICIAR CARRERA</button>
+        <button class="btn btn-warning" id="pauseRaceBtn">⏸️ PAUSAR</button>
+        <button class="btn btn-success" id="resumeRaceBtn">▶️ REANUDAR</button>
+        <button class="btn" id="repeatRaceBtn">🔄 REPETIR CARRERA</button>
+        <button class="btn btn-danger" id="finishRaceBtn">🏆 FINALIZAR</button>
     </div>
     
     <div class="container">
@@ -450,6 +475,47 @@
             showModal('Preparar USB', '¿Preparar USB para desconectar con seguridad?', async () => {
                 await apiCall('/api/usb/reset', { method: 'POST' });
                 alert('USB preparado. Puede desconectar con seguridad.');
+            });
+        };
+
+                // Botones de control de carrera
+        document.getElementById('startRaceBtn').onclick = async () => {
+            showModal('Iniciar Carrera', '¿Iniciar la carrera? Comenzará el conteo de vueltas.', async () => {
+                const res = await apiCall('/api/race/start', { method: 'POST' });
+                if(res?.success) alert('🏁 Carrera iniciada!');
+                else alert('Error: ' + (res?.error || 'No se pudo iniciar'));
+            });
+        };
+        
+        document.getElementById('pauseRaceBtn').onclick = async () => {
+            const res = await apiCall('/api/race/pause', { method: 'POST' });
+            if(res?.success) alert('⏸️ Carrera pausada');
+            else alert('Error: ' + (res?.error || 'No se pudo pausar'));
+        };
+        
+        document.getElementById('resumeRaceBtn').onclick = async () => {
+            const res = await apiCall('/api/race/resume', { method: 'POST' });
+            if(res?.success) alert('▶️ Carrera reanudada');
+            else alert('Error: ' + (res?.error || 'No se pudo reanudar'));
+        };
+        
+        document.getElementById('repeatRaceBtn').onclick = async () => {
+            showModal('Repetir Carrera', '¿Repetir la misma carrera con los mismos pilotos? Se reiniciarán las vueltas.', async () => {
+                const res = await apiCall('/api/race/repeat', { method: 'POST' });
+                if(res?.success) {
+                    alert('🔄 Repitiendo carrera... La página se recargará.');
+                    setTimeout(() => location.reload(), 3000);
+                } else {
+                    alert('Error: ' + (res?.error || 'No se pudo repetir la carrera'));
+                }
+            });
+        };
+        
+        document.getElementById('finishRaceBtn').onclick = async () => {
+            showModal('Finalizar Carrera', '¿Finalizar la carrera actual? Se guardarán los resultados.', async () => {
+                const res = await apiCall('/api/race/finish', { method: 'POST' });
+                if(res?.success) alert('🏆 Carrera finalizada!');
+                else alert('Error: ' + (res?.error || 'No se pudo finalizar'));
             });
         };
         

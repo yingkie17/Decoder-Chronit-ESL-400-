@@ -10,10 +10,10 @@ RUN pip install --no-cache-dir pyserial flask flask-cors
 
 WORKDIR /app
 
-COPY main.py .
-COPY database.py .
-COPY api.py .
-COPY templates/ ./templates/
+COPY src/main.py .
+COPY src/database.py .
+COPY src/api.py .
+COPY src/templates/ ./templates/
 
 RUN mkdir -p /app/data
 

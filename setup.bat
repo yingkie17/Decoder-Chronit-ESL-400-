@@ -20,25 +20,32 @@ echo.
 
 REM Crear estructura
 echo 📁 Creando directorios...
-mkdir App\Python\data 2>nul
-mkdir App\Python\templates 2>nul
+mkdir src 2>nul
+mkdir src\templates 2>nul
 mkdir infrastructure 2>nul
+mkdir scripts 2>nul
+mkdir docs 2>nul
+mkdir docs\instrucciones 2>nul
+mkdir tests 2>nul
+mkdir data 2>nul
 
-REM Crear .env
-echo SERIAL_PORT=COM3 > infrastructure\.env
+REM Variables de entorno en la raíz del proyecto
+if not exist .env (
+    echo SERIAL_PORT=COM3 > .env
+)
 
 REM Crear start.bat
 echo @echo off > start.bat
 echo cd /d "%%~dp0infrastructure" >> start.bat
 echo echo 🏁 Iniciando CHRONIT Racing System... >> start.bat
-echo docker compose up --build >> start.bat
+echo docker compose --env-file "%%~dp0.env" up --build >> start.bat
 echo pause >> start.bat
 
 REM Crear stop.bat
 echo @echo off > stop.bat
 echo cd /d "%%~dp0infrastructure" >> stop.bat
 echo echo 🛑 Deteniendo CHRONIT Racing System... >> stop.bat
-echo docker compose down >> stop.bat
+echo docker compose --env-file "%%~dp0.env" down >> stop.bat
 echo pause >> stop.bat
 
 echo.

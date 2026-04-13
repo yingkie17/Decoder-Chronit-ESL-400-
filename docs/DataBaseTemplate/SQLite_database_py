@@ -1,4 +1,4 @@
-cat > /home/nancy/Escritorio/Chronit/App/Python/database.py << 'EOF'
+cat > /home/nancy/Escritorio/ChronitRace/Chronit/src/database.py << 'EOF'
 import sqlite3
 import json
 from datetime import datetime

@@ -1,6 +1,8 @@
 services:
   hardware:
-    build: ../App/Python
+    build:
+      context: ..
+      dockerfile: infrastructure/Dockerfile
     privileged: true
     stdin_open: true
     tty: true
@@ -10,8 +12,8 @@ services:
       - "${SERIAL_PORT:-/dev/ttyUSB0}:${SERIAL_PORT:-/dev/ttyUSB0}"
     restart: always
     ports:
-      - "5000:5000"  # Exponer API para Next.js
+      - "5000:5000"
     volumes:
-      - ../App/Python/data:/app/data  # Persistir datos
+      - ../data:/app/data
     environment:
       - SERIAL_PORT=${SERIAL_PORT:-/dev/ttyUSB0}

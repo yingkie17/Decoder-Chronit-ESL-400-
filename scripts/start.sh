@@ -28,7 +28,9 @@ echo -e "🔧 Limpiando ruidos del puerto $PORT..."
 sudo stty -F $PORT 9600 raw -echo -echoe -echok -echoctl -echoke 2>/dev/null
 sudo chmod 666 $PORT
 
-# 4. Lanzar Docker
+# 4. Lanzar Docker (desde la carpeta del proyecto)
 echo -e "${VERDE}✅ Todo listo. Iniciando Servidores...${NC}"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT/infrastructure"
 export SERIAL_PORT=$PORT
-docker compose up
+docker compose up "$@"

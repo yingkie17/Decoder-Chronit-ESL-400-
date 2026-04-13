@@ -406,3 +406,40 @@ def get_race_history():
             LIMIT 20
         ''').fetchall()
         return [dict(r) for r in results]
+
+# ==================== REPETIR CARRERA (JSON) ====================
+import json
+import os
+
+JSON_STATE_FILE = '/app/data/race_state.json'
+
+def guardar_estado_repetir(session_id, circuit_name, laps_limit, race_drivers):
+    """Guarda el estado actual para repetir carrera después del reinicio"""
+    estado = {
+        "action": "repeat_race",
+        "session_id": session_id,
+        "circuit_name": circuit_name,
+        "laps_limit": laps_limit,
+        "race_drivers": race_drivers  # Lista de dicts con driver_id, transponder_id, name, lastname
+    }
+    with open(JSON_STATE_FILE, 'w') as f:
+        json.dump(estado, f, indent=2)
+    print(f"[SISTEMA] Estado guardado para repetir carrera: {len(race_drivers)} pilotos")
+
+def cargar_estado_repetir():
+    """Carga el estado guardado y lo elimina (solo se usa una vez)"""
+    if not os.path.exists(JSON_STATE_FILE):
+        return None
+    
+    with open(JSON_STATE_FILE, 'r') as f:
+        estado = json.load(f)
+    
+    # Eliminar el archivo después de leerlo
+    os.remove(JSON_STATE_FILE)
+    print(f"[SISTEMA] Estado restaurado: {len(estado.get('race_drivers', []))} pilotos")
+    return estado
+
+def limpiar_estado_repetir():
+    """Limpia el archivo de estado si existe"""
+    if os.path.exists(JSON_STATE_FILE):
+        os.remove(JSON_STATE_FILE)

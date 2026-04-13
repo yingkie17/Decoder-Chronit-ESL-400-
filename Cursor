@@ -1,0 +1,205 @@
+🏁 CHRONIT Racing System - Descripción Completa
+📋 Visión General
+CHRONIT Racing System es un software profesional de cronometraje diseñado específicamente para competiciones de karting y automovilismo. Actúa como un puente inteligente entre el hardware decoder ESL-400 (que detecta transponders en pista) y una interfaz de usuario moderna, transformando datos crudos en información útil para la gestión de carreras.
+
+🖥️ 1. CONSOLA (Terminal / Logs)
+Funciones que muestra en tiempo real:
+Información	Descripción	Ejemplo
+Conexión del hardware	Indica si el decoder ESL-400 está conectado por USB	✅ Puerto /dev/ttyUSB0 conectado. Vigilando pista...
+Detección de transponders	Cada vez que un transponder pasa por la meta	🏁 ¡DETECCIÓN! 🟢 EXCELENTE
+ID del transponder	Código único del vehículo/piloto	🆔 ID Transponder: 24417
+Calidad de señal (H/L)	Potencia de la antena (diagnóstico)	📡 Señal -> H: 152 | L: 81
+Tiempo acumulado	Tiempo total desde el inicio del decoder	⏱️ Tiempo Acumulado: 304:50.178
+Vueltas físicas del equipo	Contador interno del ESL-400 (nunca se reinicia)	🔄 Vueltas Físicas (Equipo): 34
+Memoria física	Registros de uso del equipo	💾 Memoria física del ESL-400: 35 registros
+Estado de inscripción	Indica si el transponder está registrado en la carrera	⚠️ ESTADO: NO INSCRITO en la carrera actual
+Alertas	Pérdida de conexión, hardware no responde, etc.	🚨 ALERTA: SIN COMUNICACIÓN CON EL HARDWARE
+Comandos desde consola (para administradores):
+bash
+# Ver logs en tiempo real
+docker compose logs -f
+
+# Reiniciar el sistema
+docker compose restart
+
+# Apagar el sistema
+docker compose down
+🔌 2. EQUIPO FÍSICO (Decoder ESL-400)
+Hardware compatible:
+Componente	Descripción
+Decoder ESL-400	Dispositivo que lee las señales de los transponders
+Transponders	Dispositivos montados en los karts que emiten señal única
+Antena	Capta la señal de los transponders al pasar por meta
+Cable USB	Conecta el decoder a la computadora
+Datos que envía el decoder:
+Tipo de dato	Formato	Ejemplo	Significado
+Pulso de vida	#	#01010000010206	El equipo está vivo
+Detección de transponder	$ + hex	$01005F6101115687...	Un vehículo pasó por meta
+Parseo de la trama (cómo se decodifica):
+Campo	Posición	Ejemplo	Resultado
+ID del transponder	data[4:8]	5F61	24417
+Tiempo en milisegundos	data[8:16]	01115687	17.847s
+Señal H (calidad alta)	data[16:18]	F1	241
+Señal L (calidad baja)	data[18:20]	50	80
+Vueltas físicas	data[-8:-4]	000B	11
+🌐 3. INTERFAZ WEB (localhost:5000)
+Pestañas principales:
+Pestaña	Funcionalidades
+🏁 EN VIVO	Tabla de posiciones, estadísticas en tiempo real
+👥 PILOTOS	Registrar, listar, inscribir pilotos
+📡 TRANSPONDERS	Agregar manual, detectar semiautomático
+🏎️ CONFIGURAR	Nueva carrera, límite de vueltas
+Barra de Control (5 botones):
+Botón	Icono	Función	Qué hace exactamente
+INICIAR CARRERA	🏁	Comienza la carrera	Reinicia el contenedor, limpia pilotos inscritos, resetea vueltas a 0
+PAUSAR	⏸️	Detiene temporalmente	Congela el conteo de vueltas y tiempos
+REANUDAR	▶️	Continúa la carrera	Restaura el conteo desde donde se pausó
+REPETIR CARRERA	🔄	Mismos pilotos, nueva carrera	Reinicia contenedor pero mantiene los pilotos inscritos
+FINALIZAR	🏆	Termina la carrera	Guarda historial en BD, limpia pilotos, reinicia sistema
+Funcionalidades por pestaña:
+📊 EN VIVO
+Tabla de posiciones: Posición, piloto, transponder, vueltas, mejor vuelta, última vuelta, vueltas restantes
+
+Estadísticas: Circuito actual, vueltas totales, pilotos inscritos, finalizados
+
+Hardware: Estado de conexión USB
+
+👥 PILOTOS
+Registrar piloto: ID transponder, nombre, apellido
+
+Lista de pilotos: Ver, eliminar pilotos registrados
+
+Inscribir a carrera: Asignar pilotos a la carrera actual
+
+Pilotos inscritos: Ver y desinscribir pilotos
+
+📡 TRANSPONDERS
+Agregar manual: Ingresar código de transponder manualmente
+
+Detectados (semiautomático): Transponders capturados por el decoder
+
+Todos los transponders: Lista completa con asignación
+
+🏎️ CONFIGURAR
+Nueva carrera: Nombre del circuito, número de vueltas
+
+Reinicia el sistema automáticamente
+
+🗄️ 4. BASE DE DATOS (SQLite)
+Tablas y su propósito:
+Tabla	Propósito
+drivers	Almacena pilotos registrados (nombre, transponder)
+transponders	Historial de transponders detectados
+race_sessions	Información de cada carrera (circuito, vueltas, fechas)
+race_drivers	Relación pilotos-inscritos en cada carrera
+laps	Registro detallado de cada vuelta (tiempos, señales)
+race_results	Resultados finales de cada carrera
+settings	Configuración del sistema
+Ubicación de la BD:
+text
+/home/nancy/Escritorio/ChronitRace/Chronit/App/Python/data/chronit.db
+🔄 5. FLUJO DE TRABAJO COMPLETO
+Para el operador de carrera:
+text
+1. Conectar decoder ESL-400 por USB
+         ↓
+2. Iniciar sistema: cd infrastructure && docker compose up
+         ↓
+3. Abrir navegador: http://localhost:5000
+         ↓
+4. Registrar pilotos (pestaña PILOTOS)
+         ↓
+5. Inscribir pilotos a la carrera
+         ↓
+6. Configurar carrera (nombre, vueltas)
+         ↓
+7. Presionar "INICIAR CARRERA"
+         ↓
+8. Los karts corren... el sistema cuenta vueltas
+         ↓
+9. Presionar "PAUSAR" si hay accidente
+         ↓
+10. Presionar "REANUDAR" cuando continúa
+         ↓
+11. Presionar "FINALIZAR" al terminar
+         ↓
+12. Los resultados se guardan en BD
+         ↓
+13. Presionar "REPETIR CARRERA" para la siguiente manga
+Para el espectador (pantalla pública):
+Ve la tabla de posiciones en tiempo real
+
+Ve los mejores tiempos de cada piloto
+
+Ve las vueltas restantes
+
+📊 6. ESTADOS DE LA CARRERA
+Estado	Icono	Comportamiento
+PENDIENTE	⏳	El sistema espera que se presione "INICIAR"
+ACTIVA	🏁	Se cuentan vueltas y tiempos
+PAUSADA	⏸️	No se cuentan vueltas, se guarda el estado
+FINALIZADA	🏆	Se guarda historial, se limpian pilotos
+🛠️ 7. COMANDOS ÚTILES PARA ADMINISTRADORES
+bash
+# Iniciar el sistema
+cd infrastructure && docker compose up
+
+# Ver logs en tiempo real
+docker compose logs -f
+
+# Reiniciar el sistema
+docker compose restart
+
+# Apagar el sistema
+docker compose down
+
+# Entrar al contenedor (debug)
+docker compose exec hardware bash
+
+# Ver base de datos
+sqlite3 App/Python/data/chronit.db ".tables"
+🐳 8. PORTABILIDAD (Docker)
+El sistema está completamente contenedorizado, lo que significa:
+
+✅ Funciona en Linux, Windows y macOS
+
+✅ No requiere instalar Python ni dependencias
+
+✅ Solo necesita Docker Desktop
+
+✅ Los datos persisten entre reinicios
+
+✅ Se puede clonar y ejecutar en cualquier máquina
+
+📈 9. MÉTRICAS QUE REGISTRA EL SISTEMA
+Métrica	Dónde se ve
+Tiempo por vuelta	Consola + Web
+Mejor vuelta	Web (resaltado en verde)
+Vueltas completadas	Web + Consola
+Vueltas restantes	Web
+Calidad de señal	Consola
+Diferencia con líder	Web (próximamente)
+Historial de carreras	Base de datos
+🎯 10. BOTONES Y SU COMPORTAMIENTO TÉCNICO
+Botón	Acción técnica	Efecto visible
+INICIAR CARRERA	Reinicia contenedor con race_drivers=[]	Limpia pilotos, resetea vueltas
+PAUSAR	Crea archivo pause_flag.txt	Congela conteo
+REANUDAR	Elimina pause_flag.txt	Continúa conteo
+REPETIR CARRERA	Reinicia contenedor con race_drivers guardados	Mantiene pilotos, resetea vueltas
+FINALIZAR	Guarda historial + reinicia contenedor	Resultados guardados, sistema limpio
+✅ RESUMEN DE CAPTURAS
+El sistema captura:
+✅ Cada vuelta de cada piloto
+
+✅ Tiempo de vuelta individual
+
+✅ Señal de calidad (H/L) para diagnóstico
+
+✅ Vueltas físicas del equipo (nunca se reinician)
+
+✅ ID del transponder para identificación
+
+✅ Estado de inscripción (si participa o no)
+
+✅ Alertas de desconexión o fallos
+

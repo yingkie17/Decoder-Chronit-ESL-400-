@@ -1,0 +1,15 @@
+🌐 Acceso
+Interfaz web: http://localhost:5000
+
+API: http://localhost:5000/api
+
+Chronit/
+├── src/                 # main.py, api.py, database.py, templates/
+├── infrastructure/      # Dockerfile, docker-compose.yml
+├── scripts/             # start.sh, restart.sh, reset-*.sh, test_serial.py
+├── docs/                # Documentación
+├── tests/               # Pruebas / datos de prueba
+├── data/                # Base de datos (chronit.db) y archivos de estado
+├── .env                 # Variables de entorno (ver .env.example)
+├── README.md
+└── setup.bat            # Instalador rápido (Windows)
