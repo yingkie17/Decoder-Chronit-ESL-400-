@@ -5,13 +5,26 @@ import time
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 from database import (
-    init_db, get_current_session, get_leaderboard_with_details,
-    get_all_drivers, get_unassigned_transponders, add_driver,
-    add_transponder_manual, get_all_transponders,
-    get_driver_by_transponder, add_driver_to_race, get_race_drivers,
-    remove_driver_from_race, delete_driver, start_new_session,
-    clear_race_drivers, get_lap_details, get_race_history,
-    update_race_status, get_session_info
+    init_db,
+    get_current_session,
+    get_leaderboard_with_details,
+    get_all_drivers,
+    get_unassigned_transponders,
+    add_driver,
+    add_transponder_manual,
+    get_all_transponders,
+    add_driver_to_race,
+    get_race_drivers,
+    remove_driver_from_race,
+    delete_driver,
+    start_new_session,
+    clear_race_drivers,
+    get_lap_details,
+    get_race_history,
+    update_race_status,
+    get_session_info,
+    guardar_estado_repetir,
+    get_session_lap_count,
 )
 
 logging.getLogger('werkzeug').setLevel(logging.ERROR)
@@ -25,7 +38,6 @@ NEXT_RACE_LAPS_FILE = '/app/data/next_race_laps.txt'
 RACE_COMMAND_FILE = '/app/data/race_command.txt'
 
 def send_race_command(command):
-    """Envía un comando al main.py"""
     with open(RACE_COMMAND_FILE, 'w') as f:
         f.write(command)
     return True
@@ -41,11 +53,17 @@ def status():
 
 @app.route('/api/session/current')
 def get_current_session_info():
+    """Endpoint principal para la tabla de posiciones"""
     session = get_current_session()
     if not session:
-        return jsonify({'active': False})
+        return jsonify({'active': False, 'leaderboard': []})
+    
     leaderboard = get_leaderboard_with_details(session['id'])
-    return jsonify({'active': True, 'session': session, 'leaderboard': leaderboard})
+    return jsonify({
+        'active': True, 
+        'session': session, 
+        'leaderboard': leaderboard
+    })
 
 @app.route('/api/leaderboard')
 def get_leaderboard_api():
@@ -76,6 +94,36 @@ def race_finish():
     send_race_command('finish')
     return jsonify({'success': True, 'message': 'Carrera finalizada'})
 
+@app.route('/api/race/repeat', methods=['POST'])
+def race_repeat():
+    try:
+        session = get_current_session()
+        if not session:
+            return jsonify({'success': False, 'error': 'No hay carrera activa'}), 400
+
+        race_drivers = get_race_drivers(session['id'])
+        if not race_drivers:
+            return jsonify({'success': False, 'error': 'No hay pilotos inscritos'}), 400
+
+        guardar_estado_repetir(
+            session_id=session['id'],
+            circuit_name=session['circuit_name'],
+            laps_limit=session.get('laps_limit', 10),
+            race_drivers=race_drivers,
+        )
+        
+        with open(RESTART_FLAG_FILE, 'w') as f:
+            f.write('restart')
+        
+        def do_exit():
+            time.sleep(0.5)
+            os._exit(1)
+        
+        threading.Thread(target=do_exit, daemon=True).start()
+        return jsonify({'success': True, 'message': 'Repitiendo carrera...'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/api/race/reset', methods=['POST'])
 def race_reset():
     send_race_command('reset_race')
@@ -83,10 +131,14 @@ def race_reset():
 
 @app.route('/api/race/clear-all', methods=['POST'])
 def race_clear_all():
-    """Limpia todo y reinicia el servidor"""
     with open(RESTART_FLAG_FILE, 'w') as f:
         f.write('restart')
-    threading.Thread(target=lambda: time.sleep(0.5) or os._exit(1)).start()
+    
+    def do_exit():
+        time.sleep(0.5)
+        os._exit(1)
+    
+    threading.Thread(target=do_exit, daemon=True).start()
     return jsonify({'success': True, 'message': 'Reiniciando sistema...'})
 
 # ==================== DETALLES DE CARRERA ====================
@@ -100,14 +152,6 @@ def get_driver_lap_details(session_id, driver_id):
 def race_history():
     history = get_race_history()
     return jsonify(history)
-
-@app.route('/api/race/session/<int:session_id>')
-def race_session_info(session_id):
-    session = get_session_info(session_id)
-    if not session:
-        return jsonify({'error': 'Not found'}), 404
-    leaderboard = get_leaderboard_with_details(session_id)
-    return jsonify({'session': session, 'leaderboard': leaderboard})
 
 # ==================== PILOTOS ====================
 
@@ -179,14 +223,6 @@ def remove_from_race():
 def get_race_drivers_api(session_id):
     return jsonify(get_race_drivers(session_id))
 
-@app.route('/api/race/clear-drivers/<int:session_id>', methods=['POST'])
-def clear_race_drivers_api(session_id):
-    try:
-        clear_race_drivers(session_id)
-        return jsonify({'success': True})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
 # ==================== REINICIAR SERVIDOR ====================
 
 @app.route('/api/restart', methods=['POST'])
@@ -238,274 +274,3 @@ def start_api_server():
 
 if __name__ == "__main__":
     start_api_server()
-
-@app.route('/api/race/repeat', methods=['POST'])
-def race_repeat():
-    """Repetir carrera con los mismos pilotos"""
-    try:
-        from database import get_current_session, get_race_drivers, guardar_estado_repetir, get_session_info
-        
-        session = get_current_session()
-        if not session:
-            return jsonify({'success': False, 'error': 'No hay carrera activa'}), 400
-        
-        # Obtener pilotos inscritos actuales
-        race_drivers = get_race_drivers(session['id'])
-        if not race_drivers:
-            return jsonify({'success': False, 'error': 'No hay pilotos inscritos'}), 400
-        
-        # Guardar estado para restaurar después del reinicio
-        guardar_estado_repetir(
-            session_id=session['id'],
-            circuit_name=session['circuit_name'],
-            laps_limit=session['laps_limit'],
-            race_drivers=race_drivers
-        )
-        
-        # Enviar comando de reinicio
-        with open('/app/data/restart.flag', 'w') as f:
-            f.write('restart')
-        
-        print(f"[API] Repetir carrera: {len(race_drivers)} pilotos guardados")
-        
-        def do_exit():
-            time.sleep(0.5)
-            os._exit(1)
-        
-        threading.Thread(target=do_exit, daemon=True).start()
-        return jsonify({'success': True, 'message': 'Repitiendo carrera...'})
-        
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/race/start', methods=['POST'])
-def race_start():
-    """Iniciar nueva carrera (limpia pilotos inscritos)"""
-    try:
-        from database import guardar_estado_repetir, get_current_session, get_race_drivers
-        
-        session = get_current_session()
-        
-        # Guardar estado actual para posible restauración (pero sin pilotos)
-        if session:
-            guardar_estado_repetir(
-                session_id=session['id'],
-                circuit_name=session['circuit_name'],
-                laps_limit=session['laps_limit'],
-                race_drivers=[]  # ⚠️ Vacío - limpia pilotos
-            )
-        
-        # Enviar comando de reinicio
-        with open('/app/data/restart.flag', 'w') as f:
-            f.write('restart')
-        
-        print(f"[API] Iniciando nueva carrera...")
-        
-        def do_exit():
-            time.sleep(0.5)
-            os._exit(1)
-        
-        threading.Thread(target=do_exit, daemon=True).start()
-        return jsonify({'success': True, 'message': 'Iniciando nueva carrera...'})
-        
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/race/pause', methods=['POST'])
-def race_pause():
-    """Pausar carrera - Guarda estado en archivo"""
-    try:
-        with open('/app/data/pause_flag.txt', 'w') as f:
-            f.write('paused')
-        print("[API] Carrera pausada")
-        return jsonify({'success': True, 'message': 'Carrera pausada'})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/race/resume', methods=['POST'])
-def race_resume():
-    """Reanudar carrera"""
-    try:
-        if os.path.exists('/app/data/pause_flag.txt'):
-            os.remove('/app/data/pause_flag.txt')
-        print("[API] Carrera reanudada")
-        return jsonify({'success': True, 'message': 'Carrera reanudada'})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/race/finish', methods=['POST'])
-def race_finish():
-    """Finalizar carrera - Guarda historial y limpia"""
-    try:
-        from database import update_race_status, get_current_session
-        
-        session = get_current_session()
-        if session:
-            update_race_status(session['id'], 'completed')
-            print(f"[API] Carrera finalizada: {session['circuit_name']}")
-        
-        # Guardar estado para repetir (sin pilotos)
-        with open('/app/data/restart.flag', 'w') as f:
-            f.write('restart')
-        
-        def do_exit():
-            time.sleep(0.5)
-            os._exit(1)
-        
-        threading.Thread(target=do_exit, daemon=True).start()
-        return jsonify({'success': True, 'message': 'Carrera finalizada'})
-        
-    except Exception as e):
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/race/repeat', methods=['POST'])
-def race_repeat():
-    """Repetir carrera con los mismos pilotos"""
-    try:
-        from database import get_current_session, get_race_drivers, guardar_estado_repetir
-        
-        session = get_current_session()
-        if not session:
-            return jsonify({'success': False, 'error': 'No hay carrera activa'}), 400
-        
-        race_drivers = get_race_drivers(session['id'])
-        if not race_drivers:
-            return jsonify({'success': False, 'error': 'No hay pilotos inscritos'}), 400
-        
-        guardar_estado_repetir(
-            session_id=session['id'],
-            circuit_name=session['circuit_name'],
-            laps_limit=session['laps_limit'],
-            race_drivers=race_drivers
-        )
-        
-        with open('/app/data/restart.flag', 'w') as f:
-            f.write('restart')
-        
-        print(f"[API] Repetir carrera: {len(race_drivers)} pilotos guardados")
-        
-        def do_exit():
-            time.sleep(0.5)
-            os._exit(1)
-        
-        threading.Thread(target=do_exit, daemon=True).start()
-        return jsonify({'success': True, 'message': 'Repitiendo carrera...'})
-        
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/race/start', methods=['POST'])
-def race_start():
-    """Iniciar nueva carrera (limpia pilotos inscritos)"""
-    try:
-        from database import guardar_estado_repetir, get_current_session, get_race_drivers
-        
-        session = get_current_session()
-        
-        # Guardar estado actual para posible restauración (pero sin pilotos)
-        if session:
-            guardar_estado_repetir(
-                session_id=session['id'],
-                circuit_name=session['circuit_name'],
-                laps_limit=session['laps_limit'],
-                race_drivers=[]  # ⚠️ Vacío - limpia pilotos
-            )
-        
-        # Enviar comando de reinicio
-        with open('/app/data/restart.flag', 'w') as f:
-            f.write('restart')
-        
-        print(f"[API] Iniciando nueva carrera...")
-        
-        def do_exit():
-            time.sleep(0.5)
-            os._exit(1)
-        
-        threading.Thread(target=do_exit, daemon=True).start()
-        return jsonify({'success': True, 'message': 'Iniciando nueva carrera...'})
-        
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/race/pause', methods=['POST'])
-def race_pause():
-    """Pausar carrera - Guarda estado en archivo"""
-    try:
-        with open('/app/data/pause_flag.txt', 'w') as f:
-            f.write('paused')
-        print("[API] Carrera pausada")
-        return jsonify({'success': True, 'message': 'Carrera pausada'})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/race/resume', methods=['POST'])
-def race_resume():
-    """Reanudar carrera"""
-    try:
-        if os.path.exists('/app/data/pause_flag.txt'):
-            os.remove('/app/data/pause_flag.txt')
-        print("[API] Carrera reanudada")
-        return jsonify({'success': True, 'message': 'Carrera reanudada'})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/race/finish', methods=['POST'])
-def race_finish():
-    """Finalizar carrera - Guarda historial y limpia"""
-    try:
-        from database import update_race_status, get_current_session
-        
-        session = get_current_session()
-        if session:
-            update_race_status(session['id'], 'completed')
-            print(f"[API] Carrera finalizada: {session['circuit_name']}")
-        
-        # Guardar estado para repetir (sin pilotos)
-        with open('/app/data/restart.flag', 'w') as f:
-            f.write('restart')
-        
-        def do_exit():
-            time.sleep(0.5)
-            os._exit(1)
-        
-        threading.Thread(target=do_exit, daemon=True).start()
-        return jsonify({'success': True, 'message': 'Carrera finalizada'})
-        
-    except Exception as e):
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/race/repeat', methods=['POST'])
-def race_repeat():
-    """Repetir carrera con los mismos pilotos"""
-    try:
-        from database import get_current_session, get_race_drivers, guardar_estado_repetir
-        
-        session = get_current_session()
-        if not session:
-            return jsonify({'success': False, 'error': 'No hay carrera activa'}), 400
-        
-        race_drivers = get_race_drivers(session['id'])
-        if not race_drivers:
-            return jsonify({'success': False, 'error': 'No hay pilotos inscritos'}), 400
-        
-        guardar_estado_repetir(
-            session_id=session['id'],
-            circuit_name=session['circuit_name'],
-            laps_limit=session['laps_limit'],
-            race_drivers=race_drivers
-        )
-        
-        with open('/app/data/restart.flag', 'w') as f:
-            f.write('restart')
-        
-        print(f"[API] Repetir carrera: {len(race_drivers)} pilotos guardados")
-        
-        def do_exit():
-            time.sleep(0.5)
-            os._exit(1)
-        
-        threading.Thread(target=do_exit, daemon=True).start()
-        return jsonify({'success': True, 'message': 'Repitiendo carrera...'})
-        
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500

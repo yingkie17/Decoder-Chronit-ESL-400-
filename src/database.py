@@ -16,7 +16,6 @@ def get_db():
 
 def init_db():
     with get_db() as conn:
-        # Tabla de pilotos/usuarios
         conn.execute('''
             CREATE TABLE IF NOT EXISTS drivers (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,7 +35,6 @@ def init_db():
             )
         ''')
         
-        # Tabla de transponders disponibles
         conn.execute('''
             CREATE TABLE IF NOT EXISTS transponders (
                 id INTEGER PRIMARY KEY,
@@ -49,7 +47,6 @@ def init_db():
             )
         ''')
         
-        # Tabla de sesiones de carrera
         conn.execute('''
             CREATE TABLE IF NOT EXISTS race_sessions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -67,7 +64,6 @@ def init_db():
             )
         ''')
         
-        # Tabla de pilotos inscritos en cada carrera
         conn.execute('''
             CREATE TABLE IF NOT EXISTS race_drivers (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -85,7 +81,6 @@ def init_db():
             )
         ''')
         
-        # Tabla de vueltas
         conn.execute('''
             CREATE TABLE IF NOT EXISTS laps (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -105,7 +100,6 @@ def init_db():
             )
         ''')
         
-        # Tabla de configuración
         conn.execute('''
             CREATE TABLE IF NOT EXISTS settings (
                 key TEXT PRIMARY KEY,
@@ -118,7 +112,6 @@ def init_db():
         conn.execute("INSERT OR IGNORE INTO settings (key, value) VALUES ('default_laps_limit', '10')")
         conn.execute("INSERT OR IGNORE INTO settings (key, value) VALUES ('race_status', 'pending')")
         
-        # Crear sesión por defecto si no existe
         session = conn.execute('SELECT * FROM race_sessions WHERE status != "completed" LIMIT 1').fetchone()
         if not session:
             cursor = conn.execute('''
@@ -239,6 +232,14 @@ def get_session_info(session_id):
         result = conn.execute('SELECT * FROM race_sessions WHERE id = ?', (session_id,)).fetchone()
         return dict(result) if result else None
 
+def get_session_lap_count(session_id):
+    with get_db() as conn:
+        result = conn.execute(
+            'SELECT COUNT(*) AS total FROM laps WHERE session_id = ? AND lap_number > 0',
+            (session_id,),
+        ).fetchone()
+        return int(result['total'] or 0) if result else 0
+
 def update_race_status(session_id, status, winner_driver_id=None, winner_time=None):
     with get_db() as conn:
         conn.execute('''
@@ -298,7 +299,6 @@ def save_lap(session_id, driver_id, transponder_id, physical_laps, lap_number, t
               datetime.now().isoformat(), total_seconds, lap_seconds, position, gap_to_leader,
               signal_h, signal_l, is_last_lap))
         
-        # Actualizar mejor vuelta del piloto
         if lap_number > 0 and lap_seconds:
             current_best = conn.execute('''
                 SELECT best_lap, best_lap_number FROM race_drivers 
@@ -313,52 +313,26 @@ def save_lap(session_id, driver_id, transponder_id, physical_laps, lap_number, t
 
 def get_leaderboard_with_details(session_id):
     with get_db() as conn:
-        try:
-            results = conn.execute('''
-                SELECT 
-                    d.id as driver_id,
-                    d.name,
-                    d.lastname,
-                    d.transponder_id,
-                    d.photo,
-                    COALESCE(MAX(l.lap_number), 0) as total_laps,
-                    MIN(CASE WHEN l.lap_number > 0 AND l.lap_seconds IS NOT NULL THEN l.lap_seconds END) as best_lap,
-                    rd.best_lap_number,
-                    (SELECT lap_seconds FROM laps l2 
-                     WHERE l2.driver_id = d.id 
-                     AND l2.session_id = l.session_id 
-                     AND l2.lap_number > 0
-                     ORDER BY l2.lap_number DESC LIMIT 1) as last_lap,
-                    rd.total_time
-                FROM race_drivers rd
-                JOIN drivers d ON rd.driver_id = d.id
-                LEFT JOIN laps l ON l.driver_id = d.id AND l.session_id = rd.session_id
-                WHERE rd.session_id = ?
-                GROUP BY d.id
-            ''', (session_id,)).fetchall()
-        except sqlite3.OperationalError:
-            # Si hay error, intentar sin best_lap_number
-            results = conn.execute('''
-                SELECT 
-                    d.id as driver_id,
-                    d.name,
-                    d.lastname,
-                    d.transponder_id,
-                    d.photo,
-                    COALESCE(MAX(l.lap_number), 0) as total_laps,
-                    MIN(CASE WHEN l.lap_number > 0 AND l.lap_seconds IS NOT NULL THEN l.lap_seconds END) as best_lap,
-                    (SELECT lap_seconds FROM laps l2 
-                     WHERE l2.driver_id = d.id 
-                     AND l2.session_id = l.session_id 
-                     AND l2.lap_number > 0
-                     ORDER BY l2.lap_number DESC LIMIT 1) as last_lap,
-                    rd.total_time
-                FROM race_drivers rd
-                JOIN drivers d ON rd.driver_id = d.id
-                LEFT JOIN laps l ON l.driver_id = d.id AND l.session_id = rd.session_id
-                WHERE rd.session_id = ?
-                GROUP BY d.id
-            ''', (session_id,)).fetchall()
+        results = conn.execute('''
+            SELECT 
+                d.id as driver_id,
+                d.name,
+                d.lastname,
+                d.transponder_id,
+                d.photo,
+                COALESCE(MAX(l.lap_number), 0) as total_laps,
+                MIN(CASE WHEN l.lap_number > 0 AND l.lap_seconds IS NOT NULL THEN l.lap_seconds END) as best_lap,
+                (SELECT lap_seconds FROM laps l2 
+                 WHERE l2.driver_id = d.id 
+                 AND l2.session_id = l.session_id 
+                 AND l2.lap_number > 0
+                 ORDER BY l2.lap_number DESC LIMIT 1) as last_lap
+            FROM race_drivers rd
+            JOIN drivers d ON rd.driver_id = d.id
+            LEFT JOIN laps l ON l.driver_id = d.id AND l.session_id = rd.session_id
+            WHERE rd.session_id = ?
+            GROUP BY d.id
+        ''', (session_id,)).fetchall()
         
         session = get_current_session()
         laps_limit = session.get('laps_limit', 10) if session else 10
@@ -414,32 +388,28 @@ import os
 JSON_STATE_FILE = '/app/data/race_state.json'
 
 def guardar_estado_repetir(session_id, circuit_name, laps_limit, race_drivers):
-    """Guarda el estado actual para repetir carrera después del reinicio"""
     estado = {
         "action": "repeat_race",
         "session_id": session_id,
         "circuit_name": circuit_name,
         "laps_limit": laps_limit,
-        "race_drivers": race_drivers  # Lista de dicts con driver_id, transponder_id, name, lastname
+        "race_drivers": race_drivers
     }
     with open(JSON_STATE_FILE, 'w') as f:
         json.dump(estado, f, indent=2)
     print(f"[SISTEMA] Estado guardado para repetir carrera: {len(race_drivers)} pilotos")
 
 def cargar_estado_repetir():
-    """Carga el estado guardado y lo elimina (solo se usa una vez)"""
     if not os.path.exists(JSON_STATE_FILE):
         return None
     
     with open(JSON_STATE_FILE, 'r') as f:
         estado = json.load(f)
     
-    # Eliminar el archivo después de leerlo
     os.remove(JSON_STATE_FILE)
     print(f"[SISTEMA] Estado restaurado: {len(estado.get('race_drivers', []))} pilotos")
     return estado
 
 def limpiar_estado_repetir():
-    """Limpia el archivo de estado si existe"""
     if os.path.exists(JSON_STATE_FILE):
         os.remove(JSON_STATE_FILE)

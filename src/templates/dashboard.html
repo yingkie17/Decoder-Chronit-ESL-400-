@@ -151,6 +151,13 @@
     </style>
 </head>
 <body>
+    <!-- OVERLAY: CUENTA REGRESIVA -->
+    <div id="countdownOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:2000; align-items:center; justify-content:center; flex-direction:column;">
+        <div style="font-size:0.9rem; color:#aaa; letter-spacing:1px; text-transform:uppercase; margin-bottom:0.75rem;">Salida en</div>
+        <div id="countdownNumber" style="font-size:6rem; font-weight:800; color:#e5484d; line-height:1;">10</div>
+        <div id="countdownHint" style="margin-top:1rem; font-size:0.9rem; color:#888;">Prepárense</div>
+    </div>
+
     <div class="navbar">
         <div class="nav-brand">CHRONIT<span>RACING</span></div>
         <div class="nav-links">
@@ -350,6 +357,13 @@
                     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin datos</td></tr>';
                 }
                 document.getElementById('refreshTime').innerHTML = new Date().toLocaleTimeString();
+            } else {
+                document.getElementById('circuitName').innerText = '--';
+                document.getElementById('lapsLimit').innerText = '--';
+                document.getElementById('totalDrivers').innerText = '0';
+                document.getElementById('finishedDrivers').innerText = '0';
+                document.getElementById('leaderboardBody').innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin carrera activa</td></tr>';
+                document.getElementById('refreshTime').innerHTML = new Date().toLocaleTimeString();
             }
             
             const usb = await apiCall('/api/usb/status');
@@ -478,12 +492,51 @@
             });
         };
 
-                // Botones de control de carrera
+        function setRaceButtonsEnabled(enabled) {
+            ['startRaceBtn','pauseRaceBtn','resumeRaceBtn','repeatRaceBtn','finishRaceBtn'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.disabled = !enabled;
+            });
+        }
+
+        async function runCountdown(seconds) {
+            const overlay = document.getElementById('countdownOverlay');
+            const numberEl = document.getElementById('countdownNumber');
+            const hintEl = document.getElementById('countdownHint');
+
+            overlay.style.display = 'flex';
+            let n = seconds;
+            while (n > 0) {
+                numberEl.innerText = String(n);
+                hintEl.innerText = (n <= 3) ? '¡YA!' : 'Prepárense';
+                await new Promise(r => setTimeout(r, 1000));
+                n -= 1;
+            }
+            numberEl.innerText = '0';
+            hintEl.innerText = '¡SALIDA!';
+            await new Promise(r => setTimeout(r, 500));
+            overlay.style.display = 'none';
+        }
+
+        // Botones de control de carrera
         document.getElementById('startRaceBtn').onclick = async () => {
-            showModal('Iniciar Carrera', '¿Iniciar la carrera? Comenzará el conteo de vueltas.', async () => {
-                const res = await apiCall('/api/race/start', { method: 'POST' });
-                if(res?.success) alert('🏁 Carrera iniciada!');
-                else alert('Error: ' + (res?.error || 'No se pudo iniciar'));
+            showModal('Iniciar Carrera', '¿Iniciar la carrera? Se mostrará una cuenta regresiva (10 → 0) y luego comenzará el conteo.', async () => {
+                try {
+                    setRaceButtonsEnabled(false);
+                    await runCountdown(10);
+                    const res = await apiCall('/api/race/start', { method: 'POST' });
+                    if (res?.success) {
+                        alert(res.message || '🏁 Carrera iniciada');
+                        if (res.restart_required) {
+                            setTimeout(() => location.reload(), 3500);
+                        } else {
+                            loadLiveData();
+                        }
+                    }
+                    else alert('Error: ' + (res?.error || 'No se pudo iniciar'));
+                } finally {
+                    setRaceButtonsEnabled(true);
+                }
             });
         };
         
@@ -504,7 +557,7 @@
                 const res = await apiCall('/api/race/repeat', { method: 'POST' });
                 if(res?.success) {
                     alert('🔄 Repitiendo carrera... La página se recargará.');
-                    setTimeout(() => location.reload(), 3000);
+                    setTimeout(() => location.reload(), 3500);
                 } else {
                     alert('Error: ' + (res?.error || 'No se pudo repetir la carrera'));
                 }
@@ -514,7 +567,10 @@
         document.getElementById('finishRaceBtn').onclick = async () => {
             showModal('Finalizar Carrera', '¿Finalizar la carrera actual? Se guardarán los resultados.', async () => {
                 const res = await apiCall('/api/race/finish', { method: 'POST' });
-                if(res?.success) alert('🏆 Carrera finalizada!');
+                if(res?.success) {
+                    alert('🏆 Carrera finalizada. Limpiando tablero...');
+                    setTimeout(() => location.reload(), 3500);
+                }
                 else alert('Error: ' + (res?.error || 'No se pudo finalizar'));
             });
         };

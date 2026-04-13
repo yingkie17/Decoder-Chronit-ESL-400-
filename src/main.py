@@ -1,15 +1,13 @@
 import serial
 import time
 import os
-import re
 import subprocess
-import sys
 import threading
 from datetime import datetime
 from database import (
     init_db, save_lap, get_current_session, start_new_session,
     get_driver_by_transponder, add_transponder_detected,
-    get_race_drivers, add_driver_to_race, cargar_estado_repetir, limpiar_estado_repetir,
+    get_race_drivers, add_driver_to_race, cargar_estado_repetir,
     update_race_status,
 )
 
@@ -27,35 +25,22 @@ LAPS_LIMIT = 10
 RACE_DRIVERS = set()
 DRIVERS_FINISHED = set()
 
-# --- CONTROL DE CARRERA ---
+# ========== NUEVO: CONTROL DE CARRERA ==========
 RACE_ACTIVE = False      # Si la carrera está activa (contando vueltas)
 RACE_PAUSED = False      # Si está pausada
-RACE_STARTED = False     # Si ya se inició alguna vez (para no reiniciar el countdown)
+# ==============================================
 
 RESTART_FLAG_FILE = '/app/data/restart.flag'
 NEXT_RACE_NAME_FILE = '/app/data/next_race_name.txt'
 NEXT_RACE_LAPS_FILE = '/app/data/next_race_laps.txt'
 RACE_COMMAND_FILE = '/app/data/race_command.txt'
 
-# Lectura serie: el ESL-400 a menudo usa \r o bloques sin \n; readline() falla en silencio.
-SERIAL_BUFFER_MAX = 16384
-_ESL_FRAME_RE = re.compile(r'\$[0-9A-Fa-f]{20,}', re.IGNORECASE)
-
 def repair_permissions(port):
     try:
         if os.path.exists(port):
             subprocess.run(['chmod', '666', port], check=True, stderr=subprocess.DEVNULL)
-            if sys.platform.startswith('linux'):
-                subprocess.run(
-                    [
-                        'stty', '-F', port, str(BAUD), 'raw',
-                        '-echo', '-echoe', '-echok', '-echoctl', '-echoke',
-                    ],
-                    check=False,
-                    stderr=subprocess.DEVNULL,
-                )
             return True
-    except Exception:
+    except:
         pass
     return False
 
@@ -66,19 +51,20 @@ def check_restart_flag():
         os._exit(0)
     return False
 
+# ========== NUEVO: LEER COMANDOS DE LA WEB ==========
 def check_race_commands():
-    """Lee comandos desde la web"""
-    global RACE_ACTIVE, RACE_PAUSED, RACE_STARTED, DRIVERS_FINISHED, VUELTA_BASE, LAST_LAP_TIME
+    global RACE_ACTIVE, RACE_PAUSED, DRIVERS_FINISHED, VUELTA_BASE, LAST_LAP_TIME
     
     if os.path.exists(RACE_COMMAND_FILE):
         with open(RACE_COMMAND_FILE, 'r') as f:
             command = f.read().strip()
         os.remove(RACE_COMMAND_FILE)
         
-        if command == 'start' and not RACE_STARTED:
+        print(f"[COMANDO] Recibido: {command}")
+        
+        if command == 'start':
             RACE_ACTIVE = True
             RACE_PAUSED = False
-            RACE_STARTED = True
             DRIVERS_FINISHED = set()
             VUELTA_BASE = {}
             LAST_LAP_TIME = {}
@@ -88,7 +74,7 @@ def check_race_commands():
         
         elif command == 'pause' and RACE_ACTIVE and not RACE_PAUSED:
             RACE_PAUSED = True
-            print("\n⏸️ CARRERA PAUSADA - No se cuentan vueltas\n")
+            print("\n⏸️ CARRERA PAUSADA\n")
         
         elif command == 'resume' and RACE_ACTIVE and RACE_PAUSED:
             RACE_PAUSED = False
@@ -97,71 +83,44 @@ def check_race_commands():
         elif command == 'finish' and RACE_ACTIVE:
             RACE_ACTIVE = False
             RACE_PAUSED = False
-            RACE_STARTED = False
-            print("\n🏆 ¡CARRERA FINALIZADA! Guardando resultados...\n")
+            print("\n🏆 ¡CARRERA FINALIZADA!\n")
             if SESSION_ID:
                 update_race_status(SESSION_ID, 'completed')
         
-        elif command == 'reset_race':
-            RACE_ACTIVE = False
-            RACE_PAUSED = False
-            RACE_STARTED = False
-            DRIVERS_FINISHED = set()
-            VUELTA_BASE = {}
-            LAST_LAP_TIME = {}
-            print("\n🔄 Reiniciando carrera con los mismos pilotos...\n")
-            if SESSION_ID:
-                update_race_status(SESSION_ID, 'pending')
-        
         return True
     return False
+# ==================================================
 
 def restaurar_estado_repetir():
-    global SESSION_ID, LAPS_LIMIT, RACE_DRIVERS, RACE_ACTIVE, RACE_PAUSED, RACE_STARTED
-    
+    global SESSION_ID, LAPS_LIMIT, RACE_DRIVERS, RACE_ACTIVE, RACE_PAUSED
     estado = cargar_estado_repetir()
     if not estado or estado.get('action') != 'repeat_race':
         return False
-    
-    print("\n" + "🔄"*40)
-    print("🔄 REPETIR CARRERA - Restaurando pilotos...")
-    print("🔄"*40)
-    
+    print("\n🔄 REPETIR CARRERA - Restaurando pilotos...")
     SESSION_ID = start_new_session(estado['circuit_name'], estado['laps_limit'])
     LAPS_LIMIT = estado['laps_limit']
-    
     for driver in estado['race_drivers']:
         add_driver_to_race(SESSION_ID, driver['driver_id'], driver['transponder_id'])
-        print(f"   ✅ Restaurado: {driver.get('name', 'Piloto')} (Transponder: {driver['transponder_id']})")
-    
+        print(f"   ✅ Restaurado: {driver.get('name', 'Piloto')}")
     RACE_DRIVERS = {d['transponder_id'] for d in estado['race_drivers']}
     RACE_ACTIVE = False
     RACE_PAUSED = False
-    RACE_STARTED = False
-    
-    print("🔄"*40 + "\n")
     return True
 
 def crear_nueva_carrera_al_inicio():
-    global SESSION_ID, VUELTA_BASE, LAST_LAP_TIME, LAPS_LIMIT, RACE_DRIVERS, DRIVERS_FINISHED
-    global RACE_ACTIVE, RACE_PAUSED, RACE_STARTED
-    
+    global SESSION_ID, VUELTA_BASE, LAST_LAP_TIME, LAPS_LIMIT, RACE_DRIVERS, DRIVERS_FINISHED, RACE_ACTIVE, RACE_PAUSED
     if restaurar_estado_repetir():
         return True
-    
     race_name = None
     laps_limit = LAPS_LIMIT
-    
     if os.path.exists(NEXT_RACE_NAME_FILE):
         with open(NEXT_RACE_NAME_FILE, 'r') as f:
             race_name = f.read().strip()
         os.remove(NEXT_RACE_NAME_FILE)
-    
     if os.path.exists(NEXT_RACE_LAPS_FILE):
         with open(NEXT_RACE_LAPS_FILE, 'r') as f:
             laps_limit = int(f.read().strip())
         os.remove(NEXT_RACE_LAPS_FILE)
-    
     if race_name:
         SESSION_ID = start_new_session(race_name, laps_limit)
         VUELTA_BASE = {}
@@ -171,8 +130,6 @@ def crear_nueva_carrera_al_inicio():
         DRIVERS_FINISHED = set()
         RACE_ACTIVE = False
         RACE_PAUSED = False
-        RACE_STARTED = False
-        
         print("\n" + "🏁"*40)
         print(f"🎬 NUEVA CARRERA: {race_name}")
         print(f"🔄 Vueltas: {laps_limit}")
@@ -181,24 +138,19 @@ def crear_nueva_carrera_al_inicio():
     return False
 
 def actualizar_pilotos_inscritos():
-    global RACE_DRIVERS, SESSION_ID, DRIVERS_FINISHED
+    global RACE_DRIVERS, SESSION_ID
     if SESSION_ID:
         drivers = get_race_drivers(SESSION_ID)
         RACE_DRIVERS = {d['transponder_id'] for d in drivers}
-        DRIVERS_FINISHED = set()
         if drivers:
             print(f"\n📋 Pilotos inscritos: {len(drivers)}")
             for d in drivers:
                 nombre = f"{d['name']} {d.get('lastname', '')}".strip()
                 print(f"   🏎️  {nombre} (Transponder: {d['transponder_id']})")
-        else:
-            print("\n📋 No hay pilotos inscritos. Los transponders se mostrarán para asignar.\n")
     return RACE_DRIVERS
 
 def actualizar_sesion_activa():
-    global SESSION_ID, VUELTA_BASE, LAST_LAP_TIME, LAPS_LIMIT, DRIVERS_FINISHED
-    global RACE_ACTIVE, RACE_PAUSED, RACE_STARTED
-    
+    global SESSION_ID, VUELTA_BASE, LAST_LAP_TIME, LAPS_LIMIT, DRIVERS_FINISHED, RACE_ACTIVE, RACE_PAUSED
     session = get_current_session()
     if session:
         if SESSION_ID != session['id']:
@@ -209,7 +161,6 @@ def actualizar_sesion_activa():
             DRIVERS_FINISHED = set()
             RACE_ACTIVE = (session.get('status') == 'active')
             RACE_PAUSED = False
-            RACE_STARTED = RACE_ACTIVE
             actualizar_pilotos_inscritos()
             print(f"\n📋 Sesión: {session['circuit_name']} | {LAPS_LIMIT} vueltas")
             print(f"📊 Estado: {'EN CURSO' if RACE_ACTIVE else 'PENDIENTE'}")
@@ -217,8 +168,7 @@ def actualizar_sesion_activa():
     return False
 
 def procesar_cadena_esl400(raw_data):
-    global VUELTA_BASE, LAST_LAP_TIME, SESSION_ID, LAPS_LIMIT, RACE_DRIVERS, DRIVERS_FINISHED
-    global RACE_ACTIVE, RACE_PAUSED
+    global VUELTA_BASE, LAST_LAP_TIME, SESSION_ID, LAPS_LIMIT, RACE_DRIVERS, DRIVERS_FINISHED, RACE_ACTIVE, RACE_PAUSED
     
     try:
         data = raw_data.replace('$', '').strip()
@@ -237,16 +187,12 @@ def procesar_cadena_esl400(raw_data):
 
         if val_h > 150:
             calidad = "🟢 EXCELENTE"
-            calidad_icono = "🟢"
         elif val_h > 100:
             calidad = "🟡 MUY BUENA"
-            calidad_icono = "🟡"
         elif val_h > 60:
             calidad = "🟠 REGULAR"
-            calidad_icono = "🟠"
         else:
             calidad = "🔴 DEBIL"
-            calidad_icono = "🔴"
 
         es_nuevo = add_transponder_detected(transponder_id)
         if es_nuevo:
@@ -255,51 +201,47 @@ def procesar_cadena_esl400(raw_data):
         mins = int(tiempo_total_segundos // 60)
         secs = tiempo_total_segundos % 60
         
-        print(f"\n🏁 ¡DETECCIÓN! {calidad_icono} {calidad}")
+        print(f"\n🏁 ¡DETECCIÓN! ({calidad})")
         print(f"🆔 ID Transponder: {transponder_id}")
         print(f"📡 Señal -> H: {val_h} | L: {val_l}")
         print(f"⏱️ Tiempo Acumulado: {mins:02d}:{secs:06.3f}")
         print(f"🔄 Vueltas Físicas (Equipo): {nro_vueltas_raw}")
-        print(f"💾 Memoria física del ESL-400: {uso_equipo_fisico} registros")
+        print(f"💾 Memoria física: {uso_equipo_fisico} registros")
 
         if transponder_id not in RACE_DRIVERS:
-            print(f"⚠️ ESTADO: NO INSCRITO en la carrera actual")
-            print(f"💡 Para inscribirlo: Web > PILOTOS > Agregar transponder {transponder_id}")
+            print(f"⚠️ NO INSCRITO - Ve a PILOTOS para asignarlo")
             print("-" * 50)
             return None
 
         driver = get_driver_by_transponder(transponder_id)
         if not driver:
-            print(f"⚠️ Transponder {transponder_id} no tiene piloto asignado")
+            print(f"⚠️ Sin piloto asignado")
             print("-" * 50)
             return None
 
-        driver_id = driver['id']
         nombre_piloto = driver['name']
         if driver.get('lastname'):
             nombre_piloto += f" {driver['lastname']}"
 
         print(f"👤 Piloto: {nombre_piloto}")
 
-        # ============================================
-        # CONTROL DE ESTADO DE CARRERA
-        # ============================================
+        # ========== NUEVO: CONTROL DE ESTADO ==========
         if not RACE_ACTIVE:
-            print(f"⏳ CARRERA NO INICIADA - Esperando inicio...")
+            print(f"⏳ Carrera no iniciada - Esperando inicio...")
             print("-" * 50)
             return None
         
         if RACE_PAUSED:
-            print(f"⏸️ CARRERA PAUSADA - Reanudar para continuar")
+            print(f"⏸️ Carrera pausada - Reanudar para continuar")
             print("-" * 50)
             return None
+        # =============================================
 
         if transponder_id in DRIVERS_FINISHED:
-            print(f"🏁 CARRERA COMPLETADA - No se cuentan más vueltas")
+            print(f"🏁 Carrera completada")
             print("-" * 50)
             return None
 
-        # Calcular vuelta de carrera (SOLO si la carrera está activa)
         if transponder_id not in VUELTA_BASE:
             VUELTA_BASE[transponder_id] = nro_vueltas_raw
             vuelta_carrera = 0
@@ -316,9 +258,9 @@ def procesar_cadena_esl400(raw_data):
         print(f"🏎️ Vueltas en Carrera: {vuelta_carrera}")
         
         if vuelta_carrera == 0:
-            print(f"🏁 Tipo: VUELTA DE SALIDA")
+            print(f"🏁 VUELTA DE SALIDA")
         else:
-            print(f"⚡ Tiempo de Vuelta {vuelta_carrera}: {lap_time:.3f} segundos")
+            print(f"⚡ Tiempo vuelta {vuelta_carrera}: {lap_time:.3f}s")
             restantes = LAPS_LIMIT - vuelta_carrera
             if restantes == 1:
                 print(f"⚠️ ¡ÚLTIMA VUELTA!")
@@ -328,10 +270,10 @@ def procesar_cadena_esl400(raw_data):
 
         print("-" * 50)
 
-        if SESSION_ID and driver_id:
+        if SESSION_ID:
             is_last_lap = (vuelta_carrera == LAPS_LIMIT)
             save_lap(
-                SESSION_ID, driver_id, transponder_id, nro_vueltas_raw,
+                SESSION_ID, driver['id'], transponder_id, nro_vueltas_raw,
                 vuelta_carrera, tiempo_total_segundos, lap_time, val_h, val_l,
                 None, None, is_last_lap
             )
@@ -339,19 +281,15 @@ def procesar_cadena_esl400(raw_data):
         return None
         
     except Exception as e:
-        print(f"[DEBUG] Error parseando: {e}")
         return None
 
 def listen_chronit():
-    global ULTIMA_ACTIVIDAD, ALERTA_MOSTRADA, SESSION_ID, LAPS_LIMIT, RACE_DRIVERS
-    global RACE_ACTIVE, RACE_PAUSED
+    global ULTIMA_ACTIVIDAD, ALERTA_MOSTRADA, SESSION_ID, LAPS_LIMIT, RACE_DRIVERS, RACE_ACTIVE, RACE_PAUSED
     
     print("\n" + "="*50)
     print("🛡️ SISTEMA ESL-400 | v9.0 - CONTROL DE CARRERA")
     print("="*50)
     print(">>> Esperando transponders...\n")
-    if os.getenv('CHRONIT_DEBUG_SERIAL'):
-        print("   (CHRONIT_DEBUG_SERIAL=1 → se imprimen tramas recibidas)\n")
     
     init_db()
     crear_nueva_carrera_al_inicio()
@@ -381,7 +319,7 @@ def listen_chronit():
         try:
             repair_permissions(PORT)
             
-            with serial.Serial(PORT, BAUD, timeout=0.05) as ser:
+            with serial.Serial(PORT, BAUD, timeout=0.1) as ser:
                 if not hasattr(listen_chronit, 'conectado_msg'):
                     print(f"✅ Puerto {PORT} conectado. Vigilando pista...\n")
                     if not RACE_ACTIVE:
@@ -390,42 +328,18 @@ def listen_chronit():
                 
                 ser.reset_input_buffer()
                 ULTIMA_ACTIVIDAD = time.time()
-                buffer_serial = ""
                 
                 while True:
                     check_restart_flag()
                     check_race_commands()
                     
-                    if ser.in_waiting > 0:
-                        chunk = ser.read(ser.in_waiting)
-                        buffer_serial += chunk.decode('latin-1', errors='replace')
-                        ULTIMA_ACTIVIDAD = time.time()
+                    line = ser.readline().decode('utf-8', errors='ignore').strip()
+                    ahora = time.time()
+                    
+                    if line:
+                        ULTIMA_ACTIVIDAD = ahora
                         ALERTA_MOSTRADA = False
-                    
-                    buffer_serial = buffer_serial.replace('\r\n', '\n').replace('\r', '\n')
-                    
-                    lines_batch = []
-                    while '\n' in buffer_serial:
-                        line, buffer_serial = buffer_serial.split('\n', 1)
-                        line = line.strip()
-                        if line:
-                            lines_batch.append(line)
-                    
-                    if not lines_batch and '\n' not in buffer_serial and len(buffer_serial) >= 2048:
-                        cut = 0
-                        for m in _ESL_FRAME_RE.finditer(buffer_serial):
-                            lines_batch.append(m.group(0))
-                            cut = m.end()
-                        if cut > 0:
-                            buffer_serial = buffer_serial[cut:].lstrip()
-                        elif len(buffer_serial) > SERIAL_BUFFER_MAX:
-                            print("[serial] Buffer grande sin tramas reconocibles; recortando.")
-                            buffer_serial = buffer_serial[-4096:]
-                    
-                    for line in lines_batch:
-                        ahora = time.time()
-                        if os.getenv('CHRONIT_DEBUG_SERIAL'):
-                            print(f"[serial rx] {line[:200]!r}")
+                        
                         if line != ultimo_codigo or (ahora - ultima_vez_deteccion) > TIEMPO_FILTRO:
                             if line.startswith('$'):
                                 procesar_cadena_esl400(line)
