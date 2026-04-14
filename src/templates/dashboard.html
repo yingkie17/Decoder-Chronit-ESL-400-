@@ -142,6 +142,41 @@
         .usb-led.off { background: #e5484d; }
         
         .refresh { font-size: 0.6rem; color: #444; text-align: right; padding: 0.3rem; }
+
+        /* Estilos del Loader */
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid #e5484d;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #loaderOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            backdrop-filter: blur(5px);
+        }
+        #loaderMessage {
+            color: white;
+            margin-top: 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
         
         @media (max-width: 700px) {
             .grid-2 { grid-template-columns: 1fr; }
@@ -151,6 +186,12 @@
     </style>
 </head>
 <body>
+    <!-- OVERLAY: LOADER -->
+    <div id="loaderOverlay">
+        <div class="spinner"></div>
+        <p id="loaderMessage">Procesando...</p>
+    </div>
+
     <!-- OVERLAY: CUENTA REGRESIVA -->
     <div id="countdownOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:2000; align-items:center; justify-content:center; flex-direction:column;">
         <div style="font-size:0.9rem; color:#aaa; letter-spacing:1px; text-transform:uppercase; margin-bottom:0.75rem;">Salida en</div>
@@ -165,19 +206,21 @@
             <a data-panel="drivers">👥 PILOTOS</a>
             <a data-panel="transponders">📡 TRANSPONDERS</a>
             <a data-panel="race-setup">🏎️ CONFIGURAR</a>
+            <a data-panel="system">🔧 SISTEMA</a>
         </div>
     </div>
 
-    <!-- BARRA DE CONTROL DE CARRERA -->
-    <div class="control-bar" style="background: #0d0d0d; border-bottom: 1px solid #1f1f1f; padding: 0.75rem 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center;">
-        <button class="btn btn-success" id="startRaceBtn">🏁 INICIAR CARRERA</button>
-        <button class="btn btn-warning" id="pauseRaceBtn">⏸️ PAUSAR</button>
-        <button class="btn btn-success" id="resumeRaceBtn">▶️ REANUDAR</button>
-        <button class="btn" id="repeatRaceBtn">🔄 REPETIR CARRERA</button>
-        <button class="btn btn-danger" id="finishRaceBtn">🏆 FINALIZAR</button>
-    </div>
+  
     
     <div class="container">
+    <!-- BARRA DE CONTROL DE CARRERA -->
+    <div class="control-bar" id="raceControlBar" style="background: #0d0d0d; border-bottom: 1px solid #1f1f1f; padding: 0.75rem 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center;">
+        <button class="btn btn-success" id="startRaceBtn">🏁 INICIAR CARRERA</button>
+        <button class="btn btn-warning" id="pauseRaceBtn" style="display:none;">⏸️ PAUSAR</button>
+        <button class="btn btn-success" id="resumeRaceBtn" style="display:none;">▶️ REANUDAR</button>
+        <button class="btn" id="repeatRaceBtn">🔄 REPETIR CARRERA</button>
+        <button class="btn btn-danger" id="finishRaceBtn" style="display:none;">🏆 FINALIZAR</button>
+    </div>
         <!-- Panel En Vivo -->
         <div id="panel-live" class="panel active">
             <div class="grid-2">
@@ -200,14 +243,6 @@
                             <div class="stat"><span>Vueltas</span><span class="stat-value" id="lapsLimit">--</span></div>
                             <div class="stat"><span>Pilotos</span><span class="stat-value" id="totalDrivers">0</span></div>
                             <div class="stat"><span>Finalizados</span><span class="stat-value" id="finishedDrivers">0</span></div>
-                        </div>
-                    </div>
-                    
-                    <div class="card">
-                        <div class="card-header">🔌 HARDWARE</div>
-                        <div class="card-body">
-                            <div class="usb-status"><div class="usb-led" id="usbLed"></div><span id="usbText">Verificando...</span></div>
-                            <button class="btn" id="resetUsbBtn" style="margin-top:0.5rem; width:100%;">🔌 Preparar USB</button>
                         </div>
                     </div>
                 </div>
@@ -262,9 +297,21 @@
                 </div>
             </div>
             <div class="card">
-                <div class="card-header">📋 TODOS LOS TRANSPONDERS</div>
-                <div style="overflow-x: auto;"><table><thead><tr><th>ID</th><th>Descripción</th><th>Asignado a</th></tr></thead><tbody id="allTranspondersList"></tbody></table></div>
-            </div>
+                    <div class="card-header">📋 TODOS LOS TRANSPONDERS</div>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Descripción</th>
+                                    <th>Asignado a</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allTranspondersList"></tbody>
+                        </table>
+                    </div>
+                </div>
         </div>
         
         <!-- Panel Configurar -->
@@ -276,6 +323,54 @@
                     <input type="number" id="newLapsLimit" value="10" placeholder="Vueltas">
                     <button class="btn btn-primary" id="createNewRaceBtn" style="width:100%;">🏁 CREAR NUEVA CARRERA</button>
                     <p style="font-size:0.65rem; color:#666; margin-top:0.5rem;">⚠️ Al crear una nueva carrera, el sistema se reiniciará.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Sistema -->
+        <div id="panel-system" class="panel">
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">📡 MONITOR DE SEÑALES EN TIEMPO REAL</div>
+                    <div style="overflow-x: auto; max-height: 600px;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>H/L</th>
+                                    <th>TIEMPO</th>
+                                    <th>VTAS FIS.</th>
+                                    <th>VISTO</th>
+                                </tr>
+                            </thead>
+                            <tbody id="signalsBody">
+                                <tr><td colspan="5" style="text-align:center; padding:2rem;">Esperando señales...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">🔌 ESTADO DEL HARDWARE</div>
+                    <div class="card-body">
+                        <div class="usb-status" style="margin-bottom:1rem; padding:1rem; background:#111; border-radius:8px;">
+                            <div class="usb-led" id="usbLed"></div>
+                            <span id="usbText" style="font-size:1rem; font-weight:600;">Verificando...</span>
+                        </div>
+                        <p style="font-size:0.75rem; color:#888; margin-bottom:1rem;">
+                            Utilice el botón inferior para desconectar el transponder de forma segura. 
+                            Esto detendrá los servicios internos y protegerá el hardware antes de ser retirado.
+                        </p>
+                        <button class="btn btn-danger" id="resetUsbBtn" style="width:100%; padding:0.8rem; font-weight:600;">🔌 DESCONEXIÓN SEGURA DEL DECODER</button>
+                        
+                        <div style="margin-top:2rem; padding-top:1rem; border-top:1px solid #333;">
+                            <h4 style="color:#e5484d; margin-bottom:0.5rem; font-size:0.8rem;">ZONA DE PELIGRO</h4>
+                            <p style="font-size:0.7rem; color:#888; margin-bottom:1rem;">
+                                Si el tablero está bloqueado o quieres limpiar todos los pilotos y vueltas de la sesión actual:
+                            </p>
+                            <button class="btn" id="hardResetBtn" style="width:100%; border-color:#e5484d; color:#e5484d;">🧹 RESET TOTAL DEL TABLERO</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -295,6 +390,15 @@
     <script>
         let pendingAction = null;
         
+        function showLoader(message) {
+            document.getElementById('loaderMessage').innerText = message || 'Procesando...';
+            document.getElementById('loaderOverlay').style.display = 'flex';
+        }
+
+        function hideLoader() {
+            document.getElementById('loaderOverlay').style.display = 'none';
+        }
+
         async function apiCall(url, options = {}) {
             try {
                 const res = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...options });
@@ -335,50 +439,133 @@
         
         // Cargar datos en vivo
         async function loadLiveData() {
-            const data = await apiCall('/api/session/current');
-            if (data && data.active) {
-                document.getElementById('circuitName').innerText = data.session.circuit_name || '--';
-                document.getElementById('lapsLimit').innerText = data.session.laps_limit || '--';
-                document.getElementById('totalDrivers').innerText = data.leaderboard?.length || 0;
-                document.getElementById('finishedDrivers').innerText = data.leaderboard?.filter(d => d.is_finished).length || 0;
-                
-                const tbody = document.getElementById('leaderboardBody');
-                if (data.leaderboard?.length) {
-                    tbody.innerHTML = data.leaderboard.map(d => {
-                        let posClass = '';
-                        if (d.position === 1) posClass = 'pos-1';
-                        else if (d.position === 2) posClass = 'pos-2';
-                        else if (d.position === 3) posClass = 'pos-3';
-                        const best = d.best_lap ? d.best_lap.toFixed(3) : '--';
-                        const last = d.last_lap ? d.last_lap.toFixed(3) : '--';
-                        return `<tr><td class="${posClass}">${d.position}</td><td>${d.full_name || d.name}</td><td>${d.transponder_id}</td><td>${d.total_laps || 0}</td><td class="best-lap">${best}</td><td>${last}</td><td>${d.laps_remaining}</td></tr>`;
-                    }).join('');
+            try {
+                const data = await apiCall('/api/session/current');
+                if (data && data.active) {
+                    const session = data.session;
+                    const status = session.status || 'pending';
+                    
+                    document.getElementById('circuitName').innerText = session.circuit_name || '--';
+                    document.getElementById('lapsLimit').innerText = session.laps_limit || '--';
+                    document.getElementById('totalDrivers').innerText = data.leaderboard?.length || 0;
+                    document.getElementById('finishedDrivers').innerText = data.leaderboard?.filter(d => d.is_finished).length || 0;
+                    
+                    // Control dinámico de botones según el estado
+                    const btnStart = document.getElementById('startRaceBtn');
+                    const btnPause = document.getElementById('pauseRaceBtn');
+                    const btnResume = document.getElementById('resumeRaceBtn');
+                    const btnFinish = document.getElementById('finishRaceBtn');
+                    const btnRepeat = document.getElementById('repeatRaceBtn');
+
+                    if (btnStart && btnPause && btnResume && btnFinish && btnRepeat) {
+                        if (status === 'active') {
+                            btnStart.style.display = 'none';
+                            btnFinish.style.display = 'inline-block';
+                            btnPause.style.display = 'inline-block';
+                            btnResume.style.display = 'none';
+                            btnRepeat.disabled = true;
+                            btnRepeat.style.opacity = '0.5';
+                        } else if (status === 'paused') {
+                            btnStart.style.display = 'none';
+                            btnFinish.style.display = 'inline-block';
+                            btnPause.style.display = 'none';
+                            btnResume.style.display = 'inline-block';
+                            btnRepeat.disabled = false;
+                            btnRepeat.style.opacity = '1';
+                        } else if (status === 'completed') {
+                            btnStart.style.display = 'inline-block';
+                            btnFinish.style.display = 'none';
+                            btnPause.style.display = 'none';
+                            btnResume.style.display = 'none';
+                            btnRepeat.disabled = false;
+                            btnRepeat.style.opacity = '1';
+                        } else { // pending
+                            btnStart.style.display = 'inline-block';
+                            btnFinish.style.display = 'none';
+                            btnPause.style.display = 'none';
+                            btnResume.style.display = 'none';
+                            btnRepeat.disabled = false;
+                            btnRepeat.style.opacity = '1';
+                        }
+                    }
+
+                    const tbody = document.getElementById('leaderboardBody');
+                    if (data.leaderboard && data.leaderboard.length > 0) {
+                        tbody.innerHTML = data.leaderboard.map(d => {
+                            let posClass = '';
+                            if (d.position === 1) posClass = 'pos-1';
+                            else if (d.position === 2) posClass = 'pos-2';
+                            else if (d.position === 3) posClass = 'pos-3';
+                            const best = d.best_lap ? d.best_lap.toFixed(3) : '--';
+                            const last = d.last_lap ? d.last_lap.toFixed(3) : '--';
+                            return `<tr><td class="${posClass}">${d.position}</td><td>${d.full_name || d.name}</td><td>${d.transponder_id}</td><td>${d.total_laps || 0}</td><td class="best-lap">${best}</td><td>${last}</td><td>${d.laps_remaining}</td></tr>`;
+                        }).join('');
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:1rem;">Sin pilotos en esta sesión</td></tr>';
+                    }
+                    document.getElementById('refreshTime').innerHTML = new Date().toLocaleTimeString();
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin datos</td></tr>';
+                    document.getElementById('circuitName').innerText = '--';
+                    document.getElementById('lapsLimit').innerText = '--';
+                    document.getElementById('totalDrivers').innerText = '0';
+                    document.getElementById('finishedDrivers').innerText = '0';
+                    document.getElementById('leaderboardBody').innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin carrera activa</td></tr>';
+                    document.getElementById('refreshTime').innerHTML = new Date().toLocaleTimeString();
                 }
-                document.getElementById('refreshTime').innerHTML = new Date().toLocaleTimeString();
-            } else {
-                document.getElementById('circuitName').innerText = '--';
-                document.getElementById('lapsLimit').innerText = '--';
-                document.getElementById('totalDrivers').innerText = '0';
-                document.getElementById('finishedDrivers').innerText = '0';
-                document.getElementById('leaderboardBody').innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin carrera activa</td></tr>';
-                document.getElementById('refreshTime').innerHTML = new Date().toLocaleTimeString();
+            } catch (error) {
+                console.error("Error en loadLiveData:", error);
             }
             
             const usb = await apiCall('/api/usb/status');
             const usbLed = document.getElementById('usbLed');
-            if (usb?.connected) { usbLed.className = 'usb-led on'; document.getElementById('usbText').innerText = `Conectado: ${usb.port}`; }
-            else { usbLed.className = 'usb-led off'; document.getElementById('usbText').innerText = 'Desconectado'; }
+            if (usb?.connected) { 
+                if (usbLed) usbLed.className = 'usb-led on'; 
+                const usbText = document.getElementById('usbText');
+                if (usbText) usbText.innerText = `Conectado: ${usb.port}`; 
+            } else { 
+                if (usbLed) usbLed.className = 'usb-led off'; 
+                const usbText = document.getElementById('usbText');
+                if (usbText) usbText.innerText = 'Desconectado'; 
+            }
+
+            // Monitor de Señales
+        const signals = await apiCall('/api/signals/recent?limit=20');
+        const signalsBody = document.getElementById('signalsBody');
+        if (signalsBody && signals) {
+            signalsBody.innerHTML = signals.map(s => {
+                const time = s.last_seen ? s.last_seen.split('T')[1].split('.')[0] : '--';
+                const hl = (s.last_signal_h !== null && s.last_signal_l !== null) ? `${s.last_signal_h}/${s.last_signal_l}` : '--';
+                return `<tr>
+                    <td style="font-family:monospace; color:#e5484d; font-weight:bold;">${s.transponder_id}</td>
+                    <td>${hl}</td>
+                    <td>${s.last_time_accumulated || '--'}</td>
+                    <td>${s.last_physical_laps || 0}</td>
+                    <td style="font-size:0.7rem; color:#666;">${time}</td>
+                </tr>`;
+            }).join('');
         }
+    }
         
         // Pilotos
         async function loadDrivers() {
             const drivers = await apiCall('/api/drivers');
             const tbody = document.getElementById('driversList');
-            if (drivers?.length) {
-                tbody.innerHTML = drivers.map(d => `<tr><td>${d.id}</td><td>${d.name} ${d.lastname || ''}</td><td>${d.transponder_id || '--'}</td><td><button class="btn btn-sm" onclick="deleteDriver(${d.id})">🗑️</button></td></tr>`).join('');
-            } else { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay pilotos</td></tr>'; }
+            if (tbody) {
+                if (drivers?.length) {
+                    tbody.innerHTML = drivers.map(d => `
+                        <tr>
+                            <td>${d.id}</td>
+                            <td><span id="name-${d.id}">${d.name} ${d.lastname || ''}</span></td>
+                            <td>${d.transponder_id || '--'}</td>
+                            <td>
+                                <button class="btn btn-sm" onclick="editDriver(${d.id}, '${d.name}', '${d.lastname || ''}', ${d.transponder_id})">✏️</button>
+                                <button class="btn btn-sm" onclick="deleteDriver(${d.id})">🗑️</button>
+                            </td>
+                        </tr>`).join('');
+                } else { 
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay pilotos</td></tr>'; 
+                }
+            }
             
             const session = await apiCall('/api/session/current');
             if (session?.active) {
@@ -400,61 +587,176 @@
                 loadTransponders();
             });
         };
-        
-        window.removeFromRace = async (driverId) => {
-            const session = await apiCall('/api/session/current');
-            if (session?.active) {
-                await apiCall('/api/race/remove', { method: 'POST', body: JSON.stringify({ session_id: session.session.id, driver_id: driverId }) });
-                loadDrivers();
-            }
+
+        window.editDriver = (id, name, lastname, transponder) => {
+            document.getElementById('driverName').value = name;
+            document.getElementById('driverLastname').value = lastname;
+            document.getElementById('driverTransponder').value = transponder;
+            
+            const saveBtn = document.getElementById('saveDriverBtn');
+            const originalText = saveBtn.innerText;
+            saveBtn.innerText = '💾 ACTUALIZAR PILOTO';
+            saveBtn.className = 'btn btn-warning';
+            saveBtn.style.width = '100%';
+            
+            saveBtn.onclick = async () => {
+                const data = {
+                    name: document.getElementById('driverName').value,
+                    lastname: document.getElementById('driverLastname').value,
+                    transponder_id: parseInt(document.getElementById('driverTransponder').value)
+                };
+                
+                showLoader('Actualizando piloto...');
+                const res = await apiCall(`/api/drivers/${id}`, { 
+                    method: 'PUT', 
+                    body: JSON.stringify(data) 
+                });
+                hideLoader();
+                
+                if (res?.success) {
+                    saveBtn.innerText = originalText;
+                    saveBtn.className = 'btn btn-primary';
+                    saveBtn.onclick = createDriverHandler; // Restaurar el handler original
+                    document.getElementById('driverName').value = '';
+                    document.getElementById('driverLastname').value = '';
+                    document.getElementById('driverTransponder').value = '';
+                    loadDrivers();
+                }
+            };
         };
         
-        document.getElementById('saveDriverBtn').onclick = async () => {
+        const createDriverHandler = async () => {
             const data = {
                 transponder_id: parseInt(document.getElementById('driverTransponder').value),
                 name: document.getElementById('driverName').value,
                 lastname: document.getElementById('driverLastname').value
             };
-            if (!data.transponder_id || !data.name) { alert('Complete ID y Nombre'); return; }
+            if (!data.transponder_id || !data.name) { return; }
+            
+            showLoader('Guardando piloto...');
             const res = await apiCall('/api/drivers', { method: 'POST', body: JSON.stringify(data) });
+            hideLoader();
+            
             if (res?.success) {
-                alert('Piloto guardado');
                 document.getElementById('driverTransponder').value = '';
                 document.getElementById('driverName').value = '';
                 document.getElementById('driverLastname').value = '';
                 loadDrivers();
                 loadTransponders();
-            } else alert('Error');
+            }
+        };
+
+        document.getElementById('saveDriverBtn').onclick = createDriverHandler;
+
+        window.removeFromRace = async (driverId) => {
+            const session = await apiCall('/api/session/current');
+            if (session?.active) {
+                showLoader('Eliminando de la carrera...');
+                await apiCall('/api/race/remove', { 
+                    method: 'POST', 
+                    body: JSON.stringify({ 
+                        session_id: session.session.id, 
+                        driver_id: driverId 
+                    }) 
+                });
+                hideLoader();
+                loadDrivers();
+                loadLiveData();
+            }
         };
         
         document.getElementById('addDriverToRaceBtn').onclick = async () => {
             const select = document.getElementById('selectDriverToAdd');
             const driverId = select.value;
-            if (!driverId) { alert('Seleccione un piloto'); return; }
+            if (!driverId) { return; }
             const session = await apiCall('/api/session/current');
-            if (!session?.active) { alert('No hay carrera activa'); return; }
+            if (!session?.active) { return; }
             const drivers = await apiCall('/api/drivers');
             const driver = drivers.find(d => d.id == driverId);
-            if (!driver) { alert('Piloto no encontrado'); return; }
+            if (!driver) { return; }
+            
+            showLoader('Inscribiendo piloto...');
             const res = await apiCall('/api/race/add', { method: 'POST', body: JSON.stringify({ session_id: session.session.id, driver_id: parseInt(driverId), transponder_id: driver.transponder_id }) });
-            if (res?.success) { alert('Piloto inscrito'); loadDrivers(); } else alert('Error');
+            hideLoader();
+            
+            if (res?.success) { 
+                loadDrivers(); 
+                loadLiveData(); // Actualizar el tablero de en vivo inmediatamente
+            }
         };
         
         // Transponders
         async function loadTransponders() {
             const detected = await apiCall('/api/transponders/unassigned');
             const detectedTbody = document.getElementById('detectedTranspondersList');
-            if (detected?.length) {
-                detectedTbody.innerHTML = detected.map(t => `<tr><td>${t.id}</td><td><button class="btn btn-sm" onclick="assignTransponder(${t.id})">👤 Asignar</button></td></tr>`).join('');
-            } else { detectedTbody.innerHTML = '<tr><td colspan="2" style="text-align:center;">Sin transponders detectados</td></tr>'; }
+            if (detectedTbody) {
+                if (detected?.length) {
+                    detectedTbody.innerHTML = detected.map(t => `<tr><td>${t.id}</td><td><button class="btn btn-sm" onclick="assignTransponder(${t.id})">👤 Asignar</button></td></tr>`).join('');
+                } else { 
+                    detectedTbody.innerHTML = '<tr><td colspan="2" style="text-align:center;">Sin transponders detectados</td></tr>'; 
+                }
+            }
             
             const all = await apiCall('/api/transponders/all');
             const allTbody = document.getElementById('allTranspondersList');
-            if (all?.length) {
-                const drivers = await apiCall('/api/drivers');
-                allTbody.innerHTML = all.map(t => { const assigned = drivers?.find(d => d.transponder_id === t.id); return `<tr><td>${t.id}</td><td>${t.description || '--'}</td><td>${assigned ? `${assigned.name} ${assigned.lastname || ''}` : 'Sin asignar'}</td></tr>`; }).join('');
-            } else { allTbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No hay transponders registrados</td></tr>'; }
+            if (allTbody) {
+                if (all?.length) {
+                    const drivers = await apiCall('/api/drivers');
+                    allTbody.innerHTML = all.map(t => { 
+                        const assigned = drivers?.find(d => d.transponder_id === t.id); 
+                        const actionButtons = assigned ? '' : `
+                            <button class="btn btn-sm" onclick="editTransponderId(${t.id})">✏️</button>
+                            <button class="btn btn-sm" onclick="deleteTransponder(${t.id})">🗑️</button>
+                        `;
+                        return `<tr>
+                            <td>${t.id}</td>
+                            <td>${t.description || '--'}</td>
+                            <td>${assigned ? `${assigned.name} ${assigned.lastname || ''}` : 'Sin asignar'}</td>
+                            <td>${actionButtons}</td>
+                        </tr>`; 
+                    }).join('');
+                } else { 
+                    allTbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay transponders registrados</td></tr>'; 
+                }
+            }
         }
+
+        window.editTransponderId = (id) => {
+            const newId = prompt('Ingrese el nuevo ID para el transponder:', id);
+            if (newId && newId != id) {
+                const numId = parseInt(newId);
+                if (isNaN(numId)) {
+                    alert('El ID debe ser un número');
+                    return;
+                }
+                showModal('Editar Transponder', `¿Cambiar el ID ${id} por ${numId}?`, async () => {
+                    showLoader('Actualizando transponder...');
+                    const res = await apiCall(`/api/transponders/${id}`, { 
+                        method: 'PUT', 
+                        body: JSON.stringify({ new_id: numId }) 
+                    });
+                    hideLoader();
+                    if (res?.success) {
+                        loadTransponders();
+                    } else {
+                        alert(res.error || 'Error al actualizar');
+                    }
+                });
+            }
+        };
+
+        window.deleteTransponder = (id) => {
+            showModal('Eliminar Transponder', `¿Eliminar el transponder ${id}?`, async () => {
+                showLoader('Eliminando transponder...');
+                const res = await apiCall(`/api/transponders/${id}`, { method: 'DELETE' });
+                hideLoader();
+                if (res?.success) {
+                    loadTransponders();
+                } else {
+                    alert(res.error || 'Error al eliminar');
+                }
+            });
+        };
         
         window.assignTransponder = (id) => {
             document.getElementById('driverTransponder').value = id;
@@ -464,31 +766,47 @@
         
         document.getElementById('addTransponderBtn').onclick = async () => {
             const id = parseInt(document.getElementById('manualTransponderId').value);
-            if (!id) { alert('Ingrese código'); return; }
+            if (!id) { return; }
+            
+            showLoader('Registrando transponder...');
             const res = await apiCall('/api/transponders/manual', { method: 'POST', body: JSON.stringify({ id }) });
+            hideLoader();
+            
             if (res?.success) {
-                alert('Transponder agregado');
                 document.getElementById('manualTransponderId').value = '';
                 loadTransponders();
-            } else alert('Error o ya existe');
+            }
         };
         
         // Nueva carrera
         document.getElementById('createNewRaceBtn').onclick = () => {
             const name = document.getElementById('newCircuitName').value;
             const laps = document.getElementById('newLapsLimit').value;
-            if (!name) { alert('Ingrese nombre del circuito'); return; }
+            if (!name) { return; }
             showModal('Nueva Carrera', `¿Crear carrera "${name}" con ${laps} vueltas?`, async () => {
+                showLoader('Creando nuevo circuito...');
                 await apiCall('/api/restart', { method: 'POST', body: JSON.stringify({ next_race_name: name, next_race_laps: parseInt(laps) }) });
-                alert('Reiniciando sistema...');
                 setTimeout(() => location.reload(), 3000);
             });
         };
         
         document.getElementById('resetUsbBtn').onclick = () => {
             showModal('Preparar USB', '¿Preparar USB para desconectar con seguridad?', async () => {
+                showLoader('Preparando USB...');
                 await apiCall('/api/usb/reset', { method: 'POST' });
-                alert('USB preparado. Puede desconectar con seguridad.');
+                hideLoader();
+            });
+        };
+
+        document.getElementById('hardResetBtn').onclick = () => {
+            showModal('RESET TOTAL', '¿Estás seguro? Se limpiarán todos los pilotos y vueltas de la sesión actual y el sistema se reiniciará.', async () => {
+                showLoader('Limpiando tablero y reiniciando...');
+                const res = await apiCall('/api/race/reset', { method: 'POST' });
+                if (res?.success) {
+                    setTimeout(() => location.reload(), 3500);
+                } else {
+                    hideLoader();
+                }
             });
         };
 
@@ -520,20 +838,28 @@
 
         // Botones de control de carrera
         document.getElementById('startRaceBtn').onclick = async () => {
+            const totalDrivers = parseInt(document.getElementById('totalDrivers').innerText) || 0;
+            if (totalDrivers === 0) {
+                showModal('🚫 SIN PILOTOS', 'No hay pilotos inscritos en la carrera. Por favor, inscribe al menos un piloto en el panel de PILOTOS antes de comenzar.', () => {});
+                return;
+            }
+
             showModal('Iniciar Carrera', '¿Iniciar la carrera? Se mostrará una cuenta regresiva (10 → 0) y luego comenzará el conteo.', async () => {
                 try {
                     setRaceButtonsEnabled(false);
                     await runCountdown(10);
+                    showLoader('Iniciando carrera...');
                     const res = await apiCall('/api/race/start', { method: 'POST' });
                     if (res?.success) {
-                        alert(res.message || '🏁 Carrera iniciada');
                         if (res.restart_required) {
                             setTimeout(() => location.reload(), 3500);
                         } else {
+                            hideLoader();
                             loadLiveData();
                         }
+                    } else {
+                        hideLoader();
                     }
-                    else alert('Error: ' + (res?.error || 'No se pudo iniciar'));
                 } finally {
                     setRaceButtonsEnabled(true);
                 }
@@ -541,37 +867,44 @@
         };
         
         document.getElementById('pauseRaceBtn').onclick = async () => {
+            showLoader('Pausando carrera...');
             const res = await apiCall('/api/race/pause', { method: 'POST' });
-            if(res?.success) alert('⏸️ Carrera pausada');
-            else alert('Error: ' + (res?.error || 'No se pudo pausar'));
+            hideLoader();
+            if(res?.success) { 
+                loadLiveData(); // Actualizar botones inmediatamente
+            }
         };
         
         document.getElementById('resumeRaceBtn').onclick = async () => {
+            showLoader('Reanudando carrera...');
             const res = await apiCall('/api/race/resume', { method: 'POST' });
-            if(res?.success) alert('▶️ Carrera reanudada');
-            else alert('Error: ' + (res?.error || 'No se pudo reanudar'));
+            hideLoader();
+            if(res?.success) { 
+                loadLiveData(); // Actualizar botones inmediatamente
+            }
         };
         
         document.getElementById('repeatRaceBtn').onclick = async () => {
             showModal('Repetir Carrera', '¿Repetir la misma carrera con los mismos pilotos? Se reiniciarán las vueltas.', async () => {
+                showLoader('Reiniciando sistema con los mismos pilotos...');
                 const res = await apiCall('/api/race/repeat', { method: 'POST' });
                 if(res?.success) {
-                    alert('🔄 Repitiendo carrera... La página se recargará.');
                     setTimeout(() => location.reload(), 3500);
                 } else {
-                    alert('Error: ' + (res?.error || 'No se pudo repetir la carrera'));
+                    hideLoader();
                 }
             });
         };
         
         document.getElementById('finishRaceBtn').onclick = async () => {
             showModal('Finalizar Carrera', '¿Finalizar la carrera actual? Se guardarán los resultados.', async () => {
+                showLoader('Finalizando carrera...');
                 const res = await apiCall('/api/race/finish', { method: 'POST' });
                 if(res?.success) {
-                    alert('🏆 Carrera finalizada. Limpiando tablero...');
                     setTimeout(() => location.reload(), 3500);
+                } else {
+                    hideLoader();
                 }
-                else alert('Error: ' + (res?.error || 'No se pudo finalizar'));
             });
         };
         

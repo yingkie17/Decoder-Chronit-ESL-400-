@@ -31,6 +31,28 @@ sudo chmod 666 $PORT
 # 4. Lanzar Docker (desde la carpeta del proyecto)
 echo -e "${VERDE}✅ Todo listo. Iniciando Servidores...${NC}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+DATA_DIR="$ROOT/data"
+SHUTDOWN_FLAG="$DATA_DIR/shutdown.flag"
+
+# Limpiar flag de apagado si existe antes de iniciar
+rm -f "$SHUTDOWN_FLAG"
+
 cd "$ROOT/infrastructure"
 export SERIAL_PORT=$PORT
-docker compose up "$@"
+
+# Iniciar en segundo plano para poder monitorear el flag de apagado
+docker compose up -d "$@"
+
+echo -e "${VERDE}🚀 Sistema en ejecución. Monitoreando apagado seguro...${NC}"
+
+# Bucle de monitoreo de apagado seguro
+while true; do
+    if [ -f "$SHUTDOWN_FLAG" ]; then
+        echo -e "\n${AMARILLO}🛑 SEÑAL DE APAGADO RECIBIDA. Deteniendo contenedores...${NC}"
+        docker compose down
+        rm -f "$SHUTDOWN_FLAG"
+        echo -e "${VERDE}✅ Sistema apagado correctamente. Puede retirar el USB.${NC}"
+        exit 0
+    fi
+    sleep 2
+done

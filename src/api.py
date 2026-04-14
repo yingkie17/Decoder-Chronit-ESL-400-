@@ -13,10 +13,13 @@ from database import (
     add_driver,
     add_transponder_manual,
     get_all_transponders,
+    delete_transponder,
+    update_transponder_id,
     add_driver_to_race,
     get_race_drivers,
     remove_driver_from_race,
     delete_driver,
+    update_driver,
     start_new_session,
     clear_race_drivers,
     get_lap_details,
@@ -24,7 +27,7 @@ from database import (
     update_race_status,
     get_session_info,
     guardar_estado_repetir,
-    get_session_lap_count,
+    get_recent_signals,
 )
 
 logging.getLogger('werkzeug').setLevel(logging.ERROR)
@@ -33,6 +36,7 @@ app = Flask(__name__)
 CORS(app)
 
 RESTART_FLAG_FILE = '/app/data/restart.flag'
+SHUTDOWN_FLAG_FILE = '/app/data/shutdown.flag'
 NEXT_RACE_NAME_FILE = '/app/data/next_race_name.txt'
 NEXT_RACE_LAPS_FILE = '/app/data/next_race_laps.txt'
 RACE_COMMAND_FILE = '/app/data/race_command.txt'
@@ -71,6 +75,11 @@ def get_leaderboard_api():
     if not session:
         return jsonify([])
     return jsonify(get_leaderboard_with_details(session['id']))
+
+@app.route('/api/signals/recent')
+def get_recent_signals_api():
+    limit = request.args.get('limit', 10, type=int)
+    return jsonify(get_recent_signals(limit))
 
 # ==================== CONTROL DE CARRERA ====================
 
@@ -172,6 +181,15 @@ def create_driver():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/drivers/<int:driver_id>', methods=['PUT'])
+def update_driver_api(driver_id):
+    try:
+        data = request.get_json()
+        update_driver(driver_id, data['transponder_id'], data['name'], data.get('lastname', ''))
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/api/drivers/<int:driver_id>', methods=['DELETE'])
 def delete_driver_by_id(driver_id):
     try:
@@ -189,6 +207,26 @@ def get_all_transponders_api():
 @app.route('/api/transponders/unassigned')
 def get_unassigned_transponders_api():
     return jsonify(get_unassigned_transponders())
+
+@app.route('/api/transponders/<int:t_id>', methods=['DELETE'])
+def delete_transponder_api(t_id):
+    try:
+        success = delete_transponder(t_id)
+        return jsonify({'success': success, 'error': None if success else 'No se puede eliminar un transponder asignado a un piloto'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/transponders/<int:old_id>', methods=['PUT'])
+def update_transponder_api(old_id):
+    try:
+        data = request.get_json()
+        new_id = data.get('new_id')
+        if not new_id:
+            return jsonify({'success': False, 'error': 'Nuevo ID requerido'}), 400
+        success = update_transponder_id(old_id, new_id)
+        return jsonify({'success': success, 'error': None if success else 'No se puede editar: el ID ya existe o está asignado a un piloto'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/transponders/manual', methods=['POST'])
 def add_transponder_manual_api():
@@ -266,7 +304,9 @@ def usb_status():
 
 @app.route('/api/usb/reset', methods=['POST'])
 def reset_usb():
-    return jsonify({'success': True, 'message': 'USB preparado para desconectar'})
+    with open(SHUTDOWN_FLAG_FILE, 'w') as f:
+        f.write('shutdown')
+    return jsonify({'success': True, 'message': 'Apagando sistema de forma segura...'})
 
 def start_api_server():
     init_db()
