@@ -5,150 +5,255 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CHRONIT Racing System</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0a0a0a;
-            color: #e0e0e0;
-            min-height: 100vh;
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg: #0f1115;
+            --bg-elev-1: #171a21;
+            --bg-elev-2: #1d212a;
+            --line: #2a303c;
+            --line-soft: #252b35;
+            --text: #eceff4;
+            --muted: #a4adbc;
+            --accent: #64b5f6;
+            --accent-2: #8cd3ff;
+            --ok: #63d297;
+            --warn: #f4c06b;
+            --danger: #ef7a86;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
-        
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Space Grotesk", "Segoe UI", Roboto, sans-serif;
+            background:
+                radial-gradient(circle at top right, rgba(100, 181, 246, 0.11), transparent 42%),
+                radial-gradient(circle at top left, rgba(140, 211, 255, 0.06), transparent 36%),
+                var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            letter-spacing: 0.01em;
+        }
+
         .navbar {
-            background: #0d0d0d;
-            border-bottom: 1px solid #1f1f1f;
-            padding: 0.75rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: rgba(15, 17, 21, 0.9);
+            border-bottom: 1px solid var(--line);
+            backdrop-filter: blur(8px);
+            padding: 0.95rem 1.5rem;
             display: flex;
-            gap: 1.5rem;
+            gap: 1.4rem;
             align-items: center;
             flex-wrap: wrap;
         }
-        
-        .nav-brand { font-size: 1.25rem; font-weight: 600; letter-spacing: 1px; }
-        .nav-brand span { color: #e5484d; }
-        
+
+        .nav-brand {
+            font-size: 1.05rem;
+            font-weight: 800;
+            letter-spacing: 0.09em;
+            color: var(--text);
+        }
+        .nav-brand span { color: var(--accent-2); }
+
         .nav-links {
             display: flex;
             gap: 0.5rem;
             flex: 1;
             flex-wrap: wrap;
         }
-        
+
         .nav-links a {
-            color: #888;
+            color: var(--muted);
             text-decoration: none;
-            font-size: 0.8rem;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            transition: all 0.2s;
+            font-size: 0.74rem;
+            font-weight: 600;
+            padding: 0.5rem 0.9rem;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
             cursor: pointer;
         }
-        
-        .nav-links a:hover, .nav-links a.active {
-            background: #1a1a1a;
-            color: #e5484d;
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: #232835;
+            border-color: var(--line);
+            color: var(--text);
         }
+
         .control-bar {
-            background: #0d0d0d;
-            border-bottom: 1px solid #1f1f1f;
-            padding: 0.75rem 1.5rem;
+            background: rgba(16, 18, 23, 0.9) !important;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 0.9rem 1rem;
             display: flex;
-            gap: 0.75rem;
+            gap: 0.65rem;
             flex-wrap: wrap;
             justify-content: center;
+            margin-bottom: 1.2rem;
+            box-shadow: var(--shadow);
         }
-        
-        .btn-success { background: #00c85320; border-color: #00c853; color: #00c853; }
-        .btn-success:hover { background: #00c85330; }
-        .btn-warning { background: #ffaa0020; border-color: #ffaa00; color: #ffaa00; }
-        .btn-warning:hover { background: #ffaa0030; }
-        .btn-danger { background: #e5484d20; border-color: #e5484d; color: #e5484d; }
-        .btn-danger:hover { background: #e5484d30; }
-        
+
+        .btn-success { background: rgba(99, 210, 151, 0.14); border-color: rgba(99, 210, 151, 0.56); color: #7fe2af; }
+        .btn-success:hover { background: rgba(99, 210, 151, 0.2); }
+        .btn-warning { background: rgba(244, 192, 107, 0.14); border-color: rgba(244, 192, 107, 0.56); color: #ffd997; }
+        .btn-warning:hover { background: rgba(244, 192, 107, 0.2); }
+        .btn-danger { background: rgba(239, 122, 134, 0.14); border-color: rgba(239, 122, 134, 0.6); color: #ffb6bf; }
+        .btn-danger:hover { background: rgba(239, 122, 134, 0.2); }
+
         .container {
-            padding: 1.5rem;
-            max-width: 1400px;
+            padding: 1.4rem;
+            max-width: 1450px;
             margin: 0 auto;
         }
-        
-        .panel { display: none; }
+
+        .panel { display: none; animation: fadeIn 0.25s ease; }
         .panel.active { display: block; }
-        
+
         .card {
-            background: #0d0d0d;
-            border: 1px solid #1f1f1f;
-            border-radius: 8px;
+            background: linear-gradient(180deg, rgba(29, 33, 42, 0.97), rgba(24, 28, 36, 0.99));
+            border: 1px solid var(--line);
+            border-radius: 14px;
             overflow: hidden;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
+            box-shadow: var(--shadow);
         }
-        
+
         .card-header {
-            padding: 0.8rem 1rem;
-            border-bottom: 1px solid #1f1f1f;
-            font-size: 0.7rem;
-            font-weight: 600;
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--line);
+            font-size: 0.68rem;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #888;
+            letter-spacing: 0.11em;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.01);
         }
-        
+
         .card-body { padding: 1rem; }
-        
+
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 0.6rem 0.8rem; font-size: 0.7rem; color: #666; border-bottom: 1px solid #1f1f1f; }
-        td { padding: 0.6rem 0.8rem; font-size: 0.8rem; border-bottom: 1px solid #151515; }
-        tr:hover { background: #111; }
-        
-        .pos-1 { color: #ffd700; font-weight: 600; }
-        .pos-2 { color: #c0c0c0; }
-        .pos-3 { color: #cd7f32; }
-        .best-lap { color: #00c853; font-family: monospace; }
-        
-        .grid-2 { display: grid; grid-template-columns: 1fr 280px; gap: 1.5rem; }
-        
-        .stat { display: flex; justify-content: space-between; padding: 0.4rem 0; font-size: 0.75rem; border-bottom: 1px solid #151515; }
-        .stat-value { font-family: monospace; color: #e5484d; font-weight: 500; }
-        
-        .btn {
-            padding: 0.5rem 1rem;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            color: #e0e0e0;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s;
+        th {
+            text-align: left;
+            padding: 0.7rem 0.8rem;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--muted);
+            border-bottom: 1px solid var(--line);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
         }
-        
-        .btn:hover { background: #252525; border-color: #e5484d; }
-        .btn-primary { background: #e5484d; border-color: #e5484d; color: white; }
-        .btn-primary:hover { background: #d33a3f; }
-        .btn-sm { padding: 0.2rem 0.5rem; font-size: 0.7rem; }
-        
+        td {
+            padding: 0.72rem 0.8rem;
+            font-size: 0.8rem;
+            border-bottom: 1px solid var(--line-soft);
+            color: #e4eaf4;
+        }
+        tr:hover { background: rgba(255, 255, 255, 0.015); }
+
+        .pos-1 { color: #a8dcff; font-weight: 700; }
+        .pos-2 { color: #cfd7e4; font-weight: 600; }
+        .pos-3 { color: #e0bf98; font-weight: 600; }
+        .best-lap { color: #64e6a3; font-family: "JetBrains Mono", monospace; font-weight: 700; }
+
+        .grid-2 { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 1.2rem; }
+
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.55rem 0;
+            font-size: 0.76rem;
+            border-bottom: 1px solid var(--line-soft);
+            color: var(--muted);
+        }
+        .stat-value {
+            font-family: "JetBrains Mono", monospace;
+            color: var(--accent-2);
+            font-weight: 700;
+            font-size: 0.78rem;
+        }
+
+        .btn {
+            padding: 0.55rem 0.95rem;
+            background: #242937;
+            border: 1px solid #313949;
+            color: var(--text);
+            border-radius: 10px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            transition: all 0.18s ease;
+        }
+
+        .btn:hover {
+            background: #2d3445;
+            border-color: #49556b;
+            transform: translateY(-1px);
+        }
+        .btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.45 !important;
+            transform: none;
+        }
+        .btn-primary {
+            background: linear-gradient(180deg, #7dc6ff, #61b4f3);
+            border-color: #95d3ff;
+            color: #16202f;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(180deg, #95d3ff, #77c4ff);
+            border-color: #b8e3ff;
+        }
+        .btn-sm { padding: 0.3rem 0.55rem; font-size: 0.68rem; border-radius: 8px; }
+
         input, select {
             width: 100%;
-            padding: 0.5rem;
-            background: #0a0a0a;
-            border: 1px solid #222;
-            color: #e0e0e0;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            margin-bottom: 0.5rem;
+            padding: 0.58rem 0.7rem;
+            background: #0f141c;
+            border: 1px solid #2b3442;
+            color: var(--text);
+            border-radius: 10px;
+            font-size: 0.76rem;
+            margin-bottom: 0.58rem;
+            outline: none;
+            transition: border-color 0.18s ease, box-shadow 0.18s ease;
         }
-        
-        .usb-status { display: flex; align-items: center; gap: 0.5rem; font-size: 0.7rem; padding: 0.4rem; background: #0a0a0a; border-radius: 6px; }
-        .usb-led { width: 8px; height: 8px; border-radius: 50%; background: #444; }
-        .usb-led.on { background: #00c853; box-shadow: 0 0 5px #00c853; }
-        .usb-led.off { background: #e5484d; }
-        
-        .refresh { font-size: 0.6rem; color: #444; text-align: right; padding: 0.3rem; }
+        input:focus, select:focus {
+            border-color: rgba(140, 211, 255, 0.9);
+            box-shadow: 0 0 0 3px rgba(140, 211, 255, 0.2);
+        }
 
-        /* Estilos del Loader */
+        .usb-status {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.74rem;
+            padding: 0.62rem;
+            background: #0d1218;
+            border: 1px solid #2a3340;
+            border-radius: 10px;
+        }
+        .usb-led { width: 10px; height: 10px; border-radius: 50%; background: #5f6774; }
+        .usb-led.on { background: var(--ok); box-shadow: 0 0 12px rgba(0, 210, 106, 0.75); }
+        .usb-led.off { background: var(--danger); box-shadow: 0 0 12px rgba(239, 122, 134, 0.6); }
+
+        .refresh {
+            font-size: 0.65rem;
+            color: #667083;
+            text-align: right;
+            padding: 0.45rem 0.65rem;
+        }
+
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255, 255, 255, 0.1);
-            border-top: 5px solid #e5484d;
+            width: 52px;
+            height: 52px;
+            border: 5px solid rgba(255, 255, 255, 0.08);
+            border-top: 5px solid var(--accent-2);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -156,6 +261,11 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         #loaderOverlay {
             display: none;
             position: fixed;
@@ -163,25 +273,182 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(4, 6, 10, 0.9);
             z-index: 9999;
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(6px);
         }
         #loaderMessage {
-            color: white;
-            margin-top: 1.5rem;
-            font-size: 1.1rem;
-            font-weight: 500;
-            letter-spacing: 0.5px;
+            color: #f6f8fc;
+            margin-top: 1.4rem;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
         }
-        
-        @media (max-width: 700px) {
+
+        #countdownOverlay {
+            background: rgba(5, 7, 11, 0.92) !important;
+            backdrop-filter: blur(6px);
+        }
+        #countdownNumber {
+            text-shadow: 0 0 24px rgba(140, 211, 255, 0.45);
+        }
+
+        .modal-content {
+            background: var(--bg-elev-1) !important;
+            border: 1px solid #364052 !important;
+            box-shadow: var(--shadow);
+        }
+
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: #0b0f15; }
+        ::-webkit-scrollbar-thumb { background: #2a3343; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #39455a; }
+
+        .race-context {
+            margin-top: 0.9rem;
+            font-size: 0.74rem;
+            color: var(--muted);
+            padding: 0.65rem 0.75rem;
+            background: #121722;
+            border: 1px solid #2a3240;
+            border-radius: 10px;
+        }
+
+        .public-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 360px;
+            gap: 1.2rem;
+        }
+
+        .lap-box {
+            margin-bottom: 0.9rem;
+            border: 1px solid #2d3544;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #121722;
+        }
+        .lap-box h4 {
+            font-size: 0.72rem;
+            color: #dbe2ee;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+            padding: 0.6rem 0.75rem;
+            border-bottom: 1px solid #2a3240;
+        }
+        .lap-box table th, .lap-box table td {
+            font-size: 0.7rem;
+            padding: 0.5rem 0.6rem;
+        }
+
+        .muted-text { color: var(--muted); }
+
+        .tv-board {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 1rem;
+        }
+        .tv-topline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.8rem;
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            background: #131824;
+            border: 1px solid #2f3747;
+        }
+        .tv-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            color: #e9f3ff;
+        }
+        .tv-meta {
+            font-size: 0.95rem;
+            color: #c2d0e3;
+        }
+        .tv-table th { font-size: 0.9rem; }
+        .tv-table td {
+            font-size: 1.1rem;
+            padding-top: 0.85rem;
+            padding-bottom: 0.85rem;
+            font-weight: 500;
+        }
+        .tv-highlight {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #9ed8ff;
+            margin-bottom: 0.4rem;
+        }
+        .tv-sub {
+            font-size: 1rem;
+            color: #b7c3d5;
+            margin-bottom: 0.7rem;
+        }
+        .tv-laps-rotator {
+            min-height: 340px;
+            border-radius: 12px;
+            border: 1px solid #2f3747;
+            background: #131824;
+            padding: 0.8rem;
+        }
+        .tv-laps-rotator h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+            color: #eef5ff;
+        }
+        .tv-laps-rotator table th { font-size: 0.8rem; }
+        .tv-laps-rotator table td {
+            font-size: 0.95rem;
+            padding-top: 0.55rem;
+            padding-bottom: 0.55rem;
+        }
+        .tv-note {
+            margin-top: 0.8rem;
+            font-size: 0.84rem;
+            color: #b3bfd1;
+        }
+
+        .winner-pill {
+            display: inline-flex;
+            align-items: center;
+            margin-left: 0.45rem;
+            padding: 0.12rem 0.45rem;
+            border-radius: 999px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #1f1a0b;
+            background: linear-gradient(180deg, #ffe09a, #f3c463);
+            border: 1px solid #f4d489;
+            box-shadow: 0 0 10px rgba(255, 217, 128, 0.28);
+            vertical-align: middle;
+        }
+        .winner-row {
+            background: linear-gradient(90deg, rgba(255, 217, 128, 0.12), rgba(255, 217, 128, 0.03)) !important;
+        }
+        .winner-name {
+            font-weight: 700;
+            color: #fff3cf;
+        }
+
+        @media (max-width: 980px) {
+            .public-grid { grid-template-columns: 1fr; }
+            .tv-board { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 900px) {
             .grid-2 { grid-template-columns: 1fr; }
-            .navbar { flex-direction: column; }
-            .nav-links { justify-content: center; }
+        }
+        @media (max-width: 700px) {
+            .navbar { flex-direction: column; align-items: flex-start; }
+            .nav-links { justify-content: flex-start; }
+            .container { padding: 1rem; }
+            .control-bar { padding: 0.75rem; }
         }
     </style>
 </head>
@@ -200,13 +467,15 @@
     </div>
 
     <div class="navbar">
-        <div class="nav-brand">CHRONIT<span>RACING</span></div>
+        <div class="nav-brand">CHRONIT<span>RACE</span></div>
         <div class="nav-links">
-            <a class="active" data-panel="live">🏁 EN VIVO</a>
-            <a data-panel="drivers">👥 PILOTOS</a>
-            <a data-panel="transponders">📡 TRANSPONDERS</a>
-            <a data-panel="race-setup">🏎️ CONFIGURAR</a>
-            <a data-panel="system">🔧 SISTEMA</a>
+            <a class="active" data-panel="live">Control en Vivo</a>
+            <a data-panel="public">Pantalla Publica</a>
+            <a data-panel="tv">Pantalla TV</a>
+            <a data-panel="drivers">Pilotos</a>
+            <a data-panel="transponders">Transponders</a>
+            <a data-panel="race-setup">Nueva Carrera</a>
+            <a data-panel="system">Sistema</a>
         </div>
     </div>
 
@@ -215,17 +484,17 @@
     <div class="container">
     <!-- BARRA DE CONTROL DE CARRERA -->
     <div class="control-bar" id="raceControlBar" style="background: #0d0d0d; border-bottom: 1px solid #1f1f1f; padding: 0.75rem 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center;">
-        <button class="btn btn-success" id="startRaceBtn">🏁 INICIAR CARRERA</button>
-        <button class="btn btn-warning" id="pauseRaceBtn" style="display:none;">⏸️ PAUSAR</button>
-        <button class="btn btn-success" id="resumeRaceBtn" style="display:none;">▶️ REANUDAR</button>
-        <button class="btn" id="repeatRaceBtn">🔄 REPETIR CARRERA</button>
-        <button class="btn btn-danger" id="finishRaceBtn" style="display:none;">🏆 FINALIZAR</button>
+        <button class="btn btn-success" id="startRaceBtn">Iniciar Carrera</button>
+        <button class="btn btn-warning" id="pauseRaceBtn" style="display:none;">Pausar</button>
+        <button class="btn btn-success" id="resumeRaceBtn" style="display:none;">Reanudar</button>
+        <button class="btn" id="repeatRaceBtn">Repetir Carrera</button>
+        <button class="btn btn-danger" id="finishRaceBtn" style="display:none;">Finalizar</button>
     </div>
         <!-- Panel En Vivo -->
         <div id="panel-live" class="panel active">
             <div class="grid-2">
                 <div class="card">
-                    <div class="card-header">🏁 POSICIONES EN VIVO</div>
+                    <div class="card-header">Posiciones en Vivo</div>
                     <div style="overflow-x: auto;">
                         <table>
                             <thead><tr><th>POS</th><th>PILOTO</th><th>TRANSPONDER</th><th>VTAS</th><th>MEJOR</th><th>ÚLTIMA</th><th>RESTANTES</th></tr></thead>
@@ -237,7 +506,7 @@
                 
                 <div>
                     <div class="card">
-                        <div class="card-header">📊 ESTADÍSTICAS</div>
+                        <div class="card-header">Estadisticas de Carrera</div>
                         <div class="card-body">
                             <div class="stat"><span>Circuito</span><span class="stat-value" id="circuitName">--</span></div>
                             <div class="stat"><span>Vueltas</span><span class="stat-value" id="lapsLimit">--</span></div>
@@ -248,35 +517,120 @@
                 </div>
             </div>
         </div>
+
+        <!-- Panel Publico -->
+        <div id="panel-public" class="panel">
+            <div class="card">
+                <div class="card-header">Vista Publica - Estado General</div>
+                <div class="card-body">
+                    <div class="race-context">
+                        Carrera actual: <strong id="publicRaceName">--</strong> |
+                        Vueltas objetivo: <strong id="publicLapsLimit">--</strong>
+                    </div>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr><th>Pos</th><th>Piloto</th><th>Vtas</th><th>Tiempo Total</th><th>Mejor Vta</th><th>Ultima Vta</th></tr>
+                        </thead>
+                        <tbody id="publicLeaderboardBody">
+                            <tr><td colspan="6" style="text-align:center;padding:1.5rem;">Sin datos de carrera</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="public-grid">
+                <div class="card">
+                    <div class="card-header">Detalle por Vuelta y Diferencias</div>
+                    <div class="card-body" id="publicLapsDetail">
+                        <p class="muted-text">Esperando informacion de vueltas...</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">Informacion para Publico</div>
+                    <div class="card-body">
+                        <div class="stat"><span>Carrera</span><span class="stat-value" id="publicRaceLabel">--</span></div>
+                        <div class="stat"><span>Estado</span><span class="stat-value" id="publicRaceStatus">--</span></div>
+                        <div class="stat"><span>Pilotos en pista</span><span class="stat-value" id="publicDriversCount">0</span></div>
+                        <div class="stat"><span>Lider actual</span><span class="stat-value" id="publicLeaderName">--</span></div>
+                        <p style="font-size:0.72rem; color:#a4adbc; margin-top:1rem;">
+                            Esta vista es para el publico. No incluye botones de control ni acciones administrativas.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel TV / Broadcast -->
+        <div id="panel-tv" class="panel">
+            <div class="tv-topline">
+                <div class="tv-title" id="tvRaceTitle">Carrera en Espera</div>
+                <div class="tv-meta">Estado: <strong id="tvRaceStatus">--</strong> | Hora: <strong id="tvClock">--:--:--</strong></div>
+            </div>
+            <div class="tv-board">
+                <div class="card" style="margin-bottom:0;">
+                    <div class="card-header">Clasificacion General</div>
+                    <div style="overflow-x: auto;">
+                        <table class="tv-table">
+                            <thead>
+                                <tr><th>Pos</th><th>Piloto</th><th>Vtas</th><th>Total</th><th>Mejor</th><th>Gap Lider</th></tr>
+                            </thead>
+                            <tbody id="tvLeaderboardBody">
+                                <tr><td colspan="6" style="text-align:center;padding:2rem;">Esperando carrera...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <div class="card" style="margin-bottom:0.9rem;">
+                        <div class="card-body">
+                            <div class="tv-highlight" id="tvLeaderName">--</div>
+                            <div class="tv-sub" id="tvLeaderMeta">Lider actual</div>
+                            <div class="stat"><span>Pilotos activos</span><span class="stat-value" id="tvDriversCount">0</span></div>
+                            <div class="stat"><span>Vueltas objetivo</span><span class="stat-value" id="tvLapsLimit">--</span></div>
+                            <div class="stat"><span>Actualizacion</span><span class="stat-value" id="tvRefreshTime">--</span></div>
+                        </div>
+                    </div>
+                    <div class="tv-laps-rotator" id="tvLapsRotator">
+                        <p class="muted-text">Esperando datos de vueltas...</p>
+                    </div>
+                    <p class="tv-note">Rotacion automatica de detalles por piloto para pantallas grandes.</p>
+                </div>
+            </div>
+        </div>
         
         <!-- Panel Pilotos -->
         <div id="panel-drivers" class="panel">
             <div class="grid-2">
                 <div class="card">
-                    <div class="card-header">👥 REGISTRAR PILOTO</div>
+                    <div class="card-header">Registrar Piloto</div>
                     <div class="card-body">
                         <input type="number" id="driverTransponder" placeholder="ID Transponder">
                         <input type="text" id="driverName" placeholder="Nombre">
                         <input type="text" id="driverLastname" placeholder="Apellido">
-                        <button class="btn btn-primary" id="saveDriverBtn" style="width:100%;">💾 GUARDAR</button>
+                        <button class="btn btn-primary" id="saveDriverBtn" style="width:100%;">Guardar</button>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-header">📋 LISTA DE PILOTOS</div>
+                    <div class="card-header">Lista de Pilotos</div>
                     <div style="overflow-x: auto; max-height: 300px;">
                         <table><thead><tr><th>ID</th><th>Nombre</th><th>Transponder</th><th>Acción</th></tr></thead><tbody id="driversList"></tbody></table>
                     </div>
                 </div>
             </div>
             <div class="card">
-                <div class="card-header">🏁 INSCRIBIR A CARRERA</div>
+                <div class="card-header">Inscribir a Carrera</div>
                 <div class="card-body">
+                    <div class="race-context">
+                        Inscripcion para carrera: <strong id="raceNameForEnrollment">--</strong>
+                    </div>
                     <select id="selectDriverToAdd"><option value="">-- Seleccionar --</option></select>
-                    <button class="btn btn-primary" id="addDriverToRaceBtn" style="width:100%; margin-top:0.5rem;">➕ INSCRIBIR</button>
+                    <button class="btn btn-primary" id="addDriverToRaceBtn" style="width:100%; margin-top:0.5rem;">Inscribir Piloto</button>
                 </div>
             </div>
             <div class="card">
-                <div class="card-header">🏎️ PILOTOS INSCRITOS</div>
+                <div class="card-header">Pilotos Inscritos</div>
                 <div style="overflow-x: auto;"><table><thead><tr><th>Piloto</th><th>Transponder</th><th>Acción</th></tr></thead><tbody id="raceDriversList"></tbody></table></div>
             </div>
         </div>
@@ -285,19 +639,19 @@
         <div id="panel-transponders" class="panel">
             <div class="grid-2">
                 <div class="card">
-                    <div class="card-header">📡 AGREGAR MANUAL</div>
+                    <div class="card-header">Agregar Manual</div>
                     <div class="card-body">
                         <input type="number" id="manualTransponderId" placeholder="Código">
-                        <button class="btn btn-primary" id="addTransponderBtn" style="width:100%;">➕ AGREGAR</button>
+                        <button class="btn btn-primary" id="addTransponderBtn" style="width:100%;">Agregar</button>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-header">🔔 DETECTADOS (Semiautomático)</div>
+                    <div class="card-header">Detectados (Semiautomatico)</div>
                     <div style="max-height: 300px; overflow-y: auto;"><table><thead><tr><th>ID</th><th>Acción</th></tr></thead><tbody id="detectedTranspondersList"></tbody></table></div>
                 </div>
             </div>
             <div class="card">
-                    <div class="card-header">📋 TODOS LOS TRANSPONDERS</div>
+                    <div class="card-header">Todos los Transponders</div>
                     <div style="overflow-x: auto;">
                         <table>
                             <thead>
@@ -317,12 +671,12 @@
         <!-- Panel Configurar -->
         <div id="panel-race-setup" class="panel">
             <div class="card">
-                <div class="card-header">🏁 NUEVA CARRERA / CIRCUITO</div>
+                <div class="card-header">Nueva Carrera / Circuito</div>
                 <div class="card-body">
                     <input type="text" id="newCircuitName" placeholder="Nombre del Circuito">
                     <input type="number" id="newLapsLimit" value="10" placeholder="Vueltas">
-                    <button class="btn btn-primary" id="createNewRaceBtn" style="width:100%;">🏁 CREAR NUEVA CARRERA</button>
-                    <p style="font-size:0.65rem; color:#666; margin-top:0.5rem;">⚠️ Al crear una nueva carrera, el sistema se reiniciará.</p>
+                    <button class="btn btn-primary" id="createNewRaceBtn" style="width:100%;">Crear Nueva Carrera</button>
+                    <p style="font-size:0.65rem; color:#666; margin-top:0.5rem;">Al crear una nueva carrera, el sistema se reiniciara.</p>
                 </div>
             </div>
         </div>
@@ -331,7 +685,7 @@
         <div id="panel-system" class="panel">
             <div class="grid-2">
                 <div class="card">
-                    <div class="card-header">📡 MONITOR DE SEÑALES EN TIEMPO REAL</div>
+                    <div class="card-header">Monitor de Senales en Tiempo Real</div>
                     <div style="overflow-x: auto; max-height: 600px;">
                         <table>
                             <thead>
@@ -351,7 +705,7 @@
                 </div>
 
                 <div class="card">
-                    <div class="card-header">🔌 ESTADO DEL HARDWARE</div>
+                    <div class="card-header">Estado del Hardware</div>
                     <div class="card-body">
                         <div class="usb-status" style="margin-bottom:1rem; padding:1rem; background:#111; border-radius:8px;">
                             <div class="usb-led" id="usbLed"></div>
@@ -361,14 +715,14 @@
                             Utilice el botón inferior para desconectar el transponder de forma segura. 
                             Esto detendrá los servicios internos y protegerá el hardware antes de ser retirado.
                         </p>
-                        <button class="btn btn-danger" id="resetUsbBtn" style="width:100%; padding:0.8rem; font-weight:600;">🔌 DESCONEXIÓN SEGURA DEL DECODER</button>
+                        <button class="btn btn-danger" id="resetUsbBtn" style="width:100%; padding:0.8rem; font-weight:600;">Desconexion Segura del Decoder</button>
                         
                         <div style="margin-top:2rem; padding-top:1rem; border-top:1px solid #333;">
                             <h4 style="color:#e5484d; margin-bottom:0.5rem; font-size:0.8rem;">ZONA DE PELIGRO</h4>
                             <p style="font-size:0.7rem; color:#888; margin-bottom:1rem;">
                                 Si el tablero está bloqueado o quieres limpiar todos los pilotos y vueltas de la sesión actual:
                             </p>
-                            <button class="btn" id="hardResetBtn" style="width:100%; border-color:#e5484d; color:#e5484d;">🧹 RESET TOTAL DEL TABLERO</button>
+                            <button class="btn" id="hardResetBtn" style="width:100%; border-color:#e5484d; color:#e5484d;">Reset Total del Tablero</button>
                         </div>
                     </div>
                 </div>
@@ -389,6 +743,8 @@
     
     <script>
         let pendingAction = null;
+        let tvLapDetailsCache = [];
+        let tvRotationIndex = 0;
         
         function showLoader(message) {
             document.getElementById('loaderMessage').innerText = message || 'Procesando...';
@@ -434,6 +790,8 @@
                 link.classList.add('active');
                 if (panelId === 'drivers') loadDrivers();
                 if (panelId === 'transponders') loadTransponders();
+                if (panelId === 'public') loadPublicView();
+                if (panelId === 'tv') loadTvView();
             });
         });
         
@@ -449,6 +807,8 @@
                     document.getElementById('lapsLimit').innerText = session.laps_limit || '--';
                     document.getElementById('totalDrivers').innerText = data.leaderboard?.length || 0;
                     document.getElementById('finishedDrivers').innerText = data.leaderboard?.filter(d => d.is_finished).length || 0;
+                    const raceNameLabel = document.getElementById('raceNameForEnrollment');
+                    if (raceNameLabel) raceNameLabel.innerText = session.circuit_name || '--';
                     
                     // Control dinámico de botones según el estado
                     const btnStart = document.getElementById('startRaceBtn');
@@ -496,14 +856,18 @@
                             if (d.position === 1) posClass = 'pos-1';
                             else if (d.position === 2) posClass = 'pos-2';
                             else if (d.position === 3) posClass = 'pos-3';
+                            const isWinner = d.position === 1 && (d.is_finished || status === 'completed');
+                            const winnerTag = isWinner ? '<span class="winner-pill">Ganador</span>' : '';
                             const best = d.best_lap ? d.best_lap.toFixed(3) : '--';
                             const last = d.last_lap ? d.last_lap.toFixed(3) : '--';
-                            return `<tr><td class="${posClass}">${d.position}</td><td>${d.full_name || d.name}</td><td>${d.transponder_id}</td><td>${d.total_laps || 0}</td><td class="best-lap">${best}</td><td>${last}</td><td>${d.laps_remaining}</td></tr>`;
+                            return `<tr class="${isWinner ? 'winner-row' : ''}"><td class="${posClass}">${d.position}</td><td class="${isWinner ? 'winner-name' : ''}">${d.full_name || d.name}${winnerTag}</td><td>${d.transponder_id}</td><td>${d.total_laps || 0}</td><td class="best-lap">${best}</td><td>${last}</td><td>${d.laps_remaining}</td></tr>`;
                         }).join('');
                     } else {
                         tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:1rem;">Sin pilotos en esta sesión</td></tr>';
                     }
                     document.getElementById('refreshTime').innerHTML = new Date().toLocaleTimeString();
+                    await loadPublicView(data);
+                    await loadTvView(data);
                 } else {
                     document.getElementById('circuitName').innerText = '--';
                     document.getElementById('lapsLimit').innerText = '--';
@@ -511,6 +875,10 @@
                     document.getElementById('finishedDrivers').innerText = '0';
                     document.getElementById('leaderboardBody').innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin carrera activa</td></tr>';
                     document.getElementById('refreshTime').innerHTML = new Date().toLocaleTimeString();
+                    const raceNameLabel = document.getElementById('raceNameForEnrollment');
+                    if (raceNameLabel) raceNameLabel.innerText = '--';
+                    await loadPublicView(data);
+                    await loadTvView(data);
                 }
             } catch (error) {
                 console.error("Error en loadLiveData:", error);
@@ -545,6 +913,215 @@
             }).join('');
         }
     }
+
+        async function loadPublicView(preloaded = null) {
+            const data = preloaded || await apiCall('/api/session/current');
+            const body = document.getElementById('publicLeaderboardBody');
+            const lapsDetail = document.getElementById('publicLapsDetail');
+            const publicRaceName = document.getElementById('publicRaceName');
+            const publicLapsLimit = document.getElementById('publicLapsLimit');
+            const publicRaceLabel = document.getElementById('publicRaceLabel');
+            const publicRaceStatus = document.getElementById('publicRaceStatus');
+            const publicDriversCount = document.getElementById('publicDriversCount');
+            const publicLeaderName = document.getElementById('publicLeaderName');
+
+            if (!body || !lapsDetail) return;
+
+            if (!data || !data.active || !data.session) {
+                body.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:1.5rem;">Sin carrera activa</td></tr>';
+                lapsDetail.innerHTML = '<p class="muted-text">No hay informacion de vueltas disponible.</p>';
+                if (publicRaceName) publicRaceName.innerText = '--';
+                if (publicLapsLimit) publicLapsLimit.innerText = '--';
+                if (publicRaceLabel) publicRaceLabel.innerText = '--';
+                if (publicRaceStatus) publicRaceStatus.innerText = '--';
+                if (publicDriversCount) publicDriversCount.innerText = '0';
+                if (publicLeaderName) publicLeaderName.innerText = '--';
+                return;
+            }
+
+            const session = data.session;
+            const leaderboard = data.leaderboard || [];
+            const leader = leaderboard[0];
+
+            if (publicRaceName) publicRaceName.innerText = session.circuit_name || '--';
+            if (publicLapsLimit) publicLapsLimit.innerText = session.laps_limit || '--';
+            if (publicRaceLabel) publicRaceLabel.innerText = session.circuit_name || '--';
+            if (publicRaceStatus) publicRaceStatus.innerText = session.status || 'pending';
+            if (publicDriversCount) publicDriversCount.innerText = String(leaderboard.length || 0);
+            if (publicLeaderName) publicLeaderName.innerText = leader ? (leader.full_name || leader.name) : '--';
+
+            if (!leaderboard.length) {
+                body.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:1.5rem;">No hay pilotos inscritos</td></tr>';
+                lapsDetail.innerHTML = '<p class="muted-text">Todavia no hay vueltas registradas.</p>';
+                return;
+            }
+
+            body.innerHTML = leaderboard.map((d, idx) => {
+                const total = d.total_time ? Number(d.total_time).toFixed(3) : '--';
+                const best = d.best_lap ? Number(d.best_lap).toFixed(3) : '--';
+                const last = d.last_lap ? Number(d.last_lap).toFixed(3) : '--';
+                const isWinner = d.position === 1 && (d.is_finished || session.status === 'completed');
+                const winnerTag = isWinner ? '<span class="winner-pill">Ganador</span>' : '';
+                return `<tr>
+                    <td class="${idx === 0 ? 'pos-1' : idx === 1 ? 'pos-2' : idx === 2 ? 'pos-3' : ''}">${d.position || idx + 1}</td>
+                    <td class="${isWinner ? 'winner-name' : ''}">${d.full_name || d.name}${winnerTag}</td>
+                    <td>${d.total_laps || 0}</td>
+                    <td>${total}</td>
+                    <td class="best-lap">${best}</td>
+                    <td>${last}</td>
+                </tr>`;
+            }).join('');
+
+            const allLapDetails = await Promise.all(
+                leaderboard.map(async (d) => {
+                    const laps = await apiCall(`/api/race/lap-details/${session.id}/${d.driver_id}`);
+                    return { driver: d, laps: Array.isArray(laps) ? laps : [] };
+                })
+            );
+
+            const lapBlocks = allLapDetails.map(({ driver, laps }) => {
+                if (!laps.length) {
+                    return `<div class="lap-box">
+                        <h4>${driver.full_name || driver.name}</h4>
+                        <div style="padding:0.7rem; font-size:0.72rem; color:#a4adbc;">Sin vueltas registradas aun.</div>
+                    </div>`;
+                }
+
+                const rows = laps.map(l => {
+                    const lapTime = l.lap_seconds !== null ? Number(l.lap_seconds).toFixed(3) : '--';
+                    const gap = l.gap_to_leader !== null ? `+${Number(l.gap_to_leader).toFixed(3)} s` : '--';
+                    return `<tr>
+                        <td>V${l.lap_number}</td>
+                        <td>${lapTime}</td>
+                        <td>${gap}</td>
+                    </tr>`;
+                }).join('');
+
+                return `<div class="lap-box">
+                    <h4>${driver.full_name || driver.name}</h4>
+                    <table>
+                        <thead><tr><th>Vuelta</th><th>Tiempo</th><th>Dif. lider</th></tr></thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>`;
+            }).join('');
+
+            lapsDetail.innerHTML = lapBlocks || '<p class="muted-text">Sin detalles de vueltas.</p>';
+        }
+
+        function formatGap(value) {
+            if (value === null || value === undefined || Number.isNaN(Number(value))) return '--';
+            const n = Number(value);
+            if (n <= 0) return 'Lider';
+            return `+${n.toFixed(3)} s`;
+        }
+
+        function renderTvLapRotator() {
+            const box = document.getElementById('tvLapsRotator');
+            if (!box) return;
+            if (!tvLapDetailsCache.length) {
+                box.innerHTML = '<p class="muted-text">Esperando datos de vueltas...</p>';
+                return;
+            }
+
+            const current = tvLapDetailsCache[tvRotationIndex % tvLapDetailsCache.length];
+            const driverName = current.driver.full_name || current.driver.name || 'Piloto';
+
+            if (!current.laps.length) {
+                box.innerHTML = `<h4>${driverName}</h4><p class="muted-text">Aun sin vueltas registradas.</p>`;
+                return;
+            }
+
+            const recentLaps = current.laps.slice(-8).reverse();
+            const rows = recentLaps.map((lap) => {
+                const lapTime = lap.lap_seconds !== null ? Number(lap.lap_seconds).toFixed(3) : '--';
+                const gap = formatGap(lap.gap_to_leader);
+                return `<tr>
+                    <td>V${lap.lap_number}</td>
+                    <td>${lapTime}</td>
+                    <td>${gap}</td>
+                </tr>`;
+            }).join('');
+
+            box.innerHTML = `<h4>${driverName} - Ultimas Vueltas</h4>
+                <table>
+                    <thead><tr><th>Vuelta</th><th>Tiempo</th><th>Dif. Lider</th></tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>`;
+        }
+
+        async function loadTvView(preloaded = null) {
+            const data = preloaded || await apiCall('/api/session/current');
+            const body = document.getElementById('tvLeaderboardBody');
+            const title = document.getElementById('tvRaceTitle');
+            const status = document.getElementById('tvRaceStatus');
+            const leaderName = document.getElementById('tvLeaderName');
+            const leaderMeta = document.getElementById('tvLeaderMeta');
+            const driversCount = document.getElementById('tvDriversCount');
+            const lapsLimit = document.getElementById('tvLapsLimit');
+            const refreshTime = document.getElementById('tvRefreshTime');
+            const clock = document.getElementById('tvClock');
+
+            if (clock) clock.innerText = new Date().toLocaleTimeString();
+            if (!body) return;
+
+            if (!data || !data.active || !data.session) {
+                body.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;">Sin carrera activa</td></tr>';
+                if (title) title.innerText = 'Carrera en Espera';
+                if (status) status.innerText = '--';
+                if (leaderName) leaderName.innerText = '--';
+                if (leaderMeta) leaderMeta.innerText = 'Lider actual';
+                if (driversCount) driversCount.innerText = '0';
+                if (lapsLimit) lapsLimit.innerText = '--';
+                if (refreshTime) refreshTime.innerText = '--';
+                tvLapDetailsCache = [];
+                tvRotationIndex = 0;
+                renderTvLapRotator();
+                return;
+            }
+
+            const session = data.session;
+            const leaderboard = data.leaderboard || [];
+            const leader = leaderboard[0];
+            if (title) title.innerText = session.circuit_name || 'Carrera en Curso';
+            if (status) status.innerText = session.status || 'pending';
+            if (driversCount) driversCount.innerText = String(leaderboard.length || 0);
+            if (lapsLimit) lapsLimit.innerText = String(session.laps_limit || '--');
+            if (refreshTime) refreshTime.innerText = new Date().toLocaleTimeString();
+
+            if (leader) {
+                const leadBest = leader.best_lap ? Number(leader.best_lap).toFixed(3) : '--';
+                leaderName.innerText = leader.full_name || leader.name || '--';
+                leaderMeta.innerText = `Posicion 1 | Mejor vuelta ${leadBest}`;
+            } else {
+                leaderName.innerText = '--';
+                leaderMeta.innerText = 'Lider actual';
+            }
+
+            body.innerHTML = leaderboard.length ? leaderboard.map((d, idx) => {
+                const total = d.total_time ? Number(d.total_time).toFixed(3) : '--';
+                const best = d.best_lap ? Number(d.best_lap).toFixed(3) : '--';
+                const gapLeader = idx === 0 ? 'Lider' : formatGap((d.total_time || 0) - (leader?.total_time || 0));
+                const isWinner = d.position === 1 && (d.is_finished || session.status === 'completed');
+                const winnerTag = isWinner ? '<span class="winner-pill">Ganador</span>' : '';
+                return `<tr>
+                    <td class="${idx === 0 ? 'pos-1' : idx === 1 ? 'pos-2' : idx === 2 ? 'pos-3' : ''}">${d.position || (idx + 1)}</td>
+                    <td class="${isWinner ? 'winner-name' : ''}">${d.full_name || d.name}${winnerTag}</td>
+                    <td>${d.total_laps || 0}</td>
+                    <td>${total}</td>
+                    <td class="best-lap">${best}</td>
+                    <td>${gapLeader}</td>
+                </tr>`;
+            }).join('') : '<tr><td colspan="6" style="text-align:center;padding:2rem;">No hay pilotos inscritos</td></tr>';
+
+            tvLapDetailsCache = await Promise.all(
+                leaderboard.map(async (d) => {
+                    const laps = await apiCall(`/api/race/lap-details/${session.id}/${d.driver_id}`);
+                    return { driver: d, laps: Array.isArray(laps) ? laps : [] };
+                })
+            );
+            renderTvLapRotator();
+        }
         
         // Pilotos
         async function loadDrivers() {
@@ -909,6 +1486,12 @@
         };
         
         loadLiveData();
+        setInterval(() => {
+            tvRotationIndex += 1;
+            renderTvLapRotator();
+            const clock = document.getElementById('tvClock');
+            if (clock) clock.innerText = new Date().toLocaleTimeString();
+        }, 5000);
         setInterval(loadLiveData, 2000);
     </script>
 </body>
