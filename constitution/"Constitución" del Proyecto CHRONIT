@@ -1,0 +1,30 @@
+"Constitución" del Proyecto CHRONIT
+
+CONSTITUCIÓN DEL PROYECTO CHRONIT
+
+Artículo 1 - Inmutabilidad del núcleo
+El código que detecta transponders y controla la carrera NO SE TOCA.
+
+main.py (funciones: procesar_cadena_esl400, listen_chronit, check_race_commands)
+
+Estos archivos están CONGELADOS. No se modifican bajo ninguna circunstancia.
+
+Artículo 2 - Zonas seguras para cambios
+Solo se pueden modificar:
+
+dashboard.html (interfaz de usuario)
+
+api.py (solo para AGREGAR nuevos endpoints, nunca modificar existentes)
+
+database.py (solo para AGREGAR nuevas tablas, nunca modificar existentes)
+
+Artículo 3 - Principio de no regresión
+Antes de cualquier cambio, se debe verificar que el sistema funciona.
+
+Si algo funcionaba antes y deja de funcionar, se REVIERTE el cambio.
+
+Artículo 4 - Cambios atómicos
+Un cambio a la vez, probar antes de continuar.
+
+No se hacen múltiples cambios simultáneamente.
+

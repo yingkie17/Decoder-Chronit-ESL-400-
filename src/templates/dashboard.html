@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CHRONIT Racing System</title>
+    <title>GO kart Racing System</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
@@ -14,9 +16,9 @@
             --line: #2a303c;
             --line-soft: #252b35;
             --text: #eceff4;
-            --muted: #a4adbc;
-            --accent: #64b5f6;
-            --accent-2: #8cd3ff;
+            --muted: #bca4a4;
+            --accent: #9b2725;
+            --accent-2: #9b3438;
             --ok: #63d297;
             --warn: #f4c06b;
             --danger: #ef7a86;
@@ -201,16 +203,16 @@
             transform: none;
         }
         .btn-primary {
-            background: linear-gradient(180deg, #7dc6ff, #61b4f3);
-            border-color: #95d3ff;
-            color: #16202f;
+            background: linear-gradient(180deg, #e5484d 0%, #b13f3d 100%);
+            border-color: #e5484d;
+            color: #ffffff;
         }
         .btn-primary:hover {
-            background: linear-gradient(180deg, #95d3ff, #77c4ff);
-            border-color: #b8e3ff;
+            background: linear-gradient(180deg, #d13a42 0%, #942327 100%);
+            border-color: #e5484d;
         }
         .btn-sm { padding: 0.3rem 0.55rem; font-size: 0.68rem; border-radius: 8px; }
-
+        
         input, select {
             width: 100%;
             padding: 0.58rem 0.7rem;
@@ -224,7 +226,7 @@
             transition: border-color 0.18s ease, box-shadow 0.18s ease;
         }
         input:focus, select:focus {
-            border-color: rgba(140, 211, 255, 0.9);
+            border-color: rgba(255, 10, 10, 0.568);
             box-shadow: 0 0 0 3px rgba(140, 211, 255, 0.2);
         }
 
@@ -248,6 +250,7 @@
             text-align: right;
             padding: 0.45rem 0.65rem;
         }
+
 
         .spinner {
             width: 52px;
@@ -413,6 +416,9 @@
             color: #b3bfd1;
         }
 
+
+        /* Ganador de Circuito*/
+        
         .winner-pill {
             display: inline-flex;
             align-items: center;
@@ -437,6 +443,451 @@
             color: #fff3cf;
         }
 
+        .config-row {
+            margin-bottom: 0.5rem;
+        }
+        .config-row label {
+            display: block;
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 0.3rem;
+        }
+        .hint {
+            font-size: 0.65rem;
+            color: #555;
+            margin-top: 0.3rem;
+        }
+        .badge {
+            background: #1a1a1a;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.6rem;
+        }
+
+        /* Estilos exclusivos para pantalla RACE */
+        #panel-race {
+            background-color: #0a0a0a; /* Fondo ultra oscuro */
+            padding: 20px;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            color: white;
+            min-height: 100vh;
+        }
+
+        /* 2. Tarjeta Superior (Header) */
+        .race-header-card {
+            background: #15192b; /* Azul marino de la foto */
+            border-radius: 24px;
+            padding: 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .event-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0;
+            color: #fff;
+        }
+
+        .main-race-clock {
+            color: #e5484d; /* Rojo neón según Art. 10 */
+            font-size: 3.5rem;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+
+        /* 3. Tabla de Posiciones */
+        .leaderboard-container {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden; /* Para que los bordes redondeados corten las filas */
+            color: #333333;
+        }
+
+        /* Encabezados */
+        .table-header {
+            background: #f1f3f5;
+            display: grid;
+            grid-template-columns: 80px 2fr 1fr 1fr 1fr 100px;
+            padding: 15px 20px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            color: #666;
+            border-bottom: 2px solid #e5484d; /* Línea roja del Art. 3 */
+        }
+
+        /* Fila de Piloto */
+        .driver-row {
+            display: grid;
+            grid-template-columns: 80px 2fr 1fr 1fr 1fr 100px;
+            padding: 20px;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            position: relative;
+        }
+
+        /* Barrita lateral amarilla (Art. 10) */
+        .driver-row.first-place {
+            border-left: 8px solid #ffd700;
+        }
+        .driver-row.pos-2 {
+            border-left: 8px solid #c0c0c0;
+        }
+        .driver-row.pos-3 {
+            border-left: 8px solid #cd7f32;
+        }
+
+        .driver-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        /* Círculo del Kart */
+        .kart-badge {
+            background: #1a1f35;
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .time-fast { color: #00c853; font-weight: 600; }
+        .time-medium { color: #ffaa00; font-weight: 600; }
+        .time-slow { color: #e5484d; font-weight: 600; }
+
+        /* Tablero Publico y TV */
+
+            /* --- CONTENEDOR GENERAL --- */
+            .chronit-tv-container {
+            background: radial-gradient(circle, #1a1f35 0%, #05070a 100%);
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            color: white;
+        }
+
+        /* --- HEADER SUPERIOR --- */
+        .tablero-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(90deg, #e5484d 0%, #a12d31 30%, transparent 100%);
+            padding: 10px 40px;
+        }
+
+        .event-tag {
+            font-size: 1.5rem;
+            font-weight: 800;
+            font-style: italic;
+            text-transform: uppercase;
+        }
+
+        .race-timer {
+            background: #00c853;
+            color: black;
+            padding: 5px 20px;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: 900;
+            font-family: monospace;
+        }
+
+        /* --- TABLA --- */
+        .karting-leaderboard {
+            padding: 20px 40px;
+            overflow-x: auto;
+        }
+
+        .k-header {
+            display: flex;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #ddd;
+            padding: 10px 0;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+
+        /* --- FILAS --- */
+        .k-row {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.08);
+            margin-bottom: 4px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .row-first {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* --- COLUMNAS (Anchos iguales a la imagen) --- */
+        .k-col-pos { 
+            width: 60px; 
+            font-size: 1.4rem; 
+            font-weight: 900; 
+            text-align: center; 
+            flex-shrink: 0;
+        }
+        .k-col-name { 
+            flex: 2; 
+            display: flex; 
+            align-items: center; 
+            position: relative; 
+            padding-left: 15px;
+            min-width: 150px;
+        }
+        .k-col-vueltas { 
+            width: 90px; 
+            text-align: center; 
+            flex-shrink: 0;
+            font-weight: 600;
+        }
+        .k-col-mejor { 
+            width: 130px; 
+            text-align: center; 
+            flex-shrink: 0;
+        }
+        .k-col-tiempo { 
+            width: 130px; 
+            text-align: center; 
+            flex-shrink: 0;
+        }
+        .k-col-tiempo-individual { 
+            width: 120px; 
+            text-align: center; 
+            flex-shrink: 0;
+        }
+        .k-col-kart { 
+            width: 80px; 
+            text-align: center; 
+            flex-shrink: 0;
+        }
+
+        /* --- ESTILOS DE LAS COPAS --- */
+        .winner-cup {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 12px;
+            vertical-align: middle;
+            background: white;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255, 215, 0, 0.5);
+        }
+
+        .winner-cup img {
+            width: 22px;
+            height: 22px;
+            display: block;
+            margin: auto;
+        }
+
+
+        /* --- ELEMENTOS DENTRO DE COLUMNAS --- */
+        .avatar-wrapper {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid white;
+            overflow: hidden;
+            margin-right: 15px;
+            background: #444;
+            flex-shrink: 0;
+        }
+
+        .k-avatar { width: 100%; height: 100%; object-fit: cover; }
+
+        .driver-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Línea de progreso */
+        .progress-line {
+            position: absolute;
+            bottom: -5px;
+            left: 70px;
+            height: 3px;
+            width: calc(100% - 80px);
+            border-radius: 2px;
+        }
+        .line-gold { background: linear-gradient(90deg, #ff9800, transparent); }
+        .line-blue { background: linear-gradient(90deg, #00bcd4, transparent); }
+
+        /* --- CAJAS DE TIEMPO --- */
+        .time-box {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            min-width: 85px;
+        }
+
+        .box-gold { background: #d4af37; color: black; }
+        .box-black { background: rgba(0,0,0,0.6); color: white; border: 1px solid #444; }
+
+        .text-red { color: #ff4d4d; }
+        
+        /* --- CIRCULO KART --- */
+        .kart-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1rem;
+            color: white;
+            text-shadow: 1px 1px 2px black;
+        }
+
+
+        /* ---Estilos de las copas ---*/
+        /* Copas de ganadores */
+            .winner-cup {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                margin-left: 8px;
+                vertical-align: middle;
+                background: white;
+                border-radius: 50%;
+                width: 28px;
+                height: 28px;
+                padding: 3px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                border: 1px solid rgba(255, 215, 0, 0.5);
+            }
+
+            .winner-cup img {
+                width: 18px;
+                height: 18px;
+                display: block;
+                margin: auto;
+            }
+
+            /* Columna de tiempo individual */
+            .k-col-tiempo-individual {
+                width: 120px;
+                text-align: center;
+                flex-shrink: 0;
+            }
+
+        /* Tabletas (980px) */
+        @media (max-width: 980px) {
+            .tablero-header {
+                flex-wrap: wrap;
+                gap: 0.85rem;
+                padding: 14px 20px;
+            }
+            .tablero-header .event-tag {
+                flex: 1 1 100%;
+                text-align: center;
+                font-size: 1rem;
+            }
+            .race-timer {
+                margin: 0 auto;
+                padding: 6px 14px;
+                font-size: 0.9rem;
+            }
+            .karting-leaderboard {
+                padding: 12px 15px;
+            }
+            .k-header > div {
+                font-size: 0.7rem;
+            }
+            
+            /* Ajustar anchos en tableta */
+            .k-col-pos { width: 45px; font-size: 1.2rem; }
+            .k-col-name { flex: 2; min-width: 120px; padding-left: 8px; }
+            .k-col-vueltas { width: 70px; font-size: 0.9rem; }
+            .k-col-mejor { width: 100px; }
+            .k-col-tiempo { width: 100px; }
+            .k-col-tiempo-individual { width: 90px; }
+            .k-col-kart { width: 65px; }
+            
+            .driver-name { font-size: 1rem; }
+            .winner-cup { width: 26px; height: 26px; margin-left: 6px; }
+            .winner-cup img { width: 18px; height: 18px; }
+            .time-box { font-size: 0.9rem; padding: 3px 8px; min-width: 70px; }
+            .kart-circle { width: 34px; height: 34px; font-size: 0.85rem; }
+            .progress-line { left: 55px; height: 2px; }
+        }
+
+        /* Móviles grandes (720px) */
+        @media (max-width: 720px) {
+            .tablero-header { padding: 10px 12px; }
+            .event-tag { font-size: 0.85rem; }
+            .race-timer { font-size: 0.8rem; padding: 4px 10px; }
+            .karting-leaderboard { padding: 10px 12px; }
+            
+            /* Ocultar columna "Mejor" y "Tiempo Individual" */
+            .k-col-tiempo,
+            .k-header .k-col-tiempo {
+                display: none;  /* Ocultar TIEMPO en móvil */
+            }
+            .k-col-tiempo-individual,
+            .k-header .k-col-tiempo-individual {
+                display: block;  /* Mostrar T.INDIV en móvil */
+                width: 90px;
+            }
+            
+            .k-col-pos { width: 38px; font-size: 1rem; }
+            .k-col-name { flex: 2; min-width: 100px; }
+            .k-col-vueltas { width: 60px; font-size: 0.8rem; }
+            .k-col-tiempo { width: 85px; }
+            .k-col-kart { width: 55px; }
+            
+            .driver-name { font-size: 0.85rem; }
+            .winner-cup { width: 22px; height: 22px; margin-left: 4px; }
+            .winner-cup img { width: 14px; height: 14px; }
+            .time-box { font-size: 0.75rem; padding: 2px 5px; min-width: 55px; }
+            .kart-circle { width: 28px; height: 28px; font-size: 0.7rem; }
+            .progress-line { left: 45px; height: 2px; }
+        }
+
+        /* Móviles pequeños (550px) */
+        @media (max-width: 550px) {
+            .k-col-vueltas,
+            .k-header .k-col-vueltas {
+                display: none;
+            }
+            .k-col-pos { width: 35px; font-size: 0.9rem; }
+            .k-col-name { min-width: 80px; }
+            .k-col-tiempo { width: 75px; }
+            .k-col-kart { width: 45px; }
+            
+            .driver-name { font-size: 0.75rem; }
+            .time-box { font-size: 0.65rem; padding: 2px 4px; min-width: 45px; }
+            .kart-circle { width: 24px; height: 24px; font-size: 0.6rem; }
+            .winner-cup { width: 18px; height: 18px; }
+            .winner-cup img { width: 12px; height: 12px; }
+        }
+
+/* Fin Tablero Publico y TV */
+
+                  
+
         @media (max-width: 980px) {
             .public-grid { grid-template-columns: 1fr; }
             .tv-board { grid-template-columns: 1fr; }
@@ -450,6 +901,85 @@
             .container { padding: 1rem; }
             .control-bar { padding: 0.75rem; }
         }
+
+        /* Modal de Ganador */
+        .winner-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+        }
+
+        .winner-modal-content {
+            text-align: center;
+            background: linear-gradient(135deg, #1a1f35, #0a0d1a);
+            border-radius: 40px;
+            padding: 40px 60px;
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.3);
+            animation: zoomIn 0.5s ease;
+        }
+
+        .winner-modal-content img {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
+        }
+
+        .winner-modal-content h2 {
+            font-size: 2rem;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+
+        .winner-modal-content .winner-name {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .winner-modal-content .winner-time {
+            font-size: 1.5rem;
+            color: #00c853;
+            font-family: monospace;
+            margin-bottom: 30px;
+        }
+
+        .winner-modal-content button {
+            background: #e5484d;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .winner-modal-content button:hover {
+            background: #c73e42;
+        }
+
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+
     </style>
 </head>
 <body>
@@ -461,44 +991,48 @@
 
     <!-- OVERLAY: CUENTA REGRESIVA -->
     <div id="countdownOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:2000; align-items:center; justify-content:center; flex-direction:column;">
-        <div style="font-size:0.9rem; color:#aaa; letter-spacing:1px; text-transform:uppercase; margin-bottom:0.75rem;">Salida en</div>
-        <div id="countdownNumber" style="font-size:6rem; font-weight:800; color:#e5484d; line-height:1;">10</div>
-        <div id="countdownHint" style="margin-top:1rem; font-size:0.9rem; color:#888;">Prepárense</div>
+        <div style="font-size:2rem; color:#aaa; letter-spacing:1px; text-transform:uppercase; margin-bottom:0.75rem;">Salida en</div>
+        <div id="countdownNumber" style="font-size:16rem; font-weight:800; color:#e5484d; line-height:1;">:</div>
+        <div id="countdownHint" style="margin-top:1rem; font-size:2rem; color:#888;">Prepárense</div>
     </div>
 
-    <div class="navbar">
-        <div class="nav-brand">CHRONIT<span>RACE</span></div>
-        <div class="nav-links">
-            <a class="active" data-panel="live">Control en Vivo</a>
-            <a data-panel="public">Pantalla Publica</a>
-            <a data-panel="tv">Pantalla TV</a>
-            <a data-panel="drivers">Pilotos</a>
-            <a data-panel="transponders">Transponders</a>
-            <a data-panel="race-setup">Nueva Carrera</a>
-            <a data-panel="system">Sistema</a>
-        </div>
+<div class="navbar">
+    <div class="nav-brand"> 
+        <img src="{{ url_for('static', filename='LogoVectorizadoGoKarting.svg') }}" alt="Logo Chronit" style="height: 70px;">
     </div>
+    <div class="nav-links">
+        <a class="active" data-panel="live">Control en Vivo</a>
+        <a data-panel="tableroPublico">Tablero Público</a>
+        <a data-panel="public">Paddock Live Feed</a>
+        <a data-panel="tv">Pit Wall Monitor</a>
+        <a data-panel="drivers">Pilotos</a>
+        <a data-panel="transponders">Transponders</a>
+        <a data-panel="race-setup">Carrera</a>
+        <a data-panel="system">Sistema</a>
+    </div>
+</div>
 
   
     
     <div class="container">
-    <!-- BARRA DE CONTROL DE CARRERA -->
-    <div class="control-bar" id="raceControlBar" style="background: #0d0d0d; border-bottom: 1px solid #1f1f1f; padding: 0.75rem 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center;">
-        <button class="btn btn-success" id="startRaceBtn">Iniciar Carrera</button>
-        <button class="btn btn-warning" id="pauseRaceBtn" style="display:none;">Pausar</button>
-        <button class="btn btn-success" id="resumeRaceBtn" style="display:none;">Reanudar</button>
-        <button class="btn" id="repeatRaceBtn">Repetir Carrera</button>
-        <button class="btn btn-danger" id="finishRaceBtn" style="display:none;">Finalizar</button>
-    </div>
-        <!-- Panel En Vivo -->
+        <!-- Panel En Vivo Administrativo -->
         <div id="panel-live" class="panel active">
+            <div class="control-bar" id="raceControlBar" style="background: #0d0d0d; border-bottom: 1px solid #1f1f1f; padding: 0.75rem 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center;">
+                <button class="btn btn-success" id="startRaceBtn">Iniciar Carrera</button>
+                <button class="btn btn-warning" id="pauseRaceBtn" style="display:none;">Pausar</button>
+                <button class="btn btn-success" id="resumeRaceBtn" style="display:none;">Reanudar</button>
+                <button class="btn" id="repeatRaceBtn" style="display:none;">Repetir Carrera</button>
+                <button class="btn btn-warning" id="resetBoardBtn" style="display:none;">Resetear Tablero</button>
+                <button class="btn btn-danger" id="finishRaceBtn" style="display:none;">Finalizar</button>
+                <button class="btn btn-primary" id="showWinnerBtn" style="display:none;">🏆 Mostrar Ganadores</button>
+            </div>
             <div class="grid-2">
                 <div class="card">
                     <div class="card-header">Posiciones en Vivo</div>
                     <div style="overflow-x: auto;">
                         <table>
-                            <thead><tr><th>POS</th><th>PILOTO</th><th>TRANSPONDER</th><th>VTAS</th><th>MEJOR</th><th>ÚLTIMA</th><th>RESTANTES</th></tr></thead>
-                            <tbody id="leaderboardBody"><tr><td colspan="7" style="text-align:center;padding:2rem;">Esperando datos...</td></tr></tbody>
+                            <thead><tr><th>POS</th><th>PILOTO</th><th>TRANSPONDER</th><th>VTAS</th><th>MEJOR</th><th>ÚLTIMA</th><th>T.INDIV</th><th>RESTANTES</th></tr></thead>
+                            <tbody id="leaderboardBody"><tr><td colspan="8" style="text-align:center;padding:2rem;">Esperando datos...</td></tr></tbody>
                         </table>
                     </div>
                     <div class="refresh" id="refreshTime">--</div>
@@ -510,10 +1044,35 @@
                         <div class="card-body">
                             <div class="stat"><span>Circuito</span><span class="stat-value" id="circuitName">--</span></div>
                             <div class="stat"><span>Vueltas</span><span class="stat-value" id="lapsLimit">--</span></div>
+                            <div class="stat"><span>Cronometro</span><span class="stat-value" id="liveRaceClock">00:00</span></div>
                             <div class="stat"><span>Pilotos</span><span class="stat-value" id="totalDrivers">0</span></div>
                             <div class="stat"><span>Finalizados</span><span class="stat-value" id="finishedDrivers">0</span></div>
                         </div>
                     </div>
+                </div>
+            </div>           
+        </div>
+
+        <!--Tablero Público -->
+        <div id="panel-tableroPublico" class="panel">
+            <div class="chronit-tv-container">
+                <div class="tablero-header">
+                    <div class="event-tag">Go Karting Sport Bar - Carrera</div>
+                    <div class="race-timer" id="total_time">0:00</div>
+                </div>
+
+                <div class="karting-leaderboard">
+                    <div class="k-header">
+                        <div class="k-col-pos">Pos</div>
+                        <div class="k-col-name">Nombre</div>
+                        <div class="k-col-vueltas">Vueltas</div>
+                        <div class="k-col-mejor">Mejor</div>
+                        <div class="k-col-tiempo">Tiempo</div>
+                        <div class="k-col-tiempo-individual">T.Indiv</div>
+                        <div class="k-col-kart">Kart</div>
+                    </div>
+
+                    <div id="lista-pilotos"></div>
                 </div>
             </div>
         </div>
@@ -552,6 +1111,7 @@
                     <div class="card-body">
                         <div class="stat"><span>Carrera</span><span class="stat-value" id="publicRaceLabel">--</span></div>
                         <div class="stat"><span>Estado</span><span class="stat-value" id="publicRaceStatus">--</span></div>
+                        <div class="stat"><span>Cronometro</span><span class="stat-value" id="publicRaceClock">00:00</span></div>
                         <div class="stat"><span>Pilotos en pista</span><span class="stat-value" id="publicDriversCount">0</span></div>
                         <div class="stat"><span>Lider actual</span><span class="stat-value" id="publicLeaderName">--</span></div>
                         <p style="font-size:0.72rem; color:#a4adbc; margin-top:1rem;">
@@ -566,7 +1126,7 @@
         <div id="panel-tv" class="panel">
             <div class="tv-topline">
                 <div class="tv-title" id="tvRaceTitle">Carrera en Espera</div>
-                <div class="tv-meta">Estado: <strong id="tvRaceStatus">--</strong> | Hora: <strong id="tvClock">--:--:--</strong></div>
+                <div class="tv-meta">Estado: <strong id="tvRaceStatus">--</strong> | Cronometro: <strong id="tvRaceClock">00:00</strong> | Hora: <strong id="tvClock">--:--:--</strong></div>
             </div>
             <div class="tv-board">
                 <div class="card" style="margin-bottom:0;">
@@ -637,17 +1197,23 @@
         
         <!-- Panel Transponders -->
         <div id="panel-transponders" class="panel">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 0.5rem;">
+                <button class="btn btn-sm" id="refreshTranspondersBtn">🔄 Refrescar</button>
+            </div>
             <div class="grid-2">
                 <div class="card">
                     <div class="card-header">Agregar Manual</div>
                     <div class="card-body">
                         <input type="number" id="manualTransponderId" placeholder="Código">
+                        <input type="text" id="manualTransponderKart" placeholder="Número de Kart (ej: 44)">
+                        <input type="text" id="manualTransponderDesc" placeholder="Descripción (ej: Chasis rojo)">
                         <button class="btn btn-primary" id="addTransponderBtn" style="width:100%;">Agregar</button>
+                        <button class="btn btn-secondary" id="cancelEditTransponderBtn" style="width:100%; margin-top:0.5rem; display:none;">Cancelar edición</button>
                     </div>
                 </div>
                 <div class="card">
                     <div class="card-header">Detectados (Semiautomatico)</div>
-                    <div style="max-height: 300px; overflow-y: auto;"><table><thead><tr><th>ID</th><th>Acción</th></tr></thead><tbody id="detectedTranspondersList"></tbody></table></div>
+                    <div style="max-height: 300px; overflow-y: auto;"><table><thead><tr><th>ID</th><th>KART</th><th>DESCRIPCIÓN</th><th>Acción</th></tr></thead><tbody id="detectedTranspondersList"></tbody></table></div>
                 </div>
             </div>
             <div class="card">
@@ -657,7 +1223,8 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Descripción</th>
+                                    <th>KART</th>
+                                    <th>DESCRIPCIÓN</th>
                                     <th>Asignado a</th>
                                     <th>Acción</th>
                                 </tr>
@@ -671,7 +1238,7 @@
         <!-- Panel Configurar -->
         <div id="panel-race-setup" class="panel">
             <div class="card">
-                <div class="card-header">Nueva Carrera / Circuito</div>
+                <div class="card-header">Crear Nueva Carrera / Circuito</div>
                 <div class="card-body">
                     <input type="text" id="newCircuitName" placeholder="Nombre del Circuito">
                     <input type="number" id="newLapsLimit" value="10" placeholder="Vueltas">
@@ -679,6 +1246,41 @@
                     <p style="font-size:0.65rem; color:#666; margin-top:0.5rem;">Al crear una nueva carrera, el sistema se reiniciara.</p>
                 </div>
             </div>
+            <!-- Card: Configuración de Cuenta Regresiva -->
+        <div class="card" style="margin-top: 1rem;">
+    <div class="card-header">
+        Configuración de Cuenta Regresiva para Salida
+            </div>
+            <div class="card-body">
+                <p style="font-size:0.75rem; color:#888; margin-bottom:1rem;">
+                    Ajusta la duración y el ritmo de la cuenta regresiva antes de iniciar la carrera.
+                </p>
+                
+                <!-- Duración total -->
+                <div class="config-row">
+                    <label>⏰ Duración total (segundos)</label>
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <input type="range" id="countdownDurationSlider" min="3" max="20" step="1" value="10" style="flex:1;">
+                        <input type="number" id="countdownDuration" value="10" min="3" max="20" step="1" style="width: 70px; text-align: center;">
+                        <span>segundos</span>
+                    </div>
+                    <p class="hint">Tiempo total desde que se presiona "Iniciar" hasta que arranca la carrera</p>
+                </div>
+                
+                <!-- Velocidad de descuento -->
+                <div class="config-row" style="margin-top: 1rem;">
+                    <label>⚡ Ritmo del conteo</label>
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <span style="font-size:0.7rem;">Lento</span>
+                        <input type="range" id="countdownSpeedSlider" min="0.3" max="2" step="0.05" value="1" style="flex:1;">
+                        <span style="font-size:0.7rem;">Rápido</span>
+                    </div>
+                    <p class="hint" id="speedHint">Cada número se mostrará durante 1.0 segundo</p>
+                </div>
+                
+                <button class="btn btn-primary" id="saveCountdownConfigBtn" style="width:100%; margin-top:1rem;">💾 GUARDAR CONFIGURACIÓN</button>
+            </div>
+        </div>
         </div>
 
         <!-- Panel Sistema -->
@@ -722,8 +1324,60 @@
                             <p style="font-size:0.7rem; color:#888; margin-bottom:1rem;">
                                 Si el tablero está bloqueado o quieres limpiar todos los pilotos y vueltas de la sesión actual:
                             </p>
-                            <button class="btn" id="hardResetBtn" style="width:100%; border-color:#e5484d; color:#e5484d;">Reset Total del Tablero</button>
+                            <button class="btn" id="hardResetBtn" style="width:100%; border-color:#e5484d; color:#e5484d;">Reinicio Forzado Total</button>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Configuración de Antena -->
+            <div class="card" style="margin-top: 1rem;">
+                <div class="card-header">
+                    📡 CONFIGURACIÓN DE ANTENA
+                    <span class="badge" id="antennaConfigStatus"></span>
+                </div>
+                <div class="card-body">
+                    <p style="font-size:0.75rem; color:#888; margin-bottom:1rem;">
+                        Ajusta estos parámetros para evitar detecciones falsas por rebotes o señales lejanas.
+                    </p>
+                    
+                    <div class="config-row">
+                        <label>🔽 Umbral mínimo de señal (H)</label>
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <input type="range" id="minSignalSlider" min="0" max="255" value="60" style="flex:1;">
+                            <input type="number" id="minSignalValue" value="60" style="width: 60px; text-align: center;">
+                        </div>
+                        <p class="hint">Ignorar señales por debajo de este valor (evita transponders lejanos)</p>
+                    </div>
+                    
+                    <div class="config-row" style="margin-top: 1rem;">
+                        <label>⏱️ Tiempo entre detecciones (segundos)</label>
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <input type="range" id="filterTimeSlider" min="0.3" max="1.5" step="0.05" value="0.5" style="flex:1;">
+                            <input type="number" id="filterTimeValue" value="0.5" step="0.05" style="width: 70px; text-align: center;">
+                        </div>
+                        <p class="hint">El mismo transponder no puede ser detectado más de una vez en este tiempo</p>
+                    </div>
+                    
+                    <button class="btn btn-primary" id="saveAntennaConfigBtn" style="width:100%; margin-top:1rem;">💾 GUARDAR CONFIGURACIÓN</button>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:1rem;">
+                <div class="card-header">Salud y Desgaste de Transponders</div>
+                <div class="card-body">
+                    <p style="font-size:0.74rem; color:#a4adbc; margin-bottom:0.75rem;">
+                        Estado estimado por uso acumulado de vueltas detectadas. Reinicia el desgaste cuando cambias un transponder a otro auto.
+                    </p>
+                    <div style="overflow-x:auto;">
+                        <table>
+                            <thead>
+                                <tr><th>ID</th><th>Asignado</th><th>Uso acumulado</th><th>Uso real</th><th>% Desgaste</th><th></th>Estado</th><th>Última señal</th><th>Acción</th></tr>
+                            </thead>
+                            <tbody id="transponderHealthBody">
+                                <tr><td colspan="8" style="text-align:center;padding:1.5rem;">Esperando datos...</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -740,11 +1394,64 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Ganador -->
+    <!-- Modal Ganador Completo -->
+    <div id="winnerModalComplete" class="winner-modal" style="display:none;">
+        <div class="winner-modal-content" style="max-width: 500px;">
+            <img src="{{ url_for('static', filename='golden.svg') }}" alt="Copa" style="width: 80px;">
+            <h2>🏆 ¡CARRERA FINALIZADA! 🏆</h2>
+            
+            <div style="margin: 20px 0; padding: 15px; background: rgba(255,215,0,0.1); border-radius: 20px;">
+                <div style="font-size: 1rem; color: #ffd700;">CAMPEÓN</div>
+                <div id="modalWinnerName" style="font-size: 1.8rem; font-weight: 800; color: white;">--</div>
+                <div id="modalWinnerTime" style="font-size: 1.2rem; color: #00c853;">--</div>
+            </div>
+            
+            <div id="modalSecondContainer" style="margin: 15px 0; padding: 10px; background: rgba(192,192,192,0.1); border-radius: 15px; display: none;">
+                <div style="font-size: 0.9rem; color: #c0c0c0;">🥈 SUBCAMPEÓN</div>
+                <div id="modalSecondName" style="font-size: 1.3rem; font-weight: bold; color: white;">--</div>
+                <div id="modalSecondTime" style="font-size: 1rem; color: #ccc;">--</div>
+            </div>
+            
+            <div id="modalThirdContainer" style="margin: 15px 0; padding: 10px; background: rgba(205,127,50,0.1); border-radius: 15px; display: none;">
+                <div style="font-size: 0.9rem; color: #cd7f32;">🥉 TERCER PUESTO</div>
+                <div id="modalThirdName" style="font-size: 1.3rem; font-weight: bold; color: white;">--</div>
+                <div id="modalThirdTime" style="font-size: 1rem; color: #ccc;">--</div>
+            </div>
+            
+            <button onclick="closeWinnerModalComplete()" style="background: #e5484d; color: white; border: none; padding: 12px 30px; border-radius: 30px; cursor: pointer; margin-top: 10px;">CERRAR</button>
+        </div>
+    </div>
+
+
     
     <script>
         let pendingAction = null;
         let tvLapDetailsCache = [];
         let tvRotationIndex = 0;
+        let raceTimerState = { seconds: 0, status: 'pending', lastSyncMs: Date.now() };
+        let frozenRaceData = null;
+        let lastRaceDataSnapshot = null;
+        let autoFinishInProgress = false;
+        let allTranspondersCache = [];
+        let editingTransponderId = null;
+
+
+        function formatRaceClock(totalSeconds) {
+            const safe = Math.max(0, Number(totalSeconds) || 0);
+            const totalMillis = Math.round(safe * 1000);
+            const millis = totalMillis % 1000;
+            const totalSecondsInt = Math.floor(totalMillis / 1000);
+            const seconds = totalSecondsInt % 60;
+            const minutes = Math.floor((totalSecondsInt % 3600) / 60);
+            const hours = Math.floor(totalSecondsInt / 3600);
+            const formatted = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(millis).padStart(3, '0')}`;
+            if (hours > 0) {
+                return `${String(hours).padStart(2, '0')}:${formatted}`;
+            }
+            return formatted;
+        }
         
         function showLoader(message) {
             document.getElementById('loaderMessage').innerText = message || 'Procesando...';
@@ -758,8 +1465,234 @@
         async function apiCall(url, options = {}) {
             try {
                 const res = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...options });
+                if (!res.ok) {
+                    console.warn(`API call failed: ${url} -> ${res.status}`);
+                    return null;
+                }
                 return await res.json();
-            } catch(e) { console.error(e); return null; }
+            } catch(e) { 
+                console.error("API Error:", e); 
+                return null; 
+            }
+        }
+
+        function formatRaceClock(totalSeconds) {
+            const safe = Math.max(0, Number(totalSeconds) || 0);
+            const totalMillis = Math.round(safe * 1000);
+            const millis = totalMillis % 1000;
+            const totalSecondsInt = Math.floor(totalMillis / 1000);
+            const seconds = totalSecondsInt % 60;
+            const minutes = Math.floor((totalSecondsInt % 3600) / 60);
+            const hours = Math.floor(totalSecondsInt / 3600);
+            const formatted = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(millis).padStart(3, '0')}`;
+            if (hours > 0) {
+                return `${String(hours).padStart(2, '0')}:${formatted}`;
+            }
+            return formatted;
+        }
+
+        // Función auxiliar para color según tiempo
+        function getTimeColorClass(seconds) {
+            if (!seconds) return '';
+            if (seconds < 60) return 'time-fast';
+            if (seconds < 90) return 'time-medium';
+            return 'time-slow';
+        }
+
+        function applyRaceTimerState(session) {
+            raceTimerState = {
+                seconds: Number(session?.race_elapsed_seconds || 0),
+                status: session?.status || 'pending',
+                lastSyncMs: Date.now()
+            };
+            renderRaceClock();
+        }
+
+        function renderRaceClock() {
+            let seconds = raceTimerState.seconds;
+            if (raceTimerState.status === 'active') {
+                seconds += (Date.now() - raceTimerState.lastSyncMs) / 1000;
+            }
+            const label = formatRaceClock(seconds);
+            ['liveRaceClock', 'publicRaceClock', 'tvRaceClock'].forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = label;
+            });
+        }
+
+        function updateRaceControls(session) {
+            const status = session?.status || 'pending';
+            const btnStart = document.getElementById('startRaceBtn');
+            const btnPause = document.getElementById('pauseRaceBtn');
+            const btnResume = document.getElementById('resumeRaceBtn');
+            const btnFinish = document.getElementById('finishRaceBtn');
+            const btnRepeat = document.getElementById('repeatRaceBtn');
+            const btnResetBoard = document.getElementById('resetBoardBtn');
+
+            if (!(btnStart && btnPause && btnResume && btnFinish && btnRepeat && btnResetBoard)) return;
+
+            if (status === 'active') {
+                btnStart.style.display = 'none';
+                btnPause.style.display = 'inline-block';
+                btnResume.style.display = 'none';
+                btnFinish.style.display = 'inline-block';
+                btnRepeat.style.display = 'none';
+                btnResetBoard.style.display = 'none';
+                btnRepeat.disabled = true;
+                btnResetBoard.disabled = true;
+            } else if (status === 'paused') {
+                btnStart.style.display = 'none';
+                btnPause.style.display = 'none';
+                btnResume.style.display = 'inline-block';
+                btnFinish.style.display = 'inline-block';
+                btnRepeat.style.display = 'none';
+                btnResetBoard.style.display = 'none';
+                btnRepeat.disabled = true;
+                btnResetBoard.disabled = true;
+            } else if (status === 'completed') {
+                btnStart.style.display = 'none';
+                btnPause.style.display = 'none';
+                btnResume.style.display = 'none';
+                btnFinish.style.display = 'none';
+                btnRepeat.style.display = 'inline-block';
+                btnResetBoard.style.display = 'inline-block';
+                const showWinnerBtn = document.getElementById('showWinnerBtn');
+                if (showWinnerBtn) showWinnerBtn.style.display = 'inline-block';
+                btnRepeat.disabled = false;
+                btnResetBoard.disabled = false;
+            } else {
+                btnStart.style.display = 'inline-block';
+                btnPause.style.display = 'none';
+                btnResume.style.display = 'none';
+                btnFinish.style.display = 'none';
+                btnRepeat.style.display = 'none';
+                btnResetBoard.style.display = 'none';
+                btnRepeat.disabled = true;
+                btnResetBoard.disabled = true;
+            }
+        }
+
+        function buildRaceSnapshot(data, forcedStatus = null) {
+            if (!data || !data.session || !Array.isArray(data.leaderboard)) return null;
+            return {
+                ...data,
+                active: true,
+                session: { ...data.session, status: forcedStatus || data.session.status || 'pending' },
+                leaderboard: [...data.leaderboard]
+            };
+        }
+
+        function isCompletedByLaps(snapshot) {
+            if (!snapshot || !snapshot.session || !Array.isArray(snapshot.leaderboard) || !snapshot.leaderboard.length) return false;
+            const lapsLimit = Number(snapshot.session.laps_limit || 0);
+            if (lapsLimit <= 0) return false;
+            const finishedDrivers = snapshot.leaderboard.filter((d) => d.is_finished && Number(d.total_laps || 0) >= lapsLimit).length;
+            return finishedDrivers === snapshot.leaderboard.length;
+        }
+
+        async function loadTransponderHealth() {
+            const tbody = document.getElementById('transponderHealthBody');
+            if (!tbody) return;
+            const data = await apiCall('/api/transponders/health');
+            if (!Array.isArray(data) || !data.length) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:1rem;">Sin transponders registrados</td></tr>';
+                return;
+            }
+
+            const badgeColor = (health) => {
+                if (health === 'critico') return '#ef7a86';
+                if (health === 'moderado') return '#f4c06b';
+                return '#63d297';
+            };
+
+            tbody.innerHTML = data.map((t) => {
+                // Cálculo de porcentaje de desgaste basado en uso acumulado (máximo sugerido: 70 vueltas)
+                const usage = t.usage_laps_total || 0;
+                const maxLaps = 70;
+                const percentage = Math.min(100, (usage / maxLaps) * 100).toFixed(1);
+                const barColor = usage < 40 ? '#63d297' : (usage < 70 ? '#f4c06b' : '#ef7a86');
+                
+                return `
+                <tr>
+                    <td>${t.id}</td>
+                    <td>${t.assigned_driver || 'Sin asignar'}</td>
+                    <td>${usage} vtas</td>
+                    <td><span style="font-weight:bold; color:#8cd3ff;">${t.last_physical_laps || 0}</span> vtas</td>
+                    <td>
+                        <div style="width:100px; background:#2a303c; border-radius:4px; overflow:hidden; height:8px; margin-bottom:4px;">
+                            <div style="width:${percentage}%; background:${barColor}; height:100%;"></div>
+                        </div>
+                        <span style="font-size:0.7rem; color:#a4adbc;">${percentage}%</span>
+                    </td>
+                    <td><span style="color:${badgeColor(t.health)}; font-weight:700; text-transform:uppercase;">${t.health}</span></td>
+                    <td>${t.last_seen ? t.last_seen.split('T')[1].split('.')[0] : '--'}</td>
+                    <td><button class="btn btn-sm" onclick="resetTransponderHealth(${t.id})">Reset estado</button></td>
+                </tr>
+            `}).join('');
+        }
+
+        // --- CONFIGURACIÓN DE ANTENA ---
+        async function loadAntennaConfig() {
+            const res = await apiCall('/api/config/antenna');
+            if (res) {
+                document.getElementById('minSignalSlider').value = res.min_signal || 60;
+                document.getElementById('minSignalValue').value = res.min_signal || 60;
+                document.getElementById('filterTimeSlider').value = res.filter_time || 0.5;
+                document.getElementById('filterTimeValue').value = res.filter_time || 0.5;
+            }
+        }
+
+        // Sincronizar slider y input
+        if (document.getElementById('minSignalSlider')) {
+            document.getElementById('minSignalSlider').oninput = function() {
+                document.getElementById('minSignalValue').value = this.value;
+            };
+            document.getElementById('minSignalValue').onchange = function() {
+                document.getElementById('minSignalSlider').value = this.value;
+            };
+            document.getElementById('filterTimeSlider').oninput = function() {
+                document.getElementById('filterTimeValue').value = this.value;
+            };
+            document.getElementById('filterTimeValue').onchange = function() {
+                document.getElementById('filterTimeSlider').value = this.value;
+            };
+        }
+
+        // Guardar configuración
+        if (document.getElementById('saveAntennaConfigBtn')) {
+            document.getElementById('saveAntennaConfigBtn').onclick = async () => {
+                const config = {
+                    min_signal: parseInt(document.getElementById('minSignalSlider').value),
+                    filter_time: parseFloat(document.getElementById('filterTimeSlider').value)
+                };
+                
+                const statusSpan = document.getElementById('antennaConfigStatus');
+                statusSpan.innerText = '⏳ Guardando...';
+                statusSpan.style.color = '#ffaa00';
+                
+                const res = await apiCall('/api/config/antenna', {
+                    method: 'POST',
+                    body: JSON.stringify(config)
+                });
+                
+                if (res?.success) {
+                    statusSpan.innerText = '✅ Guardado';
+                    statusSpan.style.color = '#00c853';
+                    setTimeout(() => {
+                        statusSpan.innerText = '';
+                    }, 3000);
+                } else {
+                    statusSpan.innerText = '❌ Error';
+                    statusSpan.style.color = '#e5484d';
+                }
+            };
+        }
+
+        // Botón Refrescar Transponders
+        if (document.getElementById('refreshTranspondersBtn')) {
+            document.getElementById('refreshTranspondersBtn').onclick = () => {
+                loadTransponders();
+            };
         }
         
         function showModal(title, message, onConfirm) {
@@ -790,68 +1723,139 @@
                 link.classList.add('active');
                 if (panelId === 'drivers') loadDrivers();
                 if (panelId === 'transponders') loadTransponders();
+                if (panelId === 'tableroPublico') loadTableroPublico();
                 if (panelId === 'public') loadPublicView();
                 if (panelId === 'tv') loadTvView();
+                if (panelId === 'system') {
+                    loadTransponderHealth();
+                    loadAntennaConfig();
+                }
             });
         });
         
-        // Cargar datos en vivo
+    // Cargar datos en vivo
         async function loadLiveData() {
             try {
                 const data = await apiCall('/api/session/current');
-                if (data && data.active) {
-                    const session = data.session;
+                let effectiveData = data;
+                const dataHasLeaderboard = data && data.session && Array.isArray(data.leaderboard) && data.leaderboard.length > 0;
+                if (dataHasLeaderboard) {
+                    lastRaceDataSnapshot = buildRaceSnapshot(data);
+                }
+
+
+
+
+
+
+                
+        // ========== DETECTAR FIN DE CARRERA (CONGELAR, NO LIMPIAR) ==========
+        if (data && data.active && data.session && data.leaderboard && data.leaderboard.length > 0) {
+            const session = data.session;
+            const leaderboard = data.leaderboard;
+            const totalDrivers = leaderboard.length;
+            const lapsLimit = session.laps_limit || 0;
+            if (session.status !== 'active') {
+                autoFinishInProgress = false;
+            }
+            
+            // Contar pilotos que completaron TODAS las vueltas
+            const finishedDrivers = leaderboard.filter(d => d.is_finished && d.total_laps >= lapsLimit).length;
+            
+            // Verificar si es la primera vez que TODOS terminan y la carrera aún está activa
+            if (finishedDrivers === totalDrivers && totalDrivers > 0 && session.status === 'active' && !autoFinishInProgress) {
+                console.log("🏁 TODOS LOS PILOTOS TERMINARON - Congelando carrera");
+                autoFinishInProgress = true;
+                
+                // Ordenar por tiempo para obtener los 3 primeros
+                const finishedOrder = [...leaderboard]
+                    .filter(d => d.is_finished && d.total_laps >= lapsLimit)
+                    .sort((a, b) => (a.total_time || 0) - (b.total_time || 0));
+                
+                const winner = finishedOrder[0];
+                const second = finishedOrder[1];
+                const third = finishedOrder[2];
+                
+                // Mostrar modal con los 3 ganadores
+                if (winner) {
+                    showWinnerModalComplete(winner, second, third);
+                }
+                
+                // Marcar carrera como completed para CONGELAR (sin recargar)
+                await apiCall('/api/race/finish', { method: 'POST' });
+                
+                // ✅ IMPORTANTE: No hacer return ni recargar, solo actualizar el estado local
+                raceTimerState.status = 'completed';
+                frozenRaceData = buildRaceSnapshot(data, 'completed');
+                
+                // ✅ Forzar que el cronómetro se detenga
+                renderRaceClock();
+
+                // Actualizar las tres pantallas con los datos finales actuales
+                await loadTableroPublico(frozenRaceData);
+                await loadPublicView(frozenRaceData);
+                await loadTvView(frozenRaceData);
+
+            }
+
+            if (session.status === 'completed') {
+                frozenRaceData = buildRaceSnapshot(data, 'completed');
+                raceTimerState.status = 'completed';
+                renderRaceClock();
+
+                const finishedOrder = [...leaderboard]
+                    .filter(d => d.is_finished && d.total_laps >= lapsLimit)
+                    .sort((a, b) => (a.total_time || 0) - (b.total_time || 0));
+
+                const winner = finishedOrder[0];
+                const second = finishedOrder[1];
+                const third = finishedOrder[2];
+                if (winner) {
+                    showWinnerModalComplete(winner, second, third);
+                }
+            }
+        }
+
+                            // ========== FIN NUEVO ==========
+
+                if (!frozenRaceData && lastRaceDataSnapshot && isCompletedByLaps(lastRaceDataSnapshot)) {
+                    frozenRaceData = buildRaceSnapshot(lastRaceDataSnapshot, 'completed');
+                    raceTimerState.status = 'completed';
+                    renderRaceClock();
+                }
+
+                if ((!effectiveData || !effectiveData.active || !effectiveData.session) && frozenRaceData && raceTimerState.status === 'completed') {
+                    effectiveData = frozenRaceData;
+                }
+                
+                if (effectiveData && effectiveData.active) {
+                    const session = effectiveData.session;
                     const status = session.status || 'pending';
+                    if (status === 'active' || status === 'pending') {
+                        resetWinnerModalFlag();
+                    }
+                    applyRaceTimerState(session);
+                    updateRaceControls(session);
                     
                     document.getElementById('circuitName').innerText = session.circuit_name || '--';
                     document.getElementById('lapsLimit').innerText = session.laps_limit || '--';
-                    document.getElementById('totalDrivers').innerText = data.leaderboard?.length || 0;
-                    document.getElementById('finishedDrivers').innerText = data.leaderboard?.filter(d => d.is_finished).length || 0;
+                    document.getElementById('totalDrivers').innerText = effectiveData.leaderboard?.length || 0;
+                    document.getElementById('finishedDrivers').innerText = effectiveData.leaderboard?.filter(d => d.is_finished).length || 0;
                     const raceNameLabel = document.getElementById('raceNameForEnrollment');
                     if (raceNameLabel) raceNameLabel.innerText = session.circuit_name || '--';
                     
-                    // Control dinámico de botones según el estado
-                    const btnStart = document.getElementById('startRaceBtn');
-                    const btnPause = document.getElementById('pauseRaceBtn');
-                    const btnResume = document.getElementById('resumeRaceBtn');
-                    const btnFinish = document.getElementById('finishRaceBtn');
-                    const btnRepeat = document.getElementById('repeatRaceBtn');
-
-                    if (btnStart && btnPause && btnResume && btnFinish && btnRepeat) {
-                        if (status === 'active') {
-                            btnStart.style.display = 'none';
-                            btnFinish.style.display = 'inline-block';
-                            btnPause.style.display = 'inline-block';
-                            btnResume.style.display = 'none';
-                            btnRepeat.disabled = true;
-                            btnRepeat.style.opacity = '0.5';
-                        } else if (status === 'paused') {
-                            btnStart.style.display = 'none';
-                            btnFinish.style.display = 'inline-block';
-                            btnPause.style.display = 'none';
-                            btnResume.style.display = 'inline-block';
-                            btnRepeat.disabled = false;
-                            btnRepeat.style.opacity = '1';
-                        } else if (status === 'completed') {
-                            btnStart.style.display = 'inline-block';
-                            btnFinish.style.display = 'none';
-                            btnPause.style.display = 'none';
-                            btnResume.style.display = 'none';
-                            btnRepeat.disabled = false;
-                            btnRepeat.style.opacity = '1';
-                        } else { // pending
-                            btnStart.style.display = 'inline-block';
-                            btnFinish.style.display = 'none';
-                            btnPause.style.display = 'none';
-                            btnResume.style.display = 'none';
-                            btnRepeat.disabled = false;
-                            btnRepeat.style.opacity = '1';
-                        }
+                    // Obtener tiempos individuales para el panel live
+                    const individualTimes = await apiCall(`/api/race/driver-times/${session.id}`);
+                    const timesMap = {};
+                    if (individualTimes && Array.isArray(individualTimes)) {
+                        individualTimes.forEach(t => {
+                            timesMap[t.driver_id] = t.individual_time_formatted || '--';
+                        });
                     }
-
+                    
                     const tbody = document.getElementById('leaderboardBody');
-                    if (data.leaderboard && data.leaderboard.length > 0) {
-                        tbody.innerHTML = data.leaderboard.map(d => {
+                    if (effectiveData.leaderboard && effectiveData.leaderboard.length > 0) {
+                        tbody.innerHTML = effectiveData.leaderboard.map(d => {
                             let posClass = '';
                             if (d.position === 1) posClass = 'pos-1';
                             else if (d.position === 2) posClass = 'pos-2';
@@ -860,30 +1864,44 @@
                             const winnerTag = isWinner ? '<span class="winner-pill">Ganador</span>' : '';
                             const best = d.best_lap ? d.best_lap.toFixed(3) : '--';
                             const last = d.last_lap ? d.last_lap.toFixed(3) : '--';
-                            return `<tr class="${isWinner ? 'winner-row' : ''}"><td class="${posClass}">${d.position}</td><td class="${isWinner ? 'winner-name' : ''}">${d.full_name || d.name}${winnerTag}</td><td>${d.transponder_id}</td><td>${d.total_laps || 0}</td><td class="best-lap">${best}</td><td>${last}</td><td>${d.laps_remaining}</td></tr>`;
+                            const individualTime = timesMap[d.driver_id] || '--';
+                            // Agregamos columna T.INDIV
+                            return `<tr class="${isWinner ? 'winner-row' : ''}">
+                                <td class="${posClass}">${d.position}</td>
+                                <td class="${isWinner ? 'winner-name' : ''}">${d.full_name || d.name}${winnerTag}</td>
+                                <td>${d.transponder_id}</td>
+                                <td>${d.total_laps || 0}</td>
+                                <td class="best-lap">${best}</td>
+                                <td>${last}</td>
+                                <td class="best-lap">${individualTime}</td>
+                                <td>${d.laps_remaining}</td>
+                            </tr>`;
                         }).join('');
                     } else {
-                        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:1rem;">Sin pilotos en esta sesión</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:1rem;">Sin pilotos en esta sesión</td></tr>';
                     }
                     document.getElementById('refreshTime').innerHTML = new Date().toLocaleTimeString();
-                    await loadPublicView(data);
-                    await loadTvView(data);
+                    await loadTableroPublico(effectiveData);
+                    await loadPublicView(effectiveData);
+                    await loadTvView(effectiveData);
                 } else {
+                    applyRaceTimerState(null);
+                    updateRaceControls(null);
                     document.getElementById('circuitName').innerText = '--';
                     document.getElementById('lapsLimit').innerText = '--';
                     document.getElementById('totalDrivers').innerText = '0';
                     document.getElementById('finishedDrivers').innerText = '0';
-                    document.getElementById('leaderboardBody').innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin carrera activa</td></tr>';
+                    document.getElementById('leaderboardBody').innerHTML = '<tr><td colspan="8" style="text-align:center;">Sin carrera activa</td></tr>';
                     document.getElementById('refreshTime').innerHTML = new Date().toLocaleTimeString();
                     const raceNameLabel = document.getElementById('raceNameForEnrollment');
                     if (raceNameLabel) raceNameLabel.innerText = '--';
-                    await loadPublicView(data);
-                    await loadTvView(data);
+                    await loadTableroPublico(effectiveData);
+                    await loadPublicView(effectiveData);
+                    await loadTvView(effectiveData);
                 }
             } catch (error) {
                 console.error("Error en loadLiveData:", error);
             }
-            
             const usb = await apiCall('/api/usb/status');
             const usbLed = document.getElementById('usbLed');
             if (usb?.connected) { 
@@ -912,6 +1930,12 @@
                 </tr>`;
             }).join('');
         }
+
+        // Actualizar Salud de Transponders si el panel Sistema está activo
+        const systemPanel = document.getElementById('panel-system');
+        if (systemPanel && systemPanel.classList.contains('active')) {
+            await loadTransponderHealth();
+        }
     }
 
         async function loadPublicView(preloaded = null) {
@@ -934,6 +1958,8 @@
                 if (publicLapsLimit) publicLapsLimit.innerText = '--';
                 if (publicRaceLabel) publicRaceLabel.innerText = '--';
                 if (publicRaceStatus) publicRaceStatus.innerText = '--';
+                const publicRaceClock = document.getElementById('publicRaceClock');
+                if (publicRaceClock) publicRaceClock.innerText = '00:00';
                 if (publicDriversCount) publicDriversCount.innerText = '0';
                 if (publicLeaderName) publicLeaderName.innerText = '--';
                 return;
@@ -1069,6 +2095,8 @@
                 body.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;">Sin carrera activa</td></tr>';
                 if (title) title.innerText = 'Carrera en Espera';
                 if (status) status.innerText = '--';
+                const tvRaceClock = document.getElementById('tvRaceClock');
+                if (tvRaceClock) tvRaceClock.innerText = '00:00';
                 if (leaderName) leaderName.innerText = '--';
                 if (leaderMeta) leaderMeta.innerText = 'Lider actual';
                 if (driversCount) driversCount.innerText = '0';
@@ -1121,6 +2149,115 @@
                 })
             );
             renderTvLapRotator();
+        }
+
+        async function loadTableroPublico(preloaded = null) {
+            const data = preloaded || await apiCall('/api/session/current');
+            const listaPilotos = document.getElementById('lista-pilotos');
+            const eventTag = document.querySelector('.event-tag');
+            const raceTimer = document.getElementById('total_time');
+            
+            if (!listaPilotos) return;
+            
+            // Paleta de colores única para pilotos
+            const driverColors = [
+                '#ff9800', '#03a9f4', '#9c27b0', '#00bcd4', '#4caf50',
+                '#ffeb3b', '#2196f3', '#ff5722', '#673ab7', '#e91e63',
+                '#00e5ff', '#76ff03', '#ffc400', '#ff7043', '#ab47bc',
+                '#00acc1', '#c0ca33', '#ec407a', '#42a5f5', '#26a69a',
+            ];
+            
+            if (!data || !data.active || !data.session) {
+                listaPilotos.innerHTML = '';
+                if (eventTag) eventTag.innerText = '--';
+                if (raceTimer) raceTimer.innerText = '00:00';
+                return;
+            }
+            
+            const session = data.session;
+            const leaderboard = data.leaderboard || [];
+            
+            // Obtener tiempos individuales
+            const individualTimes = await apiCall(`/api/race/driver-times/${session.id}`);
+            const timesMap = {};
+            if (individualTimes && Array.isArray(individualTimes)) {
+                individualTimes.forEach(t => {
+                    timesMap[t.driver_id] = t.individual_time_formatted || '--';
+                });
+            }
+            
+            // Actualizar nombre de carrera
+            if (eventTag) eventTag.innerText = session.circuit_name || 'Sin carrera';
+            
+            const finishedDrivers = leaderboard.filter(d => d.is_finished && d.total_time > 0);
+            const allFinished = leaderboard.length > 0 && finishedDrivers.length === leaderboard.length;
+            const finalDriverTime = finishedDrivers.length ? Math.max(...finishedDrivers.map(d => Number(d.total_time) || 0)) : 0;
+
+            // Actualizar cronómetro
+            if (raceTimer) {
+                if (allFinished && finalDriverTime > 0) {
+                    raceTimer.innerText = formatRaceClock(finalDriverTime);
+                } else {
+                    let seconds = session.race_elapsed_seconds || 0;
+                    if (session.status === 'active') {
+                        seconds += (Date.now() - raceTimerState.lastSyncMs) / 1000;
+                    }
+                    raceTimer.innerText = formatRaceClock(seconds);
+                }
+            }
+            
+            // Determinar posiciones finales (1°, 2°, 3°)
+            const finishedOrder = leaderboard
+                .filter(d => d.is_finished && d.total_laps >= (session.laps_limit || 0))
+                .sort((a, b) => (a.total_time || 0) - (b.total_time || 0));
+            
+            const firstPlaceId = finishedOrder[0]?.driver_id;
+            const secondPlaceId = finishedOrder[1]?.driver_id;
+            const thirdPlaceId = finishedOrder[2]?.driver_id;
+            
+            // Generar filas
+            if (!leaderboard.length) {
+                listaPilotos.innerHTML = '';
+                return;
+            }
+            
+            listaPilotos.innerHTML = leaderboard.map((driver, idx) => {
+                const color = driverColors[idx % driverColors.length];
+                const best = driver.best_lap != null ? formatRaceClock(driver.best_lap) : '--';
+                const totalTime = driver.total_time != null ? formatRaceClock(driver.total_time) : '--';
+                const individualTime = timesMap[driver.driver_id] || '--';
+                const rowClass = idx === 0 ? 'row-first' : '';
+                const progressLineClass = idx === 0 ? 'line-gold' : 'line-blue';
+                const kartIdValue = typeof driver.kart_id === 'string' ? driver.kart_id.trim() : driver.kart_id;
+                const kartLabel = kartIdValue ? kartIdValue : driver.transponder_id || '--';
+                
+                // Determinar qué copa mostrar (solo si terminó la carrera)
+                let cupHtml = '';
+                if (driver.is_finished && driver.total_laps >= (session.laps_limit || 0)) {
+                    if (driver.driver_id === firstPlaceId) {
+                        cupHtml = `<span class="winner-cup"><img src="{{ url_for('static', filename='golden.svg') }}" alt="1° Lugar" title="¡CAMPEÓN!"></span>`;
+                    } else if (driver.driver_id === secondPlaceId) {
+                        cupHtml = `<span class="winner-cup"><img src="{{ url_for('static', filename='silver.svg') }}" alt="2° Lugar" title="SUBCAMPEÓN"></span>`;
+                    } else if (driver.driver_id === thirdPlaceId) {
+                        cupHtml = `<span class="winner-cup"><img src="{{ url_for('static', filename='bronze.svg') }}" alt="3° Lugar" title="TERCER PUESTO"></span>`;
+                    }
+                }
+                
+                return `
+                    <div class="k-row ${rowClass}">
+                        <div class="k-col-pos">${driver.position || (idx + 1)}</div>
+                        <div class="k-col-name">
+                            <span class="driver-name">${driver.full_name || driver.name} ${cupHtml}</span>
+                            <div class="progress-line ${progressLineClass}" style="background: linear-gradient(90deg, ${color}, transparent);"></div>
+                        </div>
+                        <div class="k-col-vueltas">${driver.total_laps || 0}/${session.laps_limit || 0}</div>
+                        <div class="k-col-mejor"><span class="time-box box-gold">${best}</span></div>
+                        <div class="k-col-tiempo"><span class="time-box box-black">${totalTime}</span></div>
+                        <div class="k-col-tiempo-individual"><span class="time-box box-black">${individualTime}</span></div>
+                        <div class="k-col-kart"><span class="kart-circle" style="background-color: ${color};">${kartLabel}</span></div>
+                    </div>
+                `;
+            }).join('');
         }
         
         // Pilotos
@@ -1227,7 +2364,7 @@
 
         window.removeFromRace = async (driverId) => {
             const session = await apiCall('/api/session/current');
-            if (session?.active) {
+            if (session?.active && session?.session?.status !== 'completed') {
                 showLoader('Eliminando de la carrera...');
                 await apiCall('/api/race/remove', { 
                     method: 'POST', 
@@ -1247,7 +2384,7 @@
             const driverId = select.value;
             if (!driverId) { return; }
             const session = await apiCall('/api/session/current');
-            if (!session?.active) { return; }
+            if (!session?.active || session?.session?.status === 'completed') { return; }
             const drivers = await apiCall('/api/drivers');
             const driver = drivers.find(d => d.id == driverId);
             if (!driver) { return; }
@@ -1268,32 +2405,34 @@
             const detectedTbody = document.getElementById('detectedTranspondersList');
             if (detectedTbody) {
                 if (detected?.length) {
-                    detectedTbody.innerHTML = detected.map(t => `<tr><td>${t.id}</td><td><button class="btn btn-sm" onclick="assignTransponder(${t.id})">👤 Asignar</button></td></tr>`).join('');
+                    detectedTbody.innerHTML = detected.map(t => `<tr><td>${t.id}</td><td>${t.kart_id || '--'}</td><td>${t.description || '--'}</td><td><button class="btn btn-sm" onclick="assignTransponder(${t.id})">👤 Asignar</button></td></tr>`).join('');
                 } else { 
-                    detectedTbody.innerHTML = '<tr><td colspan="2" style="text-align:center;">Sin transponders detectados</td></tr>'; 
+                    detectedTbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Sin transponders detectados</td></tr>'; 
                 }
             }
             
             const all = await apiCall('/api/transponders/all');
+            allTranspondersCache = all || [];
             const allTbody = document.getElementById('allTranspondersList');
             if (allTbody) {
                 if (all?.length) {
                     const drivers = await apiCall('/api/drivers');
                     allTbody.innerHTML = all.map(t => { 
                         const assigned = drivers?.find(d => d.transponder_id === t.id); 
-                        const actionButtons = assigned ? '' : `
-                            <button class="btn btn-sm" onclick="editTransponderId(${t.id})">✏️</button>
-                            <button class="btn btn-sm" onclick="deleteTransponder(${t.id})">🗑️</button>
+                        const actionButtons = `
+                            <button class="btn btn-sm" onclick="editTransponder(${t.id})">✏️</button>
+                            ${assigned ? '' : `<button class="btn btn-sm" onclick="deleteTransponder(${t.id})">🗑️</button>`}
                         `;
                         return `<tr>
                             <td>${t.id}</td>
+                            <td>${t.kart_id || '--'}</td>
                             <td>${t.description || '--'}</td>
                             <td>${assigned ? `${assigned.name} ${assigned.lastname || ''}` : 'Sin asignar'}</td>
                             <td>${actionButtons}</td>
                         </tr>`; 
                     }).join('');
                 } else { 
-                    allTbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay transponders registrados</td></tr>'; 
+                    allTbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay transponders registrados</td></tr>'; 
                 }
             }
         }
@@ -1322,6 +2461,32 @@
             }
         };
 
+        window.editTransponder = async (id) => {
+            const transponder = allTranspondersCache.find(t => t.id === id);
+            if (!transponder) {
+                alert('Transponder no encontrado');
+                return;
+            }
+
+            editingTransponderId = id;
+            document.getElementById('manualTransponderId').value = transponder.id;
+            document.getElementById('manualTransponderId').disabled = true;
+            document.getElementById('manualTransponderKart').value = transponder.kart_id || '';
+            document.getElementById('manualTransponderDesc').value = transponder.description || '';
+            document.getElementById('addTransponderBtn').textContent = 'Guardar cambios';
+            document.getElementById('cancelEditTransponderBtn').style.display = 'block';
+        };
+
+        const resetTransponderEditMode = () => {
+            editingTransponderId = null;
+            document.getElementById('manualTransponderId').disabled = false;
+            document.getElementById('manualTransponderId').value = '';
+            document.getElementById('manualTransponderKart').value = '';
+            document.getElementById('manualTransponderDesc').value = '';
+            document.getElementById('addTransponderBtn').textContent = 'Agregar';
+            document.getElementById('cancelEditTransponderBtn').style.display = 'none';
+        };
+
         window.deleteTransponder = (id) => {
             showModal('Eliminar Transponder', `¿Eliminar el transponder ${id}?`, async () => {
                 showLoader('Eliminando transponder...');
@@ -1336,23 +2501,64 @@
         };
         
         window.assignTransponder = (id) => {
+            // Mostrar loader
+            showLoader(`Transponder ${id} listo para asignar. Completa el formulario.`);
+            
+            // Asignar valor y cambiar de panel
             document.getElementById('driverTransponder').value = id;
             document.querySelector('[data-panel="drivers"]').click();
-            alert(`Transponder ${id} listo para asignar. Completa el formulario.`);
+            
+            // Ocultar loader después de 2 segundos
+            setTimeout(() => {
+                hideLoader();
+            }, 2000);
         };
         
         document.getElementById('addTransponderBtn').onclick = async () => {
             const id = parseInt(document.getElementById('manualTransponderId').value);
-            if (!id) { return; }
+            const kartId = document.getElementById('manualTransponderKart').value.trim();
+            const desc = document.getElementById('manualTransponderDesc').value.trim();
+            if (!id) {
+                alert('Ingrese el código del transponder');
+                return;
+            }
+
+            if (editingTransponderId) {
+                showLoader('Guardando cambios...');
+                const res = await apiCall(`/api/transponders/${editingTransponderId}/details`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ kart_id: kartId, description: desc })
+                });
+                hideLoader();
+
+                if (res?.success) {
+                    resetTransponderEditMode();
+                    loadTransponders();
+                } else {
+                    alert(res.error || 'Error al actualizar transponder');
+                }
+                return;
+            }
             
             showLoader('Registrando transponder...');
-            const res = await apiCall('/api/transponders/manual', { method: 'POST', body: JSON.stringify({ id }) });
+            const res = await apiCall('/api/transponders/manual/extended', {
+                method: 'POST',
+                body: JSON.stringify({ id, kart_id: kartId, description: desc })
+            });
             hideLoader();
             
             if (res?.success) {
                 document.getElementById('manualTransponderId').value = '';
+                document.getElementById('manualTransponderKart').value = '';
+                document.getElementById('manualTransponderDesc').value = '';
                 loadTransponders();
+            } else {
+                alert(res.error || 'Error al registrar transponder');
             }
+        };
+
+        document.getElementById('cancelEditTransponderBtn').onclick = () => {
+            resetTransponderEditMode();
         };
         
         // Nueva carrera
@@ -1375,42 +2581,74 @@
             });
         };
 
-        document.getElementById('hardResetBtn').onclick = () => {
-            showModal('RESET TOTAL', '¿Estás seguro? Se limpiarán todos los pilotos y vueltas de la sesión actual y el sistema se reiniciará.', async () => {
+        document.getElementById('resetBoardBtn').onclick = () => {
+            showModal('Resetear Tablero', '¿Estás seguro? Se eliminarán los pilotos inscritos, las vueltas y la carrera completa para dejar el tablero en limpio.', async () => {
                 showLoader('Limpiando tablero y reiniciando...');
                 const res = await apiCall('/api/race/reset', { method: 'POST' });
                 if (res?.success) {
                     setTimeout(() => location.reload(), 3500);
                 } else {
                     hideLoader();
+                    alert(res?.error || 'No se pudo resetear el tablero');
+                }
+            });
+        };
+
+        document.getElementById('hardResetBtn').onclick = () => {
+            showModal('Reinicio Forzado Total', 'Esta acción reinicia servidor y borra TODO: pilotos, transponders, sesiones, vueltas y datos de carrera. ¿Continuar?', async () => {
+                showLoader('Ejecutando reinicio forzado total...');
+                const res = await apiCall('/api/race/clear-all', { method: 'POST' });
+                if (res?.success) {
+                    setTimeout(() => location.reload(true), 4500);
+                } else {
+                    hideLoader();
+                    alert(res?.error || 'No se pudo ejecutar el reinicio forzado');
                 }
             });
         };
 
         function setRaceButtonsEnabled(enabled) {
-            ['startRaceBtn','pauseRaceBtn','resumeRaceBtn','repeatRaceBtn','finishRaceBtn'].forEach(id => {
+            ['startRaceBtn','pauseRaceBtn','resumeRaceBtn','repeatRaceBtn','resetBoardBtn','finishRaceBtn'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.disabled = !enabled;
             });
         }
 
-        async function runCountdown(seconds) {
+        window.resetTransponderHealth = async (transponderId) => {
+            showLoader(`Reiniciando estado del transponder ${transponderId}...`);
+            const res = await apiCall(`/api/transponders/health/${transponderId}/reset`, { method: 'POST' });
+            hideLoader();
+            if (res?.success) {
+                loadTransponderHealth();
+            } else {
+                alert(res?.error || 'No se pudo reiniciar el estado');
+            }
+        };
+
+        async function runCountdown(seconds, speed) {
             const overlay = document.getElementById('countdownOverlay');
             const numberEl = document.getElementById('countdownNumber');
             const hintEl = document.getElementById('countdownHint');
 
             overlay.style.display = 'flex';
+            
+            // Pequeño retraso inicial
+            await new Promise(r => setTimeout(r, 100));
+            
             let n = seconds;
             while (n > 0) {
                 numberEl.innerText = String(n);
-                hintEl.innerText = (n <= 3) ? '¡YA!' : 'Prepárense';
-                await new Promise(r => setTimeout(r, 1000));
+                hintEl.innerText = (n <= 3) ? '¡LISTOS!' : 'PREPÁRENSE';
+                await new Promise(r => setTimeout(r, speed * 1000)); // Usar velocidad configurable
                 n -= 1;
             }
+            
             numberEl.innerText = '0';
-            hintEl.innerText = '¡SALIDA!';
+            hintEl.innerText = '¡GO!';
             await new Promise(r => setTimeout(r, 500));
             overlay.style.display = 'none';
+            
+            return true;
         }
 
         // Botones de control de carrera
@@ -1421,28 +2659,57 @@
                 return;
             }
 
-            showModal('Iniciar Carrera', '¿Iniciar la carrera? Se mostrará una cuenta regresiva (10 → 0) y luego comenzará el conteo.', async () => {
+            // Verificar que no haya una carrera ya activa
+            const currentData = await apiCall('/api/session/current');
+            if (currentData?.active && currentData.session?.status === 'active') {
+                showModal('⚠️ CARRERA ACTIVA', 'Ya hay una carrera en curso. No puedes iniciar otra.', () => {});
+                return;
+            }
+
+            showModal('Iniciar Carrera', `¿Iniciar la carrera? Se mostrará una cuenta regresiva (configurable) y luego comenzará el conteo.`, async () => {
                 try {
                     setRaceButtonsEnabled(false);
-                    await runCountdown(10);
-                    showLoader('Iniciando carrera...');
-                    const res = await apiCall('/api/race/start', { method: 'POST' });
-                    if (res?.success) {
-                        if (res.restart_required) {
-                            setTimeout(() => location.reload(), 3500);
+                    
+                    // Obtener duración configurada
+                    const countdownSeconds = getCountdownDuration();
+                    const countdownSpeed = getCountdownSpeed();
+                    const completed = await runCountdown(countdownSeconds, countdownSpeed);
+                    
+                    if (completed) {
+                        showLoader('Iniciando carrera...');
+                        
+                        // Enviar comando start
+                        const res = await apiCall('/api/race/start', { method: 'POST' });
+                        
+                        if (res?.success) {
+                            // Esperar un momento para que el servidor procese
+                            await new Promise(r => setTimeout(r, 500));
+                            
+                            if (res.restart_required) {
+                                setTimeout(() => location.reload(), 3500);
+                            } else {
+                                hideLoader();
+                                // Forzar actualización inmediata
+                                await loadLiveData();
+                            }
                         } else {
                             hideLoader();
-                            loadLiveData();
+                            showModal('❌ ERROR', 'No se pudo iniciar la carrera. Intenta nuevamente.', () => {});
                         }
                     } else {
                         hideLoader();
+                        showModal('❌ ERROR', 'Hubo un problema con la cuenta regresiva.', () => {});
                     }
+                } catch (error) {
+                    console.error("Error iniciando carrera:", error);
+                    hideLoader();
+                    showModal('❌ ERROR', 'Error inesperado al iniciar la carrera.', () => {});
                 } finally {
                     setRaceButtonsEnabled(true);
                 }
             });
         };
-        
+                
         document.getElementById('pauseRaceBtn').onclick = async () => {
             showLoader('Pausando carrera...');
             const res = await apiCall('/api/race/pause', { method: 'POST' });
@@ -1462,13 +2729,14 @@
         };
         
         document.getElementById('repeatRaceBtn').onclick = async () => {
-            showModal('Repetir Carrera', '¿Repetir la misma carrera con los mismos pilotos? Se reiniciarán las vueltas.', async () => {
+            showModal('Repetir Carrera', '¿Repetir la misma carrera con los mismos pilotos? Se conservarán los inscritos y solo se reiniciarán sus vueltas y tiempos.', async () => {
                 showLoader('Reiniciando sistema con los mismos pilotos...');
                 const res = await apiCall('/api/race/repeat', { method: 'POST' });
                 if(res?.success) {
                     setTimeout(() => location.reload(), 3500);
                 } else {
                     hideLoader();
+                    alert(res?.error || 'No se pudo repetir la carrera');
                 }
             });
         };
@@ -1478,21 +2746,251 @@
                 showLoader('Finalizando carrera...');
                 const res = await apiCall('/api/race/finish', { method: 'POST' });
                 if(res?.success) {
-                    setTimeout(() => location.reload(), 3500);
+                    hideLoader();
+                    setTimeout(loadLiveData, 250);
                 } else {
                     hideLoader();
+                    alert(res?.error || 'No se pudo finalizar la carrera');
                 }
             });
         };
         
         loadLiveData();
+        loadTransponderHealth();
+        setInterval(renderRaceClock, 1000);
         setInterval(() => {
             tvRotationIndex += 1;
             renderTvLapRotator();
             const clock = document.getElementById('tvClock');
             if (clock) clock.innerText = new Date().toLocaleTimeString();
         }, 5000);
-        setInterval(loadLiveData, 2000);
+        setInterval(loadLiveData, 300);
+
+
+
+    // ========== FUNCIONES MODAL GANADOR ==========
+
+    // ========== MODAL CON 3 GANADORES ==========
+        let winnerModalShown = false;
+
+        function showWinnerModalComplete(winner, second, third) {
+            if (winnerModalShown) return;
+            winnerModalShown = true;
+            
+            // Actualizar contenido del modal
+            document.getElementById('modalWinnerName').innerText = winner.full_name || winner.name;
+            document.getElementById('modalWinnerTime').innerText = formatRaceClock(winner.total_time);
+            
+            // Mostrar segundo lugar si existe
+            const secondContainer = document.getElementById('modalSecondContainer');
+            if (second && secondContainer) {
+                document.getElementById('modalSecondName').innerText = second.full_name || second.name;
+                document.getElementById('modalSecondTime').innerText = formatRaceClock(second.total_time);
+                secondContainer.style.display = 'block';
+            }
+            
+            // Mostrar tercer lugar si existe
+            const thirdContainer = document.getElementById('modalThirdContainer');
+            if (third && thirdContainer) {
+                document.getElementById('modalThirdName').innerText = third.full_name || third.name;
+                document.getElementById('modalThirdTime').innerText = formatRaceClock(third.total_time);
+                thirdContainer.style.display = 'block';
+            }
+            
+            document.getElementById('winnerModalComplete').style.display = 'flex';
+        }
+
+        function closeWinnerModalComplete() {
+            document.getElementById('winnerModalComplete').style.display = 'none';
+        }
+
+        function resetWinnerModalFlag() {
+            winnerModalShown = false;
+        }
+        // ========== FIN MODAL 3 GANADORES ==========
+
+
+
+        // ========== CONFIGURACIÓN DE CUENTA REGRESIVA ==========
+
+            function sliderToCountdownSeconds(sliderValue) {
+                // Izquierda (0.3) = lento (2.0s), derecha (2.0) = rapido (0.3s)
+                const raw = Number(sliderValue);
+                const safe = Number.isFinite(raw) ? raw : 1;
+                return Number((2.3 - safe).toFixed(2));
+            }
+
+            function countdownSecondsToSlider(secondsValue) {
+                const raw = Number(secondsValue);
+                const safe = Number.isFinite(raw) ? raw : 1;
+                const slider = 2.3 - safe;
+                return Math.min(2, Math.max(0.3, Number(slider.toFixed(2))));
+            }
+
+            // Cargar configuración guardada
+            function loadCountdownConfig() {
+                // Duración total
+                let duration = localStorage.getItem('chronit_countdown_duration');
+                if (duration) {
+                    duration = parseInt(duration);
+                    if (isNaN(duration) || duration < 3) duration = 10;
+                    if (duration > 20) duration = 20;
+                } else {
+                    duration = 10;
+                }
+                
+                // Velocidad de descuento (intervalo entre números)
+                let speed = localStorage.getItem('chronit_countdown_speed');
+                if (speed) {
+                    speed = parseFloat(speed);
+                    if (isNaN(speed) || speed < 0.3) speed = 1;
+                    if (speed > 2) speed = 2;
+                } else {
+                    speed = 1;
+                }
+                
+                // Aplicar a los inputs
+                const durationSlider = document.getElementById('countdownDurationSlider');
+                const durationInput = document.getElementById('countdownDuration');
+                const speedSlider = document.getElementById('countdownSpeedSlider');
+                const speedHint = document.getElementById('speedHint');
+                
+                if (durationSlider) durationSlider.value = duration;
+                if (durationInput) durationInput.value = duration;
+                if (speedSlider) {
+                    speedSlider.value = countdownSecondsToSlider(speed);
+                    if (speedHint) speedHint.innerText = `Cada número se mostrará durante ${speed.toFixed(2)} segundos`;
+                }
+                
+                return { duration, speed };
+            }
+
+            // Sincronizar controles
+            function setupCountdownControls() {
+                const durationSlider = document.getElementById('countdownDurationSlider');
+                const durationInput = document.getElementById('countdownDuration');
+                const speedSlider = document.getElementById('countdownSpeedSlider');
+                const speedHint = document.getElementById('speedHint');
+                const saveBtn = document.getElementById('saveCountdownConfigBtn');
+                
+                // Sincronizar duración: slider ↔ input
+                if (durationSlider && durationInput) {
+                    durationSlider.oninput = () => {
+                        durationInput.value = durationSlider.value;
+                    };
+                    durationInput.onchange = () => {
+                        let val = parseInt(durationInput.value);
+                        if (isNaN(val)) val = 10;
+                        if (val < 3) val = 3;
+                        if (val > 20) val = 20;
+                        durationSlider.value = val;
+                        durationInput.value = val;
+                    };
+                }
+                
+                // Mostrar hint de velocidad
+                if (speedSlider && speedHint) {
+                    speedSlider.oninput = () => {
+                        const val = sliderToCountdownSeconds(speedSlider.value);
+                        speedHint.innerText = `Cada número se mostrará durante ${val.toFixed(2)} segundos`;
+                    };
+                }
+                
+                // Guardar configuración
+                if (saveBtn) {
+                    saveBtn.onclick = () => {
+                        const duration = parseInt(durationSlider.value);
+                        const speed = sliderToCountdownSeconds(speedSlider.value);
+                        localStorage.setItem('chronit_countdown_duration', duration);
+                        localStorage.setItem('chronit_countdown_speed', speed);
+                        showModal('✅ CONFIGURACIÓN GUARDADA', 
+                            `Cuenta regresiva: ${duration} segundos totales, ritmo de ${speed.toFixed(2)}s por número.`, 
+                            () => {});
+                    };
+                }
+            }
+
+            // Obtener duración total
+            function getCountdownDuration() {
+                const input = document.getElementById('countdownDuration');
+                if (input) {
+                    let val = parseInt(input.value);
+                    if (isNaN(val)) val = 10;
+                    if (val < 3) val = 3;
+                    if (val > 20) val = 20;
+                    return val;
+                }
+                return 10;
+            }
+
+            // Obtener velocidad de descuento (intervalo entre números)
+            function getCountdownSpeed() {
+                const slider = document.getElementById('countdownSpeedSlider');
+                if (slider) {
+                    let val = sliderToCountdownSeconds(slider.value);
+                    if (isNaN(val)) val = 1;
+                    if (val < 0.3) val = 0.3;
+                    if (val > 2) val = 2;
+                    return val;
+                }
+                return 1;
+            }
+             // ========== FIN CONFIGURACIÓN DE CUENTA REGRESIVA ==========
+
+             loadCountdownConfig();
+        setupCountdownControls();
+
+        // ✅ LLAMADAS EXISTENTES
+        loadLiveData();
+        loadTransponderHealth();
+        setInterval(renderRaceClock, 1000);
+        setInterval(() => {
+            tvRotationIndex += 1;
+            renderTvLapRotator();
+            const clock = document.getElementById('tvClock');
+            if (clock) clock.innerText = new Date().toLocaleTimeString();
+        }, 5000);
+        setInterval(loadLiveData, 300);
+
+
+
+        
+    /=== MOSTRAR GANADOR ===/
+
+        document.getElementById('showWinnerBtn').onclick = async () => {
+            const data = await apiCall('/api/session/current');
+            const sourceData = (data && data.session && Array.isArray(data.leaderboard) && data.leaderboard.length)
+                ? data
+                : (frozenRaceData || lastRaceDataSnapshot);
+            if (sourceData && sourceData.session && Array.isArray(sourceData.leaderboard)) {
+                const leaderboard = sourceData.leaderboard;
+                const lapsLimit = sourceData.session.laps_limit || 0;
+
+                const finishedOrder = [...leaderboard]
+                    .filter(d => d.is_finished && d.total_laps >= lapsLimit)
+                    .sort((a, b) => (a.total_time || 0) - (b.total_time || 0));
+                
+                const winner = finishedOrder[0];
+                const second = finishedOrder[1];
+                const third = finishedOrder[2];
+                
+                if (winner) {
+                    resetWinnerModalFlag();
+                    showWinnerModalComplete(winner, second, third);
+                }
+            }
+        };
+
+    
+
     </script>
+
+
+
+
+
+
+
+
 </body>
 </html>

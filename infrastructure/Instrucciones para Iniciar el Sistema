@@ -1,0 +1,3 @@
+docker compose restart hardware
+
+## Esto solo reinicia el proceso de Python. Tarda unos 2-3 segundos y es mucho más seguro para el puerto serial que el autoguardado de Flask

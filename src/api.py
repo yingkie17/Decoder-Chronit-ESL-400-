@@ -2,11 +2,22 @@ import logging
 import os
 import threading
 import time
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, make_response
 from flask_cors import CORS
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+static_path = os.path.join(current_dir, 'static')
+template_path = os.path.join(current_dir, 'templates')
+
+app = Flask(__name__, 
+            static_folder=os.path.join(current_dir, 'static'),
+            template_folder=os.path.join(current_dir, 'templates'))
+
+CORS(app)
 from database import (
     init_db,
     get_current_session,
+    get_latest_session,
     get_leaderboard_with_details,
     get_all_drivers,
     get_unassigned_transponders,
@@ -15,6 +26,7 @@ from database import (
     get_all_transponders,
     delete_transponder,
     update_transponder_id,
+    update_transponder,
     add_driver_to_race,
     get_race_drivers,
     remove_driver_from_race,
@@ -28,12 +40,13 @@ from database import (
     get_session_info,
     guardar_estado_repetir,
     get_recent_signals,
+    get_session_elapsed_seconds,
+    get_transponder_health,
+    reset_transponder_health,
+    hard_reset_all_data,
 )
 
 logging.getLogger('werkzeug').setLevel(logging.ERROR)
-
-app = Flask(__name__)
-CORS(app)
 
 RESTART_FLAG_FILE = '/app/data/restart.flag'
 SHUTDOWN_FLAG_FILE = '/app/data/shutdown.flag'
@@ -48,7 +61,12 @@ def send_race_command(command):
 
 @app.route('/')
 def index():
-    return render_template('dashboard.html')
+    resp = make_response(render_template('dashboard.html'))
+    # Evita HTML/JS viejo en pantallas múltiples (Chrome cache agresivo)
+    resp.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    resp.headers['Pragma'] = 'no-cache'
+    resp.headers['Expires'] = '0'
+    return resp
 
 @app.route('/api/status')
 def status():
@@ -58,11 +76,15 @@ def status():
 @app.route('/api/session/current')
 def get_current_session_info():
     """Endpoint principal para la tabla de posiciones"""
-    session = get_current_session()
+    session = get_current_session() or get_latest_session()
     if not session:
         return jsonify({'active': False, 'leaderboard': []})
     
     leaderboard = get_leaderboard_with_details(session['id'])
+    session['race_elapsed_seconds'] = get_session_elapsed_seconds(session)
+    session['can_repeat'] = session.get('status') == 'completed'
+    session['can_reset_board'] = session.get('status') == 'completed'
+    session['can_manage_enrollment'] = session.get('status') == 'pending'
     return jsonify({
         'active': True, 
         'session': session, 
@@ -108,7 +130,11 @@ def race_repeat():
     try:
         session = get_current_session()
         if not session:
-            return jsonify({'success': False, 'error': 'No hay carrera activa'}), 400
+            session = get_latest_session()
+        if not session:
+            return jsonify({'success': False, 'error': 'No hay carrera disponible'}), 400
+        if session.get('status') != 'completed':
+            return jsonify({'success': False, 'error': 'Solo se puede repetir cuando la carrera ha finalizado'}), 400
 
         race_drivers = get_race_drivers(session['id'])
         if not race_drivers:
@@ -135,11 +161,16 @@ def race_repeat():
 
 @app.route('/api/race/reset', methods=['POST'])
 def race_reset():
+    session = get_current_session() or get_latest_session()
+    if session and session.get('status') != 'completed':
+        return jsonify({'success': False, 'error': 'Solo puedes resetear el tablero cuando la carrera haya finalizado'}), 400
     send_race_command('reset_race')
     return jsonify({'success': True, 'message': 'Reiniciando carrera'})
 
 @app.route('/api/race/clear-all', methods=['POST'])
 def race_clear_all():
+    hard_reset_all_data()
+
     with open(RESTART_FLAG_FILE, 'w') as f:
         f.write('restart')
     
@@ -148,7 +179,7 @@ def race_clear_all():
         os._exit(1)
     
     threading.Thread(target=do_exit, daemon=True).start()
-    return jsonify({'success': True, 'message': 'Reiniciando sistema...'})
+    return jsonify({'success': True, 'message': 'Reinicio forzado: limpiando sistema completo...'})
 
 # ==================== DETALLES DE CARRERA ====================
 
@@ -237,6 +268,44 @@ def add_transponder_manual_api():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/transponders/manual/extended', methods=['POST'])
+def add_transponder_manual_extended_api():
+    try:
+        data = request.get_json()
+        success = add_transponder_manual(
+            transponder_id=data['id'],
+            description=data.get('description', ''),
+            kart_id=data.get('kart_id', '')
+        )
+        return jsonify({'success': success})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/transponders/<int:transponder_id>/details', methods=['PUT'])
+def update_transponder_details_api(transponder_id):
+    try:
+        data = request.get_json()
+        update_transponder(
+            transponder_id=transponder_id,
+            kart_id=data.get('kart_id'),
+            description=data.get('description')
+        )
+        return jsonify({'success': True, 'message': 'Transponder actualizado'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/transponders/health')
+def transponder_health_api():
+    return jsonify(get_transponder_health())
+
+@app.route('/api/transponders/health/<int:t_id>/reset', methods=['POST'])
+def reset_transponder_health_api(t_id):
+    try:
+        success = reset_transponder_health(t_id)
+        return jsonify({'success': success, 'error': None if success else 'Transponder no encontrado'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 # ==================== INSCRIPCIONES ====================
 
 @app.route('/api/race/add', methods=['POST'])
@@ -310,7 +379,34 @@ def reset_usb():
 
 def start_api_server():
     init_db()
-    app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False, threaded=True)
+    app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False, threaded=True)
+
+@app.route('/api/race/driver-times/<int:session_id>')
+def get_driver_individual_times(session_id):
+    """Obtiene los tiempos individuales de cada piloto"""
+    from database import get_driver_individual_times
+    return jsonify(get_driver_individual_times(session_id))
+
 
 if __name__ == "__main__":
     start_api_server()
+
+# ==================== CONFIGURACIÓN DE ANTENA ====================
+
+@app.route('/api/config/antenna', methods=['GET'])
+def get_antenna_config_api():
+    from database import get_antenna_config
+    return jsonify(get_antenna_config())
+
+@app.route('/api/config/antenna', methods=['POST'])
+def update_antenna_config_api():
+    try:
+        from database import update_antenna_config
+        data = request.get_json()
+        update_antenna_config(
+            min_signal=data.get('min_signal'),
+            filter_time=data.get('filter_time')
+        )
+        return jsonify({'success': True, 'message': 'Configuración actualizada'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500

@@ -2,119 +2,447 @@ import serial
 import time
 import os
 import subprocess
+import threading
+from datetime import datetime
+from database import (
+    init_db, save_lap, get_current_session, start_new_session,
+    get_driver_by_transponder, add_transponder_detected,
+    get_race_drivers, add_driver_to_race, cargar_estado_repetir,
+    update_race_status, get_antenna_config,
+)
 
-# --- CONFIGURACIÓN ---
 PORT = os.getenv('SERIAL_PORT', '/dev/ttyUSB0')
 BAUD = 9600
 
-# --- VARIABLES DE ESTADO ---
 VUELTA_BASE = {}
 ULTIMA_ACTIVIDAD = time.time()
 ALERTA_MOSTRADA = False
+SESSION_ID = None
+LAST_LAP_TIME = {}
+LAPS_LIMIT = 10
+RACE_DRIVERS = set()
+DRIVERS_FINISHED = set()
+FIRST_FINISHER = None
+RACE_ACTIVE = False
+RACE_PAUSED = False
+VUELTAS_CARRERA = {} 
+PRIMERA_VEZ = {}
+VUELTA_SALIDA = {}
+RESTART_FLAG_FILE = '/app/data/restart.flag'
+NEXT_RACE_NAME_FILE = '/app/data/next_race_name.txt'
+NEXT_RACE_LAPS_FILE = '/app/data/next_race_laps.txt'
+RACE_COMMAND_FILE = '/app/data/race_command.txt'
+
 
 def repair_permissions(port):
     try:
         if os.path.exists(port):
             subprocess.run(['chmod', '666', port], check=True, stderr=subprocess.DEVNULL)
-            subprocess.run(['stty', '-F', port, '9600', 'raw', '-echo'], 
-                          check=True, stderr=subprocess.DEVNULL)
+            subprocess.run(['stty', '-F', port, str(BAUD), 'raw', '-echo', '-hupcl'], 
+                          check=False, stderr=subprocess.DEVNULL)
             return True
     except:
         pass
     return False
 
-def procesar_trama_esl400(trama):
-    """
-    Parsea tramas del ESL-400
-    Formato esperado: $01005F610111568713F1501000B05A7
-    """
-    global VUELTA_BASE
+def check_restart_flag():
+    if os.path.exists(RESTART_FLAG_FILE):
+        print("\n[SISTEMA] Reiniciando...")
+        os.remove(RESTART_FLAG_FILE)
+        os._exit(0)
+    return False
+
+def check_race_commands():
+    global RACE_ACTIVE, RACE_PAUSED, DRIVERS_FINISHED, VUELTA_BASE, LAST_LAP_TIME, SESSION_ID, FIRST_FINISHER
+    VUELTAS_CARRERA = {}
+
+    if os.path.exists(RACE_COMMAND_FILE):
+        with open(RACE_COMMAND_FILE, 'r') as f:
+            command = f.read().strip()
+        os.remove(RACE_COMMAND_FILE)
+        print(f"[COMANDO] Recibido: {command}")
+        if command == 'start':
+            RACE_ACTIVE = True
+            RACE_PAUSED = False
+            DRIVERS_FINISHED = set()
+            VUELTA_BASE = {}
+            LAST_LAP_TIME = {}
+            FIRST_FINISHER = None
+            actualizar_pilotos_inscritos()
+            print("\n🏁 ¡CARRERA INICIADA!\n")
+            if SESSION_ID:
+                update_race_status(SESSION_ID, 'active')
+        elif command == 'reset_usb':
+            print("\n🛑 APAGADO SEGURO SOLICITADO\n")
+            if SESSION_ID:
+                update_race_status(SESSION_ID, 'paused')
+            # Forzamos salida del programa para que el contenedor se detenga
+            os._exit(0)
+        elif command == 'pause':
+            RACE_ACTIVE = True
+            RACE_PAUSED = True
+            print("\n⏸️ CARRERA PAUSADA\n")
+            if SESSION_ID:
+                update_race_status(SESSION_ID, 'paused')
+        elif command == 'resume':
+            RACE_ACTIVE = True
+            RACE_PAUSED = False
+            print("\n▶️ CARRERA REANUDADA\n")
+            if SESSION_ID:
+                update_race_status(SESSION_ID, 'active')
+        elif command == 'finish':
+            RACE_ACTIVE = False
+            RACE_PAUSED = False
+            DRIVERS_FINISHED = set()
+            VUELTA_BASE = {}
+            LAST_LAP_TIME = {}
+            print("\n🏆 ¡CARRERA FINALIZADA!\n")
+            if SESSION_ID:
+                update_race_status(
+                    SESSION_ID,
+                    'completed',
+                    FIRST_FINISHER['driver_id'] if FIRST_FINISHER else None,
+                    FIRST_FINISHER['finish_time'] if FIRST_FINISHER else None
+                )
+            FIRST_FINISHER = None
+        elif command == 'reset_race':
+            RACE_ACTIVE = False
+            RACE_PAUSED = False
+            DRIVERS_FINISHED = set()
+            VUELTA_BASE = {}
+            LAST_LAP_TIME = {}
+            FIRST_FINISHER = None
+            print("\n🧹 RESET TOTAL DEL TABLERO\n")
+            if SESSION_ID:
+                update_race_status(SESSION_ID, 'completed')
+            # Forzamos un reinicio limpio del sistema
+            with open(RESTART_FLAG_FILE, 'w') as f:
+                f.write('restart')
+        return True
+    return False
+
+def restaurar_estado_repetir():
+    global SESSION_ID, LAPS_LIMIT, RACE_DRIVERS, RACE_ACTIVE, RACE_PAUSED, FIRST_FINISHER
+    estado = cargar_estado_repetir()
+    if not estado or estado.get('action') != 'repeat_race':
+        return False
+    print("\n🔄 REPETIR CARRERA - Restaurando pilotos...")
+    SESSION_ID = start_new_session(estado['circuit_name'], estado['laps_limit'])
+    LAPS_LIMIT = estado['laps_limit']
+    for driver in estado['race_drivers']:
+        add_driver_to_race(SESSION_ID, driver['driver_id'], driver['transponder_id'])
+        print(f"   ✅ Restaurado: {driver.get('name', 'Piloto')}")
+    RACE_DRIVERS = {d['transponder_id'] for d in estado['race_drivers']}
+    RACE_ACTIVE = False
+    RACE_PAUSED = False
+    FIRST_FINISHER = None
+    return True
+
+def crear_nueva_carrera_al_inicio():
+    global SESSION_ID, VUELTA_BASE, LAST_LAP_TIME, LAPS_LIMIT, RACE_DRIVERS, DRIVERS_FINISHED, RACE_ACTIVE, RACE_PAUSED, PRIMERA_VEZ, VUELTA_SALIDA
     
+    PRIMERA_VEZ = {}
+    VUELTA_SALIDA = {}
+    VUELTA_BASE = {}
+    VUELTAS_CARRERA = {}
+    LAST_LAP_TIME = {}
+    DRIVERS_FINISHED = set()
+    RACE_DRIVERS = set()
+    
+    if restaurar_estado_repetir():
+        return True
+    race_name = None
+    laps_limit = LAPS_LIMIT
+    if os.path.exists(NEXT_RACE_NAME_FILE):
+        with open(NEXT_RACE_NAME_FILE, 'r') as f:
+            race_name = f.read().strip()
+        os.remove(NEXT_RACE_NAME_FILE)
+    if os.path.exists(NEXT_RACE_LAPS_FILE):
+        with open(NEXT_RACE_LAPS_FILE, 'r') as f:
+            laps_limit = int(f.read().strip())
+        os.remove(NEXT_RACE_LAPS_FILE)
+    if race_name:
+        SESSION_ID = start_new_session(race_name, laps_limit)
+        VUELTA_BASE = {}
+        LAST_LAP_TIME = {}
+        LAPS_LIMIT = laps_limit
+        RACE_DRIVERS = set()
+        DRIVERS_FINISHED = set()
+        FIRST_FINISHER = None
+        RACE_ACTIVE = False
+        RACE_PAUSED = False
+        print("\n" + "🏁"*40)
+        print(f"🎬 NUEVA CARRERA: {race_name}")
+        print(f"🔄 Vueltas: {laps_limit}")
+        print("🏁"*40 + "\n")
+        return True
+    return False
+
+def actualizar_pilotos_inscritos():
+    global RACE_DRIVERS, SESSION_ID, PRIMERA_VEZ, VUELTA_SALIDA
+    # ✅ NUEVO: Limpiar controles de primera vez al actualizar pilotos
+    PRIMERA_VEZ = {}
+    VUELTA_SALIDA = {}
+    VUELTAS_CARRERA = {}
+    
+    if SESSION_ID:
+        drivers = get_race_drivers(SESSION_ID)
+        RACE_DRIVERS = {d['transponder_id'] for d in drivers}
+        if drivers:
+            print(f"\n📋 Pilotos inscritos: {len(drivers)}")
+            for d in drivers:
+                nombre = f"{d['name']} {d.get('lastname', '')}".strip()
+                print(f"   🏎️  {nombre} (Transponder: {d['transponder_id']})")
+    return RACE_DRIVERS
+
+def actualizar_sesion_activa():
+    global SESSION_ID, VUELTA_BASE, LAST_LAP_TIME, LAPS_LIMIT, DRIVERS_FINISHED, RACE_ACTIVE, RACE_PAUSED
+    session = get_current_session()
+    if session:
+        if SESSION_ID != session['id']:
+            SESSION_ID = session['id']
+            VUELTA_BASE = {}
+            LAST_LAP_TIME = {}
+            LAPS_LIMIT = session.get('laps_limit', 10)
+            DRIVERS_FINISHED = set()
+            RACE_ACTIVE = (session.get('status') in ['active', 'paused'])
+            RACE_PAUSED = (session.get('status') == 'paused')
+            actualizar_pilotos_inscritos()
+            print(f"\n📋 Sesión: {session['circuit_name']} | {LAPS_LIMIT} vueltas")
+            print(f"📊 Estado: {'EN CURSO' if RACE_ACTIVE else 'PENDIENTE'}")
+        return True
+    return False
+
+def procesar_cadena_esl400(raw_data):
+    global VUELTA_BASE, LAST_LAP_TIME, SESSION_ID, LAPS_LIMIT, RACE_DRIVERS, DRIVERS_FINISHED, RACE_ACTIVE, RACE_PAUSED, FIRST_FINISHER, PRIMERA_VEZ, VUELTA_SALIDA, VUELTAS_CARRERA
     try:
-        if not trama or trama[0] != '$':
+        data = raw_data.replace('$', '').strip()
+        if len(data) < 20:
             return None
         
-        # Remover el '$' inicial
-        datos = trama[1:]
+        transponder_id = int(data[4:8], 16)
+        milisegundos_raw = int(data[8:16], 16)
+        tiempo_total_segundos = milisegundos_raw / 1000.0
+        val_h = int(data[16:18], 16)
         
-        # Según tus tramas reales:
-        # $01005F610111568713F1501000B05A7
-        # Los primeros bytes son el ID del transponder
-        if len(datos) < 20:
+        config = get_antenna_config()
+        umbral_minimo = config.get('min_signal', 60)
+        if val_h < umbral_minimo:
+            print(f"   🔇 Señal débil ({val_h} < {umbral_minimo}) - IGNORADA")
             return None
         
-        # Extraer ID (primeros 8 caracteres después de $)
-        id_hex = datos[0:8]
-        transponder_id = int(id_hex, 16)
-        
-        # Extraer tiempo (siguientes 8 caracteres)
-        tiempo_hex = datos[8:16]
-        milisegundos = int(tiempo_hex, 16)
-        segundos_totales = milisegundos / 1000.0
-        
-        # Extraer señal H y L (siguientes 4 caracteres)
-        senal_h_hex = datos[16:18]
-        senal_l_hex = datos[18:20]
-        valor_h = int(senal_h_hex, 16)
-        valor_l = int(senal_l_hex, 16)
-        
-        # Extraer vueltas (últimos 4 caracteres antes del checksum)
-        # Según tus datos, parece que los últimos 4-5 caracteres son checksum/vueltas
-        if len(datos) >= 24:
-            vueltas_hex = datos[-8:-4]
-            vueltas_raw = int(vueltas_hex, 16)
+        val_l = int(data[18:20], 16)
+        vueltas_hex = data[-8:-4] 
+        nro_vueltas_raw = int(vueltas_hex, 16)
+        uso_equipo_fisico = nro_vueltas_raw + 1
+
+        if val_h > 150:
+            calidad = "🟢 EXCELENTE"
+        elif val_h > 100:
+            calidad = "🟡 MUY BUENA"
+        elif val_h > 60:
+            calidad = "🟠 REGULAR"
         else:
-            vueltas_raw = 0
+            calidad = "🔴 DEBIL"
+
+        mins = int(tiempo_total_segundos // 60)
+        secs = tiempo_total_segundos % 60
+        time_str = f"{mins:02d}:{secs:06.3f}"
         
-        # Lógica de carrera
-        if transponder_id not in VUELTA_BASE:
-            VUELTA_BASE[transponder_id] = vueltas_raw
+        es_nuevo = add_transponder_detected(
+            transponder_id, val_h, val_l, time_str, nro_vueltas_raw
+        )
+        if es_nuevo:
+            print(f"\n🔔 NUEVO TRANSPONDER DETECTADO: {transponder_id}")
+
+        print(f"\n🏁 ¡DETECCIÓN! ({calidad})")
+        print(f"🆔 ID Transponder: {transponder_id}")
+        print(f"📡 Señal -> H: {val_h} | L: {val_l}")
+        print(f"⏱️ Tiempo Acumulado: {mins:02d}:{secs:06.3f}")
+        print(f"🔄 Vueltas Físicas (Equipo): {nro_vueltas_raw}")
+        print(f"💾 Memoria física: {uso_equipo_fisico} registros")
+
+        if transponder_id not in RACE_DRIVERS:
+            actualizar_pilotos_inscritos()
+            if transponder_id not in RACE_DRIVERS:
+                print(f"⚠️ NO INSCRITO - Ve a PILOTOS para asignarlo")
+                print("-" * 50)
+                return None
+            else:
+                print(f"✅ INSCRIPCIÓN DETECTADA TARDE PARA {transponder_id}")
+
+        driver = get_driver_by_transponder(transponder_id)
+        if not driver:
+            print(f"⚠️ Sin piloto asignado")
+            print("-" * 50)
+            return None
+
+        nombre_piloto = driver['name']
+        if driver.get('lastname'):
+            nombre_piloto += f" {driver['lastname']}"
+        print(f"👤 Piloto: {nombre_piloto}")
+
+        if not RACE_ACTIVE:
+            print(f"⏳ Carrera no iniciada - Esperando inicio...")
+            print("-" * 50)
+            return None
+        
+        if RACE_PAUSED:
+            print(f"⏸️ Carrera pausada - Reanudar para continuar")
+            print("-" * 50)
+            return None
+
+        # Verificar si el piloto ya terminó la carrera
+        if transponder_id in DRIVERS_FINISHED:
+            print(f"🏁 {nombre_piloto} ya completó la carrera - IGNORADO")
+            print("-" * 50)
+            return None
+
+        # Detectar primera vez que vemos este piloto en esta carrera
+        es_primera_vez = transponder_id not in PRIMERA_VEZ
+        
+        if es_primera_vez:
+            PRIMERA_VEZ[transponder_id] = True
+            VUELTA_SALIDA[transponder_id] = nro_vueltas_raw
+            VUELTAS_CARRERA[transponder_id] = 0
+            VUELTA_BASE[transponder_id] = nro_vueltas_raw
             vuelta_carrera = 0
+            lap_time = None
+            print(f"🏁 ¡PRIMERA DETECCIÓN! Vuelta de SALIDA para {nombre_piloto}")
+            print(f"   Cronómetro individual INICIADO")
         else:
-            vuelta_carrera = vueltas_raw - VUELTA_BASE[transponder_id]
+            # Usar contador interno, no la diferencia de raw
+            if nro_vueltas_raw > VUELTA_BASE.get(transponder_id, 0):
+                VUELTAS_CARRERA[transponder_id] = VUELTAS_CARRERA.get(transponder_id, 0) + 1
+                VUELTA_BASE[transponder_id] = nro_vueltas_raw
+                
+                vuelta_carrera = VUELTAS_CARRERA[transponder_id]
+                
+                if transponder_id in LAST_LAP_TIME and vuelta_carrera > 0:
+                    lap_time = tiempo_total_segundos - LAST_LAP_TIME[transponder_id]
+                else:
+                    lap_time = None
+            else:
+                # Misma vuelta física (señal repetida), ignorar
+                print(f"   🔄 Señal duplicada - IGNORADA")
+                print("-" * 50)
+                return None
+
+        LAST_LAP_TIME[transponder_id] = tiempo_total_segundos
+        print(f"🏎️ Vueltas en Carrera: {vuelta_carrera}")
         
-        return {
-            "id": transponder_id,
-            "vueltas_fisicas": vueltas_raw,
-            "vuelta_carrera": vuelta_carrera,
-            "segundos": segundos_totales,
-            "h": valor_h,
-            "l": valor_l,
-            "trama_original": trama
-        }
-        
+        if vuelta_carrera == 0:
+            print(f"🏁 VUELTA DE SALIDA (no cuenta para el límite)")
+        else:
+            print(f"⚡ Tiempo vuelta {vuelta_carrera}: {lap_time:.3f}s")
+            restantes = LAPS_LIMIT - vuelta_carrera
+            
+            # Verificar si el piloto completó TODAS las vueltas
+            if vuelta_carrera >= LAPS_LIMIT:
+                print(f"\n🏆 ¡{nombre_piloto} HA COMPLETADO LA CARRERA!")
+                DRIVERS_FINISHED.add(transponder_id)
+                
+                # Guardar tiempo de finalización si es el primero
+                if FIRST_FINISHER is None:
+                    FIRST_FINISHER = {
+                        'driver_id': driver['id'],
+                        'transponder_id': transponder_id,
+                        'finish_time': tiempo_total_segundos,
+                        'total_time': tiempo_total_segundos - VUELTA_SALIDA.get(transponder_id, 0)
+                    }
+                    print(f"   ⏱️ Tiempo total del ganador: {FIRST_FINISHER['total_time']:.3f}s")
+                
+                print(f"   ✅ {nombre_piloto} agregado a finalizados ({len(DRIVERS_FINISHED)}/{len(RACE_DRIVERS)})")
+                
+                # Verificar si TODOS los pilotos terminaron
+                if len(DRIVERS_FINISHED) == len(RACE_DRIVERS):
+                    print("\n" + "="*60)
+                    print("🏁 ¡CARRERA COMPLETADA POR TODOS LOS PILOTOS!")
+                    print(f"   Total pilotos: {len(RACE_DRIVERS)}")
+                    print(f"   Ganador: {nombre_piloto if FIRST_FINISHER and FIRST_FINISHER['transponder_id'] == transponder_id else 'Verificar'}")
+                    print("="*60)
+                    RACE_ACTIVE = False
+                    RACE_PAUSED = False
+                    if SESSION_ID:
+                        winner_id = FIRST_FINISHER['driver_id'] if FIRST_FINISHER else None
+                        winner_time = FIRST_FINISHER['total_time'] if FIRST_FINISHER else None
+                        update_race_status(
+                            SESSION_ID,
+                            'completed',
+                            winner_id,
+                            winner_time
+                        )
+            else:
+                if restantes == 1:
+                    print(f"⚠️ ¡ÚLTIMA VUELTA para {nombre_piloto}!")
+
+        print("-" * 50)
+
+        # Guardar en base de datos (solo vueltas reales, no la de salida)
+        if SESSION_ID and not es_primera_vez:
+            is_last_lap = (vuelta_carrera == LAPS_LIMIT)
+            save_lap(
+                SESSION_ID, driver['id'], transponder_id, nro_vueltas_raw,
+                vuelta_carrera, tiempo_total_segundos, lap_time, val_h, val_l,
+                None, None, is_last_lap
+            )
+        return None
     except Exception as e:
-        # Debug opcional
-        # print(f"Error parseando: {e} - Trama: {trama}", flush=True)
+        print(f"Error procesando: {e}")
         return None
 
 def listen_chronit():
-    global ULTIMA_ACTIVIDAD, ALERTA_MOSTRADA
+    global ULTIMA_ACTIVIDAD, ALERTA_MOSTRADA, SESSION_ID, LAPS_LIMIT, RACE_DRIVERS, RACE_ACTIVE, RACE_PAUSED
     
-    print("\n" + "="*55, flush=True)
-    print("🏁 SISTEMA ESL-400 v5.1 - MODO LECTURA CRUDA", flush=True)
-    print("="*55, flush=True)
-    print(f"📡 Puerto: {PORT} a {BAUD} baudios", flush=True)
-    print("🔄 Leyendo datos en tiempo real...\n", flush=True)
+    print("\n" + "="*50)
+    print("🛡️ SISTEMA ESL-400 | v9.0 - CONTROL DE CARRERA")
+    print("="*50)
+    print(">>> Esperando transponders...\n")
+    
+    init_db()
+    crear_nueva_carrera_al_inicio()
+    
+    if not get_current_session():
+        nombre_defecto = f"Circuito {datetime.now().strftime('%d/%m')}"
+        SESSION_ID = start_new_session(nombre_defecto, LAPS_LIMIT)
+        print(f"📋 Nueva sesión: {nombre_defecto} ({LAPS_LIMIT} vueltas)")
+    else:
+        actualizar_sesion_activa()
+    
+    actualizar_pilotos_inscritos()
     
     buffer_serial = ""
+    ultimo_codigo = ""
+    ultima_vez_deteccion = 0
+    reconectar = False
     
     while True:
+        check_restart_flag()
+        check_race_commands()
+        
         if not os.path.exists(PORT):
-            print(f"⚠️ Puerto {PORT} no encontrado. Reintentando...", flush=True)
+            print(f"🔍 Buscando hardware en {PORT}...")
             time.sleep(5)
             continue
         
         try:
             repair_permissions(PORT)
             
-            with serial.Serial(PORT, BAUD, timeout=0.05) as ser:
-                print(f"✅ Conectado a {PORT}\n", flush=True)
+            with serial.Serial(PORT, BAUD, timeout=0.1) as ser:
+                if reconectar or not hasattr(listen_chronit, 'conectado_msg'):
+                    print(f"✅ Puerto {PORT} conectado. Vigilando pista...\n")
+                    if not RACE_ACTIVE:
+                        print("⏳ Carrera pendiente. Presiona 'INICIAR CARRERA' para comenzar.\n")
+                    listen_chronit.conectado_msg = True
+                    reconectar = False
+                
                 ser.reset_input_buffer()
                 ULTIMA_ACTIVIDAD = time.time()
                 
                 while True:
-                    # Leer TODO lo disponible
+                    check_restart_flag()
+                    check_race_commands()
+
                     if ser.in_waiting > 0:
                         datos_crudos = ser.read(ser.in_waiting)
                         ULTIMA_ACTIVIDAD = time.time()
@@ -124,7 +452,7 @@ def listen_chronit():
                             texto = datos_crudos.decode('utf-8', errors='ignore')
                             buffer_serial += texto
                             
-                            # Buscar tramas completas (empiezan con $)
+                            # Separar por líneas (como en la versión legacy)
                             lineas = buffer_serial.split('\n')
                             buffer_serial = lineas[-1]  # Guardar lo incompleto
                             
@@ -133,61 +461,51 @@ def listen_chronit():
                                 if not linea:
                                     continue
                                 
-                                # Procesar transponders (tramas que empiezan con $)
-                                if linea.startswith('$'):
-                                    info = procesar_trama_esl400(linea)
-                                    if info:
-                                        minutos = int(info['segundos'] // 60)
-                                        segs = info['segundos'] % 60
-                                        
-                                        # Calidad de señal
-                                        if info['h'] > 200:
-                                            calidad = "🟢 EXCELENTE"
-                                        elif info['h'] > 100:
-                                            calidad = "🟡 BUENA"
-                                        elif info['h'] > 50:
-                                            calidad = "🟠 REGULAR"
-                                        else:
-                                            calidad = "🔴 DÉBIL"
-                                        
-                                        print(f"\n🏁 ¡TRANSPONDER DETECTADO! {calidad}", flush=True)
-                                        print(f"   🆔 ID: {info['id']}", flush=True)
-                                        print(f"   🔄 Vuelta carrera: {info['vuelta_carrera']}", flush=True)
-                                        print(f"   📟 Vueltas físicas: {info['vueltas_fisicas']}", flush=True)
-                                        print(f"   ⏱️  Tiempo: {minutos:02d}:{segs:06.3f}", flush=True)
-                                        print(f"   📡 Señal H:{info['h']:3d} L:{info['l']:3d}", flush=True)
-                                        print(f"   📝 Trama: {info['trama_original'][:30]}...", flush=True)
-                                        print("-"*55, flush=True)
+                                ahora = time.time()
                                 
-                                # Heartbeats (silenciosos)
-                                elif linea.startswith('#'):
-                                    # Mostrar solo si quieres debug
-                                    # print(".", end="", flush=True)
-                                    pass
+                                # Leer configuración en vivo (Artículo 4)
+                                config_antena = get_antenna_config()
+                                tiempo_filtro = config_antena.get('filter_time', 0.5)
                                 
+                                if linea != ultimo_codigo or (ahora - ultima_vez_deteccion) > tiempo_filtro:
+                                    if linea.startswith('$'):
+                                        procesar_cadena_esl400(linea)
+                                        ultima_vez_deteccion = ahora
+                                    elif linea.startswith('#'):
+                                        pass
+                                    ultimo_codigo = linea
+                                    
                         except Exception as e:
-                            print(f"Error procesando buffer: {e}", flush=True)
+                            pass
+                    else:
+                        time.sleep(0.01)
                     
-                    # Watchdog
-                    if time.time() - ULTIMA_ACTIVIDAD > 20 and not ALERTA_MOSTRADA:
-                        print("\n" + "!"*55, flush=True)
-                        print("🚨 ALERTA: SIN DATOS DEL HARDWARE POR 20 SEGUNDOS", flush=True)
-                        print("   Verifique la conexión del ESL-400", flush=True)
-                        print("!"*55 + "\n", flush=True)
+                    if time.time() - ULTIMA_ACTIVIDAD > 30 and not ALERTA_MOSTRADA:
+                        print("\n" + "!"*60)
+                        print("🚨 ALERTA: EL HARDWARE NO RESPONDE (30s de silencio)")
+                        print("   Reintentando conexión...")
+                        print("!"*60 + "\n")
                         ALERTA_MOSTRADA = True
+                        reconectar = True
+                        break
                     
-                    time.sleep(0.005)  # Pequeña pausa
-                    
-        except serial.SerialException as e:
-            print(f"❌ Error serial: {e}. Reintentando...", flush=True)
-            time.sleep(3)
         except Exception as e:
-            print(f"⚠️ Error: {e}. Reintentando...", flush=True)
-            time.sleep(2)
+            print(f"📡 Error: {e}. Reintentando en 5 segundos...")
+            time.sleep(5)
+            reconectar = True
+
+def start_api():
+    try:
+        from api import start_api_server
+        start_api_server()
+    except Exception as e:
+        print(f"⚠️ API no iniciada: {e}")
 
 if __name__ == "__main__":
     try:
+        api_thread = threading.Thread(target=start_api, daemon=True)
+        api_thread.start()
+        time.sleep(1)
         listen_chronit()
     except KeyboardInterrupt:
-        print("\n\n🛑 Sistema detenido por el operador", flush=True)
-        print("👋 ¡Hasta pronto!\n", flush=True)
+        print("\n🛑 Sistema detenido.")
