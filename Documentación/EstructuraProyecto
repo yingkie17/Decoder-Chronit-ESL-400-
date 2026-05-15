@@ -1,0 +1,67 @@
+DOCUMENTO MAESTRO - CHRONIT RACING SYSTEM
+Para copiar en un nuevo chat cuando sea necesario:
+
+# 🏁 CHRONIT Racing System - Documento Maestro
+
+## ¿Qué es?
+Sistema profesional de cronometraje para karts que conecta con decoder ESL-400 por USB, detecta transponders y gestiona carreras en tiempo real.
+
+## Estado actual (TODO FUNCIONANDO)
+✅ Detección de transponders vía ESL-400
+✅ Parseo de tramas (ID en data[4:8])
+✅ API Flask con CORS
+✅ Dashboard web completo (7 paneles)
+✅ Base de datos SQLite persistente
+✅ Control de carrera (iniciar/pausar/reanudar/finalizar/repetir/resetear)
+✅ Gestión de pilotos (CRUD)
+✅ Gestión de transponders (manual + semiautomático)
+✅ Pantalla Pública y Pantalla TV
+✅ Monitor de señales en vivo
+✅ Configuración de antena (umbral H + tiempo filtro)
+✅ Campo KART en pilotos y transponders
+✅ Dos modos de carrera: Position Race y Time Attack
+✅ Autenticación de usuarios (login/logout con tokens)
+✅ Respaldo y restauración de base de datos
+✅ Respaldo de pilotos y transponders
+✅ Limpieza segura de datos
+
+## Estructura del proyecto
+Chronit/
+├── src/
+│ ├── main.py # CONGELADO - Lector del decoder
+│ ├── api.py # SOLO AGREGAR endpoints
+│ ├── database.py # SOLO AGREGAR tablas/columnas
+│ ├── users_db.py # Autenticación y sesiones
+│ ├── cleanup.py # Mantenimiento de BD
+│ └── templates/
+│ └── dashboard.html # Único archivo editable
+├── infrastructure/
+│ ├── docker-compose.yml
+│ └── Dockerfile
+├── data/ # Base de datos persistente
+└── constitution/ # Reglas del proyecto
+
+
+## CONSTITUCIÓN (NO ROMPER)
+❌ NO modificar main.py (detección de transponders)
+❌ NO modificar endpoints existentes en api.py
+❌ NO modificar tablas existentes en database.py
+✅ Solo AGREGAR nuevas funcionalidades
+✅ Probar un cambio a la vez
+
+## Comandos útiles
+```bash
+# Iniciar sistema
+cd infrastructure && docker compose up --build
+
+# Ver logs
+docker compose logs -f
+
+# Limpiar todo
+docker compose down -v && docker system prune -a -f
+
+# Entrar al contenedor
+docker compose exec hardware bash
+
+# Ver logs del hardware
+docker compose logs hardware-1
