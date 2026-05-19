@@ -1,522 +1,238 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CHRONIT Racing System</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
-
-        :root {
-            --bg: #0f1115;
-            --bg-elev-1: #171a21;
-            --bg-elev-2: #1d212a;
-            --line: #2a303c;
-            --line-soft: #252b35;
-            --text: #eceff4;
-            --muted: #a4adbc;
-            --accent: #64b5f6;
-            --accent-2: #8cd3ff;
-            --ok: #63d297;
-            --warn: #f4c06b;
-            --danger: #ef7a86;
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: "Space Grotesk", "Segoe UI", Roboto, sans-serif;
-            background:
-                radial-gradient(circle at top right, rgba(100, 181, 246, 0.11), transparent 42%),
-                radial-gradient(circle at top left, rgba(140, 211, 255, 0.06), transparent 36%),
-                var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            letter-spacing: 0.01em;
-        }
-
-        .navbar {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            background: rgba(15, 17, 21, 0.9);
-            border-bottom: 1px solid var(--line);
-            backdrop-filter: blur(8px);
-            padding: 0.95rem 1.5rem;
-            display: flex;
-            gap: 1.4rem;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .nav-brand {
-            font-size: 1.05rem;
-            font-weight: 800;
-            letter-spacing: 0.09em;
-            color: var(--text);
-        }
-        .nav-brand span { color: var(--accent-2); }
-
-        .nav-links {
-            display: flex;
-            gap: 0.5rem;
-            flex: 1;
-            flex-wrap: wrap;
-        }
-
-        .nav-links a {
-            color: var(--muted);
-            text-decoration: none;
-            font-size: 0.74rem;
-            font-weight: 600;
-            padding: 0.5rem 0.9rem;
-            border-radius: 10px;
-            border: 1px solid transparent;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .nav-links a:hover,
-        .nav-links a.active {
-            background: #232835;
-            border-color: var(--line);
-            color: var(--text);
-        }
-
-        .control-bar {
-            background: rgba(16, 18, 23, 0.9) !important;
-            border: 1px solid var(--line);
-            border-radius: 12px;
-            padding: 0.9rem 1rem;
-            display: flex;
-            gap: 0.65rem;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-bottom: 1.2rem;
-            box-shadow: var(--shadow);
-        }
-
-        .btn-success { background: rgba(99, 210, 151, 0.14); border-color: rgba(99, 210, 151, 0.56); color: #7fe2af; }
-        .btn-success:hover { background: rgba(99, 210, 151, 0.2); }
-        .btn-warning { background: rgba(244, 192, 107, 0.14); border-color: rgba(244, 192, 107, 0.56); color: #ffd997; }
-        .btn-warning:hover { background: rgba(244, 192, 107, 0.2); }
-        .btn-danger { background: rgba(239, 122, 134, 0.14); border-color: rgba(239, 122, 134, 0.6); color: #ffb6bf; }
-        .btn-danger:hover { background: rgba(239, 122, 134, 0.2); }
-
-        .container {
-            padding: 1.4rem;
-            max-width: 1450px;
-            margin: 0 auto;
-        }
-
-        .panel { display: none; animation: fadeIn 0.25s ease; }
-        .panel.active { display: block; }
-
-        .card {
-            background: linear-gradient(180deg, rgba(29, 33, 42, 0.97), rgba(24, 28, 36, 0.99));
-            border: 1px solid var(--line);
-            border-radius: 14px;
-            overflow: hidden;
-            margin-bottom: 1.2rem;
-            box-shadow: var(--shadow);
-        }
-
-        .card-header {
-            padding: 0.85rem 1rem;
-            border-bottom: 1px solid var(--line);
-            font-size: 0.68rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.11em;
-            color: var(--muted);
-            background: rgba(255, 255, 255, 0.01);
-        }
-
-        .card-body { padding: 1rem; }
-
-        table { width: 100%; border-collapse: collapse; }
-        th {
-            text-align: left;
-            padding: 0.7rem 0.8rem;
-            font-size: 0.68rem;
-            font-weight: 700;
-            color: var(--muted);
-            border-bottom: 1px solid var(--line);
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-        }
-        td {
-            padding: 0.72rem 0.8rem;
-            font-size: 0.8rem;
-            border-bottom: 1px solid var(--line-soft);
-            color: #e4eaf4;
-        }
-        tr:hover { background: rgba(255, 255, 255, 0.015); }
-
-        .pos-1 { color: #a8dcff; font-weight: 700; }
-        .pos-2 { color: #cfd7e4; font-weight: 600; }
-        .pos-3 { color: #e0bf98; font-weight: 600; }
-        .best-lap { color: #64e6a3; font-family: "JetBrains Mono", monospace; font-weight: 700; }
-
-        .grid-2 { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 1.2rem; }
-
-        .stat {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.55rem 0;
-            font-size: 0.76rem;
-            border-bottom: 1px solid var(--line-soft);
-            color: var(--muted);
-        }
-        .stat-value {
-            font-family: "JetBrains Mono", monospace;
-            color: var(--accent-2);
-            font-weight: 700;
-            font-size: 0.78rem;
-        }
-
-        .btn {
-            padding: 0.55rem 0.95rem;
-            background: #242937;
-            border: 1px solid #313949;
-            color: var(--text);
-            border-radius: 10px;
-            font-size: 0.74rem;
-            font-weight: 700;
-            letter-spacing: 0.02em;
-            cursor: pointer;
-            transition: all 0.18s ease;
-        }
-
-        .btn:hover {
-            background: #2d3445;
-            border-color: #49556b;
-            transform: translateY(-1px);
-        }
-        .btn:disabled {
-            cursor: not-allowed;
-            opacity: 0.45 !important;
-            transform: none;
-        }
-        .btn-primary {
-            background: linear-gradient(180deg, #7dc6ff, #61b4f3);
-            border-color: #95d3ff;
-            color: #16202f;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(180deg, #95d3ff, #77c4ff);
-            border-color: #b8e3ff;
-        }
-        .btn-sm { padding: 0.3rem 0.55rem; font-size: 0.68rem; border-radius: 8px; }
-
-        input, select {
-            width: 100%;
-            padding: 0.58rem 0.7rem;
-            background: #0f141c;
-            border: 1px solid #2b3442;
-            color: var(--text);
-            border-radius: 10px;
-            font-size: 0.76rem;
-            margin-bottom: 0.58rem;
-            outline: none;
-            transition: border-color 0.18s ease, box-shadow 0.18s ease;
-        }
-        input:focus, select:focus {
-            border-color: rgba(140, 211, 255, 0.9);
-            box-shadow: 0 0 0 3px rgba(140, 211, 255, 0.2);
-        }
-
-        .usb-status {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            font-size: 0.74rem;
-            padding: 0.62rem;
-            background: #0d1218;
-            border: 1px solid #2a3340;
-            border-radius: 10px;
-        }
-        .usb-led { width: 10px; height: 10px; border-radius: 50%; background: #5f6774; }
-        .usb-led.on { background: var(--ok); box-shadow: 0 0 12px rgba(0, 210, 106, 0.75); }
-        .usb-led.off { background: var(--danger); box-shadow: 0 0 12px rgba(239, 122, 134, 0.6); }
-
-        .refresh {
-            font-size: 0.65rem;
-            color: #667083;
-            text-align: right;
-            padding: 0.45rem 0.65rem;
-        }
-
-        .spinner {
-            width: 52px;
-            height: 52px;
-            border: 5px solid rgba(255, 255, 255, 0.08);
-            border-top: 5px solid var(--accent-2);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        #loaderOverlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(4, 6, 10, 0.9);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            backdrop-filter: blur(6px);
-        }
-        #loaderMessage {
-            color: #f6f8fc;
-            margin-top: 1.4rem;
-            font-size: 1rem;
-            font-weight: 600;
-            letter-spacing: 0.02em;
-        }
-
-        #countdownOverlay {
-            background: rgba(5, 7, 11, 0.92) !important;
-            backdrop-filter: blur(6px);
-        }
-        #countdownNumber {
-            text-shadow: 0 0 24px rgba(140, 211, 255, 0.45);
-        }
-
-        .modal-content {
-            background: var(--bg-elev-1) !important;
-            border: 1px solid #364052 !important;
-            box-shadow: var(--shadow);
-        }
-
-        ::-webkit-scrollbar { width: 10px; height: 10px; }
-        ::-webkit-scrollbar-track { background: #0b0f15; }
-        ::-webkit-scrollbar-thumb { background: #2a3343; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #39455a; }
-
-        .race-context {
-            margin-top: 0.9rem;
-            font-size: 0.74rem;
-            color: var(--muted);
-            padding: 0.65rem 0.75rem;
-            background: #121722;
-            border: 1px solid #2a3240;
-            border-radius: 10px;
-        }
-
-        .public-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) 360px;
-            gap: 1.2rem;
-        }
-
-        .lap-box {
-            margin-bottom: 0.9rem;
-            border: 1px solid #2d3544;
-            border-radius: 10px;
-            overflow: hidden;
-            background: #121722;
-        }
-        .lap-box h4 {
-            font-size: 0.72rem;
-            color: #dbe2ee;
-            letter-spacing: 0.05em;
-            font-weight: 700;
-            padding: 0.6rem 0.75rem;
-            border-bottom: 1px solid #2a3240;
-        }
-        .lap-box table th, .lap-box table td {
-            font-size: 0.7rem;
-            padding: 0.5rem 0.6rem;
-        }
-
-        .muted-text { color: var(--muted); }
-
-        .tv-board {
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 1rem;
-        }
-        .tv-topline {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 0.8rem;
-            padding: 0.8rem 1rem;
-            border-radius: 12px;
-            background: #131824;
-            border: 1px solid #2f3747;
-        }
-        .tv-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            color: #e9f3ff;
-        }
-        .tv-meta {
-            font-size: 0.95rem;
-            color: #c2d0e3;
-        }
-        .tv-table th { font-size: 0.9rem; }
-        .tv-table td {
-            font-size: 1.1rem;
-            padding-top: 0.85rem;
-            padding-bottom: 0.85rem;
-            font-weight: 500;
-        }
-        .tv-highlight {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #9ed8ff;
-            margin-bottom: 0.4rem;
-        }
-        .tv-sub {
-            font-size: 1rem;
-            color: #b7c3d5;
-            margin-bottom: 0.7rem;
-        }
-        .tv-laps-rotator {
-            min-height: 340px;
-            border-radius: 12px;
-            border: 1px solid #2f3747;
-            background: #131824;
-            padding: 0.8rem;
-        }
-        .tv-laps-rotator h4 {
-            font-size: 1.1rem;
-            margin-bottom: 0.6rem;
-            color: #eef5ff;
-        }
-        .tv-laps-rotator table th { font-size: 0.8rem; }
-        .tv-laps-rotator table td {
-            font-size: 0.95rem;
-            padding-top: 0.55rem;
-            padding-bottom: 0.55rem;
-        }
-        .tv-note {
-            margin-top: 0.8rem;
-            font-size: 0.84rem;
-            color: #b3bfd1;
-        }
-
-        .winner-pill {
-            display: inline-flex;
-            align-items: center;
-            margin-left: 0.45rem;
-            padding: 0.12rem 0.45rem;
-            border-radius: 999px;
-            font-size: 0.6rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: #1f1a0b;
-            background: linear-gradient(180deg, #ffe09a, #f3c463);
-            border: 1px solid #f4d489;
-            box-shadow: 0 0 10px rgba(255, 217, 128, 0.28);
-            vertical-align: middle;
-        }
-        .winner-row {
-            background: linear-gradient(90deg, rgba(255, 217, 128, 0.12), rgba(255, 217, 128, 0.03)) !important;
-        }
-        .winner-name {
-            font-weight: 700;
-            color: #fff3cf;
-        }
-
-        @media (max-width: 980px) {
-            .public-grid { grid-template-columns: 1fr; }
-            .tv-board { grid-template-columns: 1fr; }
-        }
-        @media (max-width: 900px) {
-            .grid-2 { grid-template-columns: 1fr; }
-        }
-        @media (max-width: 700px) {
-            .navbar { flex-direction: column; align-items: flex-start; }
-            .nav-links { justify-content: flex-start; }
-            .container { padding: 1rem; }
-            .control-bar { padding: 0.75rem; }
-        }
-    </style>
+    <title>GO kart Racing System</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <!-- CSS externo -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
 </head>
+
 <body>
+
     <!-- OVERLAY: LOADER -->
     <div id="loaderOverlay">
         <div class="spinner"></div>
         <p id="loaderMessage">Procesando...</p>
     </div>
 
-    <!-- OVERLAY: CUENTA REGRESIVA -->
-    <div id="countdownOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:2000; align-items:center; justify-content:center; flex-direction:column;">
-        <div style="font-size:0.9rem; color:#aaa; letter-spacing:1px; text-transform:uppercase; margin-bottom:0.75rem;">Salida en</div>
-        <div id="countdownNumber" style="font-size:6rem; font-weight:800; color:#e5484d; line-height:1;">10</div>
-        <div id="countdownHint" style="margin-top:1rem; font-size:0.9rem; color:#888;">Prepárense</div>
-    </div>
-
     <div class="navbar">
-        <div class="nav-brand">CHRONIT<span>RACE</span></div>
-        <div class="nav-links">
-            <a class="active" data-panel="live">Control en Vivo</a>
-            <a data-panel="public">Pantalla Publica</a>
-            <a data-panel="tv">Pantalla TV</a>
-            <a data-panel="drivers">Pilotos</a>
-            <a data-panel="transponders">Transponders</a>
-            <a data-panel="race-setup">Nueva Carrera</a>
-            <a data-panel="system">Sistema</a>
+        <div class="nav-brand">
+            <img src="{{ url_for('static', filename='LogoVectorizadoGoKarting.svg') }}" alt="Logo Chronit"
+                style="height: 70px;">
+        </div>
+
+        <!-- Menú de escritorio (visible solo en pantallas grandes) -->
+        <div class="nav-links nav-desktop">
+            <a class="active" data-panel="tableroPublico">Tablero Público</a>
+            <a data-panel="live" class="admin-only"><img src="{{ url_for('static', filename='favicon.svg') }}"
+                    alt="Casco Karting" style="width: 10px; height: 10px; margin-right: 4px;">Control de Carrera</a>
+            <a data-panel="public">Paddock Live Feed</a>
+            <a data-panel="tv">Pit Wall Monitor</a>
+            <a data-panel="drivers" class="admin-only">Pilotos</a>
+            <a data-panel="transponders" class="admin-only">Transponders</a>
+            <a data-panel="race-setup" class="admin-only">Carrera</a>
+            <a data-panel="system" class="admin-only">Sistema</a>
+        </div>
+
+        <!-- Contenedor de botones (reset, login, hamburguesa) -->
+        <div class="mobile-buttons">
+            <span id="userStatus" class="admin-only" style="color: var(--muted); font-size: 0.85rem;"></span>
+            <button id="loginBtn" class="btn">Iniciar Sesión</button>
+            <button id="logoutBtn" class="btn " style="display: none;">Cerrar Sesión</button>
+            <button class="menu-toggle" id="menuToggle">☰</button>
         </div>
     </div>
 
-  
-    
-    <div class="container">
-    <!-- BARRA DE CONTROL DE CARRERA -->
-    <div class="control-bar" id="raceControlBar" style="background: #0d0d0d; border-bottom: 1px solid #1f1f1f; padding: 0.75rem 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center;">
-        <button class="btn btn-success" id="startRaceBtn">Iniciar Carrera</button>
-        <button class="btn btn-warning" id="pauseRaceBtn" style="display:none;">Pausar</button>
-        <button class="btn btn-success" id="resumeRaceBtn" style="display:none;">Reanudar</button>
-        <button class="btn" id="repeatRaceBtn">Repetir Carrera</button>
-        <button class="btn btn-danger" id="finishRaceBtn" style="display:none;">Finalizar</button>
+
+    <!-- Menú móvil (desplegable) - SOLO UNO -->
+    <div id="mobileMenu" class="mobile-menu">
+        <button class="close-menu" id="closeMenu">✕</button>
+        <div class="nav-links-mobile">
+            <a class="active" data-panel="tableroPublico">Tablero Público</a>
+            <a data-panel="live" class="admin-only"><img src="{{ url_for('static', filename='favicon.svg') }}"
+                    alt="Casco Karting" style="width: 16px; height: 16px; margin-right: 8px;">Control de Carrera</a>
+            <a data-panel="public">Paddock Live Feed</a>
+            <a data-panel="tv">Pit Wall Monitor</a>
+            <a data-panel="drivers" class="admin-only">Pilotos</a>
+            <a data-panel="transponders" class="admin-only">Transponders</a>
+            <a data-panel="race-setup" class="admin-only">Carrera</a>
+            <a data-panel="system" class="admin-only">Sistema</a>
+        </div>
     </div>
-        <!-- Panel En Vivo -->
-        <div id="panel-live" class="panel active">
-            <div class="grid-2">
-                <div class="card">
-                    <div class="card-header">Posiciones en Vivo</div>
-                    <div style="overflow-x: auto;">
-                        <table>
-                            <thead><tr><th>POS</th><th>PILOTO</th><th>TRANSPONDER</th><th>VTAS</th><th>MEJOR</th><th>ÚLTIMA</th><th>RESTANTES</th></tr></thead>
-                            <tbody id="leaderboardBody"><tr><td colspan="7" style="text-align:center;padding:2rem;">Esperando datos...</td></tr></tbody>
-                        </table>
+
+    <!-- Modal de Login -->
+    <div id="loginModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:3000; align-items:center; justify-content:center;">
+        <div
+            style="background: var(--bg-elev-2); border: 1px solid var(--line); border-radius:20px; padding:2.5rem; width:100%; max-width:420px;">
+            <h2 style="text-align:center; margin-bottom:2rem; font-size:1.5rem;"><img
+                    src="{{ url_for('static', filename='favicon.svg') }}" alt="GO KARTING"
+                    style="width: 25px; height: 25px;"> Iniciar Sesión</h2>
+            <div style="margin-bottom:1.25rem;">
+                <label
+                    style="display:block; margin-bottom:0.5rem; color:var(--muted); font-size:0.85rem;">Usuario</label>
+                <input type="text" id="loginUsername"
+                    style="width:100%; padding:0.9rem 1.1rem; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--text); font-size:1rem;">
+            </div>
+            <div style="margin-bottom:1.75rem;">
+                <label
+                    style="display:block; margin-bottom:0.5rem; color:var(--muted); font-size:0.85rem;">Contraseña</label>
+                <input type="password" id="loginPassword"
+                    style="width:100%; padding:0.9rem 1.1rem; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--text); font-size:1rem;">
+            </div>
+            <div style="display:flex; gap:0.75rem;">
+                <button id="cancelLoginBtn" class="btn" style="flex:1;">Cancelar</button>
+                <button id="submitLoginBtn" class="btn btn-success" style="flex:1;">Ingresar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!--Tablero Público -->
+        <div id="panel-tableroPublico" class="panel active ">
+
+            <div class="chronit-tv-container">
+
+                <div class="tablero-header">
+                    <div class="event-tag">
+                        <span id="publicRaceNameDisplay">Go Karting Sport Bar - Carrera</span>
+                        <span id="raceStatusBadge" class="race-status-badge">Carrera Pendiente</span>
                     </div>
-                    <div class="refresh" id="refreshTime">--</div>
+                    <div id="publicRaceModeDisplay" style="font-size:0.85rem; color:#a4adbc; margin-top:0.25rem;">--
+                    </div>
+                    <div id="publicRaceDescriptionDisplay"
+                        style="font-size:0.82rem; color:#a4adbc; margin-top:0.15rem;">--</div>
+
+                    <div class="race-timer" id="total_time"> 0:00</div>
                 </div>
-                
+
+                <div class="karting-leaderboard">
+
+                    <div class="k-header">
+                        <div class="k-col-pos">Pos</div>
+                        <div class="k-col-name">Nombre</div>
+                        <div class="k-col-vueltas">Vueltas</div>
+                        <div class="k-col-mejor">Mejor</div>
+                        <div class="k-col-tiempo">Tiempo</div>
+                        <div class="k-col-tiempo-individual">T.Indiv</div>
+                        <div class="k-col-kart">Kart</div>
+                    </div>
+
+                    <div id="lista-pilotos"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel En Vivo Administrativo - PANEL MAESTRO -->
+        <div id="panel-live" class="panel admin-only">
+            <!-- Barra de control de carrera (existente) -->
+            <div class="control-bar" id="raceControlBar"
+                style="background: #0d0d0d; border-bottom: 1px solid #1f1f1f; padding: 0.75rem 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center;">
+                <button class="btn btn-success" id="startRaceBtn"
+                    style="display: inline-flex; align-items: center; gap: 8px;">
+                    <img src="{{ url_for('static', filename='favicon.svg') }}" alt="Casco Karting"
+                        style="width: 13px; height: 13px;">
+                    Iniciar Carrera
+                </button>
+                <button class="btn btn-warning" id="pauseRaceBtn" style="display:none;">Pausar</button>
+                <button class="btn btn-success" id="resumeRaceBtn" style="display:none;">Reanudar</button>
+                <button class="btn" id="repeatRaceBtn" style="display:none;">Repetir Carrera</button>
+                <button class="btn btn-warning" id="resetBoardBtn" style="display:none;"> <img
+                        src="{{ url_for('static', filename='refresh2.svg') }}" alt="Resetear vistas" class="admin-only"
+                        title="Resetear tableros" style="width: 15px; height: 15px; cursor: pointer;"> Resetear
+                    Tablero</button>
+                <button class="btn btn-danger" id="finishRaceBtn" style="display:none;">Finalizar</button>
+                <button class="btn btn-primary" id="showWinnerBtn" style="display:none;">🏆 Mostrar Ganadores</button>
+            </div>
+
+            <!-- Grid principal: 2 columnas -->
+            <div class="grid-2">
+                <!-- Columna izquierda: Tabla de posiciones estilo Tablero Público -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="tablero-header">
+                            <div class="event-tag">
+                                <span id="liveRaceNameDisplay"
+                                    style="font-size: normal !important; font-style: normal;">Go Karting Sport Bar -
+                                    Carrera</span>
+                                <span id="liveRaceStatusBadge" class="race-status-badge"
+                                    style="font-size: small !important;">Carrera Pendiente</span>
+                            </div>
+                            <div id="liveRaceModeDisplay"
+                                style="font-size: smaller!important; font-family: Arial, Helvetica, sans-serif !important; color:#e1ecff; margin-top:0.25rem;">
+                                --</div>
+                            <div id="liveRaceDescriptionDisplay"
+                                style="font-size: smaller!important; font-family: Arial, Helvetica, sans-serif !important; color:#e0ecff; margin-top:0.15rem;">
+                                --</div>
+                            <div class="race-timer" id="liveTotalTime" style="font-size: medium!important;">00:00.000
+                            </div>
+                        </div>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <div class="karting-leaderboard" style="padding: 0;">
+                            <div class="k-header">
+                                <div class="k-col-pos">Pos</div>
+                                <div class="k-col-name">Nombre</div>
+                                <div class="k-col-vueltas">Vueltas</div>
+                                <div class="k-col-mejor">Mejor</div>
+                                <div class="k-col-tiempo">Tiempo</div>
+                                <div class="k-col-tiempo-individual">T.Indiv</div>
+                                <div class="k-col-kart">Kart</div>
+                            </div>
+                            <div id="liveLeaderboardPublicStyle"></div>
+                        </div>
+                    </div>
+                    <div class="refresh" id="refreshTimeLive">--</div>
+                </div>
+
+                <!-- Columna derecha: Estadísticas + Detalle de vueltas -->
                 <div>
+                    <!-- Estadísticas de carrera (existentes) -->
                     <div class="card">
-                        <div class="card-header">Estadisticas de Carrera</div>
+                        <div class="card-header">📊 ESTADÍSTICAS DE CARRERA</div>
                         <div class="card-body">
-                            <div class="stat"><span>Circuito</span><span class="stat-value" id="circuitName">--</span></div>
-                            <div class="stat"><span>Vueltas</span><span class="stat-value" id="lapsLimit">--</span></div>
-                            <div class="stat"><span>Pilotos</span><span class="stat-value" id="totalDrivers">0</span></div>
-                            <div class="stat"><span>Finalizados</span><span class="stat-value" id="finishedDrivers">0</span></div>
+                            <div class="stat"><span>Circuito</span><span class="stat-value" id="circuitName">--</span>
+                            </div>
+                            <div class="stat"><span>Vueltas</span><span class="stat-value" id="lapsLimit">--</span>
+                            </div>
+                            <div class="stat"><span>Cronómetro</span><span class="stat-value"
+                                    id="liveRaceClock">00:00</span></div>
+                            <div class="stat"><span>Pilotos</span><span class="stat-value" id="totalDrivers">0</span>
+                            </div>
+                            <div class="stat"><span>Finalizados</span><span class="stat-value"
+                                    id="finishedDrivers">0</span></div>
+                            <div class="stat"><span>Líder actual</span><span class="stat-value"
+                                    id="liveLeaderName">--</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Detalle de vueltas por piloto (estilo Paddock Live Feed) -->
+                    <div class="card">
+                        <div class="card-header">📋 DETALLE DE VUELTAS POR PILOTO</div>
+                        <div id="liveLapsDetail" style="max-height: 300px; overflow-y: auto; padding: 0.5rem;">
+                            <p class="muted-text" style="text-align:center;">Esperando datos de vueltas...</p>
+                        </div>
+                    </div>
+
+                    <!-- Rotador de últimas vueltas (estilo Pit Wall Monitor) -->
+                    <div class="card">
+                        <div class="card-header">🔄 ÚLTIMAS VUELTAS</div>
+                        <div id="liveTvLapsRotator" style="min-height: 150px;">
+                            <p class="muted-text" style="text-align:center;">Esperando datos...</p>
                         </div>
                     </div>
                 </div>
             </div>
+            <button class="btn btn-sm admin-only" id="resetVistasBtn" style="width: 150px !important;"> <img
+                    src="{{ url_for('static', filename='refresh2.svg') }}" alt="Resetear vistas" class="admin-only"
+                    title="Resetear tableros" style="width: 15px; height: 15px; cursor: pointer;">Resetear
+                Tablero</button>
         </div>
+
+
 
         <!-- Panel Publico -->
         <div id="panel-public" class="panel">
@@ -525,16 +241,29 @@
                 <div class="card-body">
                     <div class="race-context">
                         Carrera actual: <strong id="publicRaceName">--</strong> |
-                        Vueltas objetivo: <strong id="publicLapsLimit">--</strong>
+                        Vueltas objetivo: <strong id="publicLapsLimit">--</strong> |
+                        Modo: <strong id="publicRaceMode">--</strong>
+                    </div>
+                    <div id="publicRaceDescription" style="font-size:0.8rem; color:#a4adbc; margin-top:0.35rem;">--
                     </div>
                 </div>
                 <div style="overflow-x: auto;">
                     <table>
                         <thead>
-                            <tr><th>Pos</th><th>Piloto</th><th>Vtas</th><th>Tiempo Total</th><th>Mejor Vta</th><th>Ultima Vta</th></tr>
+                            <tr>
+                                <th>Pos</th>
+                                <th>Piloto</th>
+                                <th>Vtas</th>
+                                <th>Tiempo Total</th>
+                                <th>Mejor Vta</th>
+                                <th>Ultima Vta</th>
+                                <th>Vel.</th>
+                            </tr>
                         </thead>
                         <tbody id="publicLeaderboardBody">
-                            <tr><td colspan="6" style="text-align:center;padding:1.5rem;">Sin datos de carrera</td></tr>
+                            <tr>
+                                <td colspan="6" style="text-align:center;padding:1.5rem;">Sin datos de carrera</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -550,10 +279,16 @@
                 <div class="card">
                     <div class="card-header">Informacion para Publico</div>
                     <div class="card-body">
-                        <div class="stat"><span>Carrera</span><span class="stat-value" id="publicRaceLabel">--</span></div>
-                        <div class="stat"><span>Estado</span><span class="stat-value" id="publicRaceStatus">--</span></div>
-                        <div class="stat"><span>Pilotos en pista</span><span class="stat-value" id="publicDriversCount">0</span></div>
-                        <div class="stat"><span>Lider actual</span><span class="stat-value" id="publicLeaderName">--</span></div>
+                        <div class="stat"><span>Carrera</span><span class="stat-value" id="publicRaceLabel">--</span>
+                        </div>
+                        <div class="stat"><span>Estado</span><span class="stat-value" id="publicRaceStatus">--</span>
+                        </div>
+                        <div class="stat"><span>Cronometro</span><span class="stat-value"
+                                id="publicRaceClock">00:00</span></div>
+                        <div class="stat"><span>Pilotos en pista</span><span class="stat-value"
+                                id="publicDriversCount">0</span></div>
+                        <div class="stat"><span>Lider actual</span><span class="stat-value"
+                                id="publicLeaderName">--</span></div>
                         <p style="font-size:0.72rem; color:#a4adbc; margin-top:1rem;">
                             Esta vista es para el publico. No incluye botones de control ni acciones administrativas.
                         </p>
@@ -566,7 +301,8 @@
         <div id="panel-tv" class="panel">
             <div class="tv-topline">
                 <div class="tv-title" id="tvRaceTitle">Carrera en Espera</div>
-                <div class="tv-meta">Estado: <strong id="tvRaceStatus">--</strong> | Hora: <strong id="tvClock">--:--:--</strong></div>
+                <div class="tv-meta">Estado: <strong id="tvRaceStatus">--</strong> | Cronometro: <strong
+                        id="tvRaceClock">00:00</strong> | Hora: <strong id="tvClock">--:--:--</strong></div>
             </div>
             <div class="tv-board">
                 <div class="card" style="margin-bottom:0;">
@@ -574,10 +310,19 @@
                     <div style="overflow-x: auto;">
                         <table class="tv-table">
                             <thead>
-                                <tr><th>Pos</th><th>Piloto</th><th>Vtas</th><th>Total</th><th>Mejor</th><th>Gap Lider</th></tr>
+                                <tr>
+                                    <th>Pos</th>
+                                    <th>Piloto</th>
+                                    <th>Vtas</th>
+                                    <th>Total</th>
+                                    <th>Mejor</th>
+                                    <th>Gap Lider</th>
+                                </tr>
                             </thead>
                             <tbody id="tvLeaderboardBody">
-                                <tr><td colspan="6" style="text-align:center;padding:2rem;">Esperando carrera...</td></tr>
+                                <tr>
+                                    <td colspan="6" style="text-align:center;padding:2rem;">Esperando carrera...</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -587,9 +332,12 @@
                         <div class="card-body">
                             <div class="tv-highlight" id="tvLeaderName">--</div>
                             <div class="tv-sub" id="tvLeaderMeta">Lider actual</div>
-                            <div class="stat"><span>Pilotos activos</span><span class="stat-value" id="tvDriversCount">0</span></div>
-                            <div class="stat"><span>Vueltas objetivo</span><span class="stat-value" id="tvLapsLimit">--</span></div>
-                            <div class="stat"><span>Actualizacion</span><span class="stat-value" id="tvRefreshTime">--</span></div>
+                            <div class="stat"><span>Pilotos activos</span><span class="stat-value"
+                                    id="tvDriversCount">0</span></div>
+                            <div class="stat"><span>Vueltas objetivo</span><span class="stat-value"
+                                    id="tvLapsLimit">--</span></div>
+                            <div class="stat"><span>Actualizacion</span><span class="stat-value"
+                                    id="tvRefreshTime">--</span></div>
                         </div>
                     </div>
                     <div class="tv-laps-rotator" id="tvLapsRotator">
@@ -599,94 +347,405 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Panel Pilotos -->
-        <div id="panel-drivers" class="panel">
-            <div class="grid-2">
+        <div id="panel-drivers" class="panel admin-only">
+                <!-- Botón de refrescar global -->
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem; padding: 0 0.5rem;">
+                    <button id="refreshAllPilotsBtn" class="btn " style="background: #2196f3; display: flex; align-items: center; gap: 8px;">
+                        <img src="{{ url_for('static', filename='refresh2.svg') }}" alt="Refrescar" style="width: 16px; height: 16px;">
+                        REFRESCAR LISTAS
+                    </button>
+                </div>
+                
+
+            <div class="universal-grid3">
                 <div class="card">
-                    <div class="card-header">Registrar Piloto</div>
-                    <div class="card-body">
-                        <input type="number" id="driverTransponder" placeholder="ID Transponder">
-                        <input type="text" id="driverName" placeholder="Nombre">
-                        <input type="text" id="driverLastname" placeholder="Apellido">
-                        <button class="btn btn-primary" id="saveDriverBtn" style="width:100%;">Guardar</button>
+                    <div class="universal-grid">
+
+                        <div class="universal-box">
+                            <div class="card-header universal-header">Registrar Piloto</div>
+
+                            <div class="card-body">
+                                <label for="newLapsLimit">Código de Transponder:</label>
+                                <input type="number" id="driverTransponder" placeholder="ID Transponder"
+                                    style=" margin-top: 0.5rem;">
+                                <label for="newLapsLimit">Nombre de Piloto:</label>
+                                <input type="text" id="driverName" placeholder="Nombre" style=" margin-top: 0.5rem;">
+                                <label for="newLapsLimit">Apellido de Piloto:</label>
+                                <input type="text" id="driverLastname" placeholder="Apellido"
+                                    style=" margin-top: 0.5rem;">
+                                <button class="btn btn-primary" id="saveDriverBtn" style="width:100%;">Guardar</button>
+                            </div>
+                        </div>
+                        <div class="universal-box">
+                            <div class="card-header universal-header">Inscribir a Carrera</div>
+                            <div class="card-body">
+                                <label for="newLapsLimit">Inscripción de pilotos para carrera:</label>
+                                <div class="race-context">
+                                    <span style="font-size: medium;">Carrera: </span> <span> </span><strong
+                                        id="raceNameForEnrollment"
+                                        style=" color: #2196f3; font-size: medium;">--</strong>
+                                </div>
+                                <span style="font-size:0.72rem; color:#a4adbc; margin-top:0.5rem;">
+                                    Seleccione el piloto a inscribir:
+                                </span>
+                                <select id="selectDriverToAdd" style="margin-top:0.5rem;">
+                                    <option value="">-- Seleccionar Piloto --</option>
+                                </select>
+                                <button class="btn btn-primary" id="addDriverToRaceBtn"
+                                    style="width:100%; margin-top:0.5rem;">Inscribir Piloto</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="card universal-main-container">
+                    <div class="universal-box">
+                        <div class="card-header universal-header">Lista de Pilotos Registrados</div>
+                         
+                        <div style="overflow-x: auto; max-height: 350px;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nombre</th>
+                                        <th>Transponder</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="driversList"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="card-header">Lista de Pilotos</div>
-                    <div style="overflow-x: auto; max-height: 300px;">
-                        <table><thead><tr><th>ID</th><th>Nombre</th><th>Transponder</th><th>Acción</th></tr></thead><tbody id="driversList"></tbody></table>
-                    </div>
-                </div>
+
             </div>
-            <div class="card">
-                <div class="card-header">Inscribir a Carrera</div>
-                <div class="card-body">
-                    <div class="race-context">
-                        Inscripcion para carrera: <strong id="raceNameForEnrollment">--</strong>
-                    </div>
-                    <select id="selectDriverToAdd"><option value="">-- Seleccionar --</option></select>
-                    <button class="btn btn-primary" id="addDriverToRaceBtn" style="width:100%; margin-top:0.5rem;">Inscribir Piloto</button>
+
+        <div class="card universal-main-container">
+            <div class="universal-box">
+                <div class="card-header universal-header" style="display: flex;  justify-content: space-between; align-items: center;max-width: 40%;">
+                    <span>🏁 PILOTOS INSCRITOS <span id="inscritosCount" style=" padding: 0.2rem 0.8rem; border-radius: 20px; font-size: 1.2rem; color: #ffd700;">0</span></span>
+                    
                 </div>
-            </div>
-            <div class="card">
-                <div class="card-header">Pilotos Inscritos</div>
-                <div style="overflow-x: auto;"><table><thead><tr><th>Piloto</th><th>Transponder</th><th>Acción</th></tr></thead><tbody id="raceDriversList"></tbody></table></div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 50px; text-align: center;">#</th>
+                                <th>Piloto</th> 
+                                <th>Transponder</th>
+                                <th style="width: 80px;">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="raceDriversList"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
-        
+    </div>
+
         <!-- Panel Transponders -->
-        <div id="panel-transponders" class="panel">
-            <div class="grid-2">
-                <div class="card">
-                    <div class="card-header">Agregar Manual</div>
-                    <div class="card-body">
-                        <input type="number" id="manualTransponderId" placeholder="Código">
-                        <button class="btn btn-primary" id="addTransponderBtn" style="width:100%;">Agregar</button>
+        <div id="panel-transponders" class="panel admin-only">
+            <div class="card">
+                <div class="grid-3">
+                    <div class="universal-grid">
+                        <div class="universal-box" style="width: 100%; height: fit-content;">
+                            <div class="card-header universal-header">Agregar Transponder Manualmente</div>
+                            <div class="card-body">
+                                <label for="newLapsLimit">Código de Transponder:</label>
+                                <input type="number" id="manualTransponderId" placeholder="Código"
+                                    style="width:100%; margin-top:0.5rem;">
+                                <label for="newLapsLimit">Número de Kart:</label>
+                                <input type="text" id="manualTransponderKart" placeholder="Número de Kart (ej: 44)"
+                                    style="width:100%; margin-top:0.5rem;">
+                                <label for="newLapsLimit">Descripción:</label>
+                                <input type="text" id="manualTransponderDesc"
+                                    placeholder="Marca, Módelo, año etc...(ej: BMW, F1, 2023)"
+                                    style="width:100%; margin-top:0.5rem;">
+                                <button class="btn btn-primary" id="addTransponderBtn"
+                                    style="width:100%; margin-top:0.5rem;">Agregar</button>
+                                <button class="btn btn-secondary" id="cancelEditTransponderBtn"
+                                    style="width:100%; margin-top:0.5rem; display:none;">Cancelar edición</button>
+                            </div>
+                        </div>
+
+
+
+                        <div class="universal-box" style="width: 100%;">
+                            <div class="card-header universal-header">Deteción automatica de Transpoders</div>
+
+                            <div class="card-body">
+
+
+
+                                <div
+                                    style="max-width: 100%; overflow-y: auto; max-height: 200px; margin-bottom: 0.5rem; ">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>KART</th>
+                                                <th>DESCRIPCIÓN</th>
+                                                <th>Acción</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="detectedTranspondersList"></tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                            <button class="btn btn-sm" id="refreshTranspondersBtn"
+                                style="width:fit-content; padding: 0.6rem; background: #2196f3; display: flex; align-items: center; gap: 8px;">
+                                <img src="{{ url_for('static', filename='refresh2.svg') }}" alt="Resetear vistas"
+                                    class="admin-only" title="Resetear vistas"
+                                    style="width: 15px; height: 15px; cursor: pointer;"> Refrescar Detección</button>
+                        </div>
+
+                    </div>
+
+                </div>
+                <!-- end of grid -->
+
+                <div class="universal-main-container">
+                    <div class="universal-box" style="max-height: 400px; overflow-y: auto; height: fit-content;">
+                        <div class="card-header universal-header">Todos los Transponders</div>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>KART</th>
+                                        <th>DESCRIPCIÓN</th>
+                                        <th>Asignado a</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="allTranspondersList"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="card-header">Detectados (Semiautomatico)</div>
-                    <div style="max-height: 300px; overflow-y: auto;"><table><thead><tr><th>ID</th><th>Acción</th></tr></thead><tbody id="detectedTranspondersList"></tbody></table></div>
-                </div>
+
             </div>
-            <div class="card">
-                    <div class="card-header">Todos los Transponders</div>
-                    <div style="overflow-x: auto;">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Descripción</th>
-                                    <th>Asignado a</th>
-                                    <th>Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody id="allTranspondersList"></tbody>
-                        </table>
-                    </div>
-                </div>
-        </div>
-        
-        <!-- Panel Configurar -->
-        <div id="panel-race-setup" class="panel">
-            <div class="card">
-                <div class="card-header">Nueva Carrera / Circuito</div>
-                <div class="card-body">
-                    <input type="text" id="newCircuitName" placeholder="Nombre del Circuito">
-                    <input type="number" id="newLapsLimit" value="10" placeholder="Vueltas">
-                    <button class="btn btn-primary" id="createNewRaceBtn" style="width:100%;">Crear Nueva Carrera</button>
-                    <p style="font-size:0.65rem; color:#666; margin-top:0.5rem;">Al crear una nueva carrera, el sistema se reiniciara.</p>
-                </div>
-            </div>
+
+            <!-- end of grid -->
         </div>
 
-        <!-- Panel Sistema -->
-        <div id="panel-system" class="panel">
+
+        <!-- Panel Configuración de Carrera -->
+        <div id="panel-race-setup" class="panel admin-only">
             <div class="grid-2">
+
                 <div class="card">
-                    <div class="card-header">Monitor de Senales en Tiempo Real</div>
-                    <div style="overflow-x: auto; max-height: 600px;">
+
+                    <!-- Contenedor Grid Principal: Separa la tarjeta en 2 Grandes Columnas (Izquierda y Derecha) -->
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; padding: 1.5rem;">
+
+                        <!-- ================= COLUMNA IZQUIERDA: CREAR CARRERA ================= -->
+                        <div class="universal-box">
+
+                            <div class="card-header universal-header">
+                                CREAR NUEVA CARRERA / CIRCUITO
+                            </div>
+
+                            <div class="card-body"
+                                style="padding: 0; display: flex; flex-direction: column; gap: 1rem;">
+                                <div>
+                                    <label for="newCircuitName" style="display:block; margin-bottom:0.5rem;">🏆
+                                        Título de evento carrera/circuito:</label>
+                                    <input type="text" id="newCircuitName" placeholder="Nombre del Circuito"
+                                        style="width:100%; padding:0.7rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white;">
+                                </div>
+
+                                <div style="display: flex; gap: 1rem;">
+                                    <div style="flex: 2;">
+
+                                        <label for="newRaceMode" style="display:block; margin-bottom:0.5rem;">Modo
+                                            de Carrera:</label>
+                                        <select id="newRaceMode"
+                                            style="width:100%; padding:0.7rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white;">
+                                            <option value="position">Position Race (primero en terminar)</option>
+                                            <option value="time_attack">Time Attack (menor tiempo total)</option>
+                                        </select>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <label for="newLapsLimit"
+                                            style="display:block; margin-bottom:0.5rem;">Vueltas:</label>
+                                        <input type="number" id="newLapsLimit" value="7" placeholder="Vueltas"
+                                            style="width:100%; padding:0.7rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white; text-align: center;">
+
+                                    </div>
+                                </div>
+
+                                <div style="margin-top: auto; padding-top: 1rem;">
+                                    <button class="btn btn-primary" id="createNewRaceBtn"
+                                        style="width:100%; padding: 0.8rem; font-weight: bold;">
+                                        CREAR NUEVA CARRERA
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- ================= COLUMNA DERECHA: CONFIGURACIÓN DE PISTA ================= -->
+                        <div class="universal-box">
+                            <div class="card-header universal-header">
+                                <span>CONFIGURACIÓN DE PISTA</span>
+                                <span class="badge" id="trackConfigStatus"></span>
+                            </div>
+
+                            <div class="card-body"
+                                style="padding: 0; display: flex; flex-direction: column; gap: 1rem;">
+
+                                <div>
+                                    <label style="display:block; margin-bottom:0.5rem;">Tipo de pista</label>
+                                    <select id="trackTypeSelect"
+                                        style="width:100%; padding:0.8rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white;">
+                                        <option value="karting">🏎️ Karting - Pista cerrada</option>
+                                        <option value="motocross">🏍️ Motocross - Tierra, saltos</option>
+                                        <option value="moto_rally">🏁 Moto Rally - Mixto</option>
+                                        <option value="autodromo">🏎️ Autódromo - Alta velocidad</option>
+                                        <option value="enduro">🌲 Enduro - Terreno variado</option>
+                                        <option value="circuito_callejero">🏙️ Circuito Callejero</option>
+                                        <option value="custom">📏 Personalizado - Otro tipo</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label style="display:block; margin-bottom:0.3rem;">Largo de pista
+                                        (kilómetros)</label>
+                                    <div style="display: flex; gap: 1rem; align-items: center;">
+                                        <input type="range" id="trackLengthSlider" min="0" max="50" step="0.1" value="0"
+                                            style="flex:1;">
+                                        <input type="number" id="trackLengthValue" value="0" step="0.1"
+                                            style="width: 75px; text-align: center; background:#0f1117; border:1px solid #2a2f3a; color:white; border-radius:6px; padding: 0.5rem;">
+                                        <span style="font-size:0.8rem;">km</span>
+                                    </div>
+                                    <p class="hint" id="trackLengthHint" style="font-size: 0.75rem; color: #666;">
+                                        Karting: 1.2km | MotoGP: 4.5km</p>
+                                </div>
+
+                                <div
+                                    style="margin-top: auto; padding-top: 0.2rem; display: flex; justify-content: flex-end;">
+                                    <button class="btn" id="saveTrackConfigBtn"
+                                        style="flex:1;max-width: 100%; padding:0.8rem; background:#3b82f6; color:white; cursor:pointer;">
+                                        GUARDAR CONFIGURACIÓN
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="universal-box">
+                            <div class="card-header"
+                                style="padding: 0 0 1rem 0; border-bottom: 1px solid #2a2f3a; background: transparent; font-weight: bold;">
+                                Configuración de Cuenta Regresiva para Salida
+                            </div>
+                            <div class="card-body">
+                                <p style="font-size:0.75rem; color:#888; margin-bottom:1rem;">
+                                    Ajusta la duración y el ritmo de la cuenta regresiva antes de iniciar la carrera.
+                                </p>
+
+                                <!-- Duración total -->
+                                <div class="config-row">
+                                    <label>⏰ Duración total <strong
+                                            style="font-size:0.7rem; color: whitesmoke;">(segundos)</strong></label>
+                                    <div style="display: flex; gap: 1rem; align-items: center;">
+                                        <input type="range" id="countdownDurationSlider" min="3" max="20" step="1"
+                                            value="10" style="flex:1;">
+                                        <input type="number" id="countdownDuration" value="10" min="3" max="20" step="1"
+                                            style="width: 70px; text-align: center;">
+
+                                    </div>
+                                    <p class="hint">Tiempo total desde que se presiona "Iniciar" hasta que arranca la
+                                        carrera</p>
+                                </div>
+
+                                <!-- Velocidad de descuento -->
+                                <div class="config-row" style="margin-top: 1rem;">
+                                    <label>⚡ Ritmo del conteo</label>
+                                    <div style="display: flex; gap: 1rem; align-items: center;">
+                                        <span style="font-size:0.7rem;">Lento</span>
+                                        <input type="range" id="countdownSpeedSlider" min="0.3" max="2" step="0.05"
+                                            value="1" style="flex:1;">
+                                        <span style="font-size:0.7rem;">Rápido</span>
+                                    </div>
+                                    <p class="hint" id="speedHint">Cada número se mostrará durante 1.0 segundo</p>
+                                </div>
+
+                                <button class="btn" id="saveCountdownConfigBtn"
+                                    style="flex:1;max-width: 100%; padding:0.8rem; background:#3b82f6; color:white; cursor:pointer;">
+                                    GUARDAR CONFIGURACIÓN</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <!-- Card: Configuración de Fuente de Tiempo -->
+                <div class="card" style="padding: 1.5rem; height: fit-content;">
+                    <div class="universal-box">
+                        <div class="card-header"
+                            style="padding: 0 0 1rem 0; border-bottom: 1px solid #2a2f3a; background: transparent; font-weight: bold;">
+                            CONFIGURACIÓN DE CRONOMETRAJE
+                            <span class="badge" id="timingConfigStatus" style="margin-left: 1rem;"></span>
+                        </div>
+
+                        <div class="card-body">
+                            <p style="font-size:0.75rem; color:#888; margin-bottom:1rem;">
+                                Selecciona la fuente de tiempo para calcular vueltas y tiempos totales.
+                            </p>
+
+                            <div class="config-row" style="max-width: 100%; overflow: hidden;">
+                                <label style="display: block; margin-bottom: 5px;">📡 Fuente de tiempo</label>
+                                <select id="timeSourceSelect"
+                                    style="width: 100%; margin-bottom: 0.5rem; padding: 8px; border-radius: 4px;">
+                                    <option value="server">🖥️ Servidor (Recomendado)</option>
+                                    <option value="decoder">🔧 Decoder ESL-400</option>
+                                </select>
+                                <p class="hint" id="timeSourceHint"
+                                    style="font-size: 0.85rem; color: #666; line-height: 1.2;">
+                                    <strong>Servidor:</strong> Filtra señales fantasmas y ofrece máxima precisión.
+                                </p>
+                            </div>
+
+                            <div class="config-row" id="minLapTimeRow" style="margin-top: 1rem;">
+                                <label>🛡️ Tiempo mínimo por vuelta (segundos) - SOLO para modo Servidor</label>
+                                <div style="display: flex; gap: 1rem; align-items: center;">
+                                    <input type="range" id="minLapTimeSlider" min="2" max="15" step="0.5" value="5.0"
+                                        style="flex:1;">
+                                    <input type="number" id="minLapTimeValue" value="5.0" step="0.5"
+                                        style="width: 70px; text-align: center;">
+                                </div>
+                                <p class="hint">Vuelta más rápida que este valor será ignorada (evita señales fantasmas)
+                                </p>
+                            </div>
+
+                            <button class="btn" id="saveTimingConfigBtn"
+                                style="flex:1;max-width: 100%; padding:0.8rem; background:#3b82f6; color:white; cursor:pointer;">
+                                GUARDAR CONFIGURACIÓN</button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Panel Sistema -->
+        <div id="panel-system" class="panel admin-only">
+
+            <div class="grid-2">
+            <div class="card universal-main-container">
+                <div class="universal-box">
+                    <div class="card-header universal-header">Monitor de Senales en Tiempo Real</div>
+                    <div style="overflow-x: auto; max-height: 400px;">
                         <table>
                             <thead>
                                 <tr>
@@ -698,40 +757,230 @@
                                 </tr>
                             </thead>
                             <tbody id="signalsBody">
-                                <tr><td colspan="5" style="text-align:center; padding:2rem;">Esperando señales...</td></tr>
+                                <tr>
+                                    <td colspan="5" style="text-align:center; padding:2rem;">Esperando señales...</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
+            </div>    
 
-                <div class="card">
-                    <div class="card-header">Estado del Hardware</div>
+
+                <div class="card universal-main-container">
+                    <div class="universal-box">
+                    <div class="card-header universal-main-header">
+                        CONFIGURACIÓN DE ANTENA
+
+                        <span class="badge" id="antennaConfigStatus" style="margin-left: 1rem;"></span>
+                    </div>
                     <div class="card-body">
-                        <div class="usb-status" style="margin-bottom:1rem; padding:1rem; background:#111; border-radius:8px;">
+                        <p style="font-size:0.75rem; color:#888; margin-bottom:1rem;">
+                            Ajusta estos parámetros para evitar detecciones falsas por rebotes o señales lejanas.
+                        </p>
+
+                        <div class="config-row">
+                            <label>🔽 Umbral mínimo de señal (H)</label>
+                            <div style="display: flex; gap: 1rem; align-items: center;">
+                                <input type="range" id="minSignalSlider" min="0" max="255" value="10" style="flex:1;">
+                                <input type="number" id="minSignalValue" value="10"
+                                    style="width: 60px; text-align: center;">
+                            </div>
+                            <p class="hint">Ignorar señales por debajo de este valor (evita transponders lejanos)</p>
+                        </div>
+
+                        <div class="config-row" style="margin-top: 1rem;">
+                            <label>⏱️ Tiempo entre detecciones (segundos)</label>
+                            <div style="display: flex; gap: 1rem; align-items: center;">
+                                <input type="range" id="filterTimeSlider" min="0.3" max="1.5" step="0.05" value="0.5"
+                                    style="flex:1;">
+                                <input type="number" id="filterTimeValue" value="0.5" step="0.05"
+                                    style="width: 70px; text-align: center;">
+                            </div>
+                            <p class="hint">El mismo transponder no puede ser detectado más de una vez en este tiempo
+                            </p>
+                        </div>
+
+                        <button class="btn btn-primary" id="saveAntennaConfigBtn" style="width:100%; margin-top:1rem;">
+                            GUARDAR CONFIGURACIÓN</button>
+                    </div>
+
+                </div>
+                </div>
+            </div>
+            <!--End of grid-2-->
+
+            <div class="card universal-main-container" style="margin-top:1rem;">
+                <div class="universal-box" style=" height: 400px; overflow-y: scroll; overflow-x:auto;">
+                <div class="card-header universal-header">Salud y Desgaste de Transponders</div>    
+                <div class="card-body">
+                    <p style="font-size:0.74rem; color:#a4adbc; margin-bottom:0.75rem;">
+                        Estado estimado por uso acumulado de vueltas detectadas. Reinicia el desgaste cuando cambias un
+                        transponder a otro auto.
+                    </p>
+                    <div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Asignado</th>
+                                    <th>Transponder</th>
+                                    <th>Decoder</th>
+                                    <th>Intensidad (3h)</th>
+                                    <th>Última señal</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transponderHealthBody">
+                                <tr>
+                                    <td colspan="8" style="text-align:center;padding:1.5rem;">Esperando datos...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <!-- Card: Mantenimiento de Base de Datos -->
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        MANTENIMIENTO DE BASE DE DATOS
+                        <span class="badge admin-only" id="dbSizeBadge"></span>
+                    </div>
+
+                    <!-- Usamos la nueva clase aquí -->
+                    <div class="grid-mantenimiento-db">
+
+                        <!-- Bloque 1: Acciones Críticas -->
+                        <div class="mantenimiento-seccion">
+                            <span class="section-title">Acciones Críticas</span>
+                            <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                                <button class="btn btn-primary" id="backupBtn"> Crear Respaldo General</button>
+                                <button class="btn btn-warning" id="softResetBtn">Sweep Limpieza Segura</button>
+                                <button class="btn btn-danger" id="safeHardResetBtn"> Reinicio Total</button>
+                            </div>
+                            <div>
+                                <span class="section-title">Historial de Respaldos</span>
+                                <div id="backupsList" class="scroll-area" style="height: 150px;">
+                                    <p class="muted-text">Cargando respaldos...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bloque 2: Respaldos de Pilotos -->
+                        <div class="mantenimiento-seccion">
+                            <span class="section-title">Respaldo de Transponders / Pilotos</span>
+                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                <button class="btn btn-primary" id="backupPilotosBtn" style="flex:1;"> Guardar</button>
+                                <button class="btn btn-warning" id="restorePilotosBtn" style="flex:1;">
+                                    Restaurar</button>
+                            </div>
+
+                            <div id="pilotosBackupsList" class="scroll-area" style="height: 150px;">
+                                <p class="muted-text">No existen respaldos disponibles</p>
+                            </div>
+                        </div>
+
+                        <!-- Bloque 3: Estadísticas -->
+                        <div class="mantenimiento-seccion">
+                            <span class="section-title">Estadísticas del Sistema</span>
+                            <div id="dbStats" style="border: 1px solid #3f3f3f; padding: 1rem; border-radius: 8px;">
+                                <div class="stats-row"><span>Pilotos</span> <strong id="statDrivers">--</strong></div>
+                                <div class="stats-row"><span>Transponders</span> <strong
+                                        id="statTransponders">--</strong></div>
+                                <div class="stats-row"><span>Carreras</span> <strong id="statSessions">--</strong></div>
+                                <div class="stats-row"><span>Vueltas</span> <strong id="statLaps">--</strong></div>
+                                <div class="stats-row"><span>Tamaño</span> <strong id="statSize">-- MB</strong></div>
+                            </div>
+                        </div>
+
+
+
+                        <!-- Bloque 4: Historial (Este se acomodará abajo o al lado según el ancho) -->
+
+
+                    </div>
+                </div>
+
+                <!-- Card: Estado de Hardwre -->
+                <div class="card universal-main-container" style="width: 100%; max-width: 450px; align-items: center; align-content: center">
+                    <!-- Card: IP de Conexión -->
+                    <div class="universal-box">
+                        <div class="card-header universal-header">
+                            IP DE CONEXIÓN PARA CELULARES
+                        </div>
+                        <div class="card-body">
+                            <p style="font-size:0.75rem; color:#888; margin-bottom:0.5rem;">
+                                Para poder abrir en otro monitor/pantalla, copia la IP en tu navegador web.
+                            </p>
+
+                            <div id="ipListContainer">
+                                <div class="ip-item"
+                                    style="background: #0d1218; border-radius: 8px; padding: 10px; margin-bottom: 10px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="color: #aaa;">Cargando IPs...</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                                <button class="btn btn-sm" id="copyIpBtn" style="background: #2196f3;">📋 Copiar
+                                    IP</button>
+                                <button class="btn btn-sm" id="refreshIpBtn"><img
+                                        src="{{ url_for('static', filename='refresh2.svg') }}" alt="Resetear vistas"
+                                        class="admin-only" title="Resetear vistas"
+                                        style="width: 15px; height: 15px; cursor: pointer;"> Refrescar</button>
+                            </div>
+
+                            <div id="qrCodeContainer"
+                                style="margin-top: 1rem; text-align: center; background: white; padding: 15px; border-radius: 12px;">
+                                <div id="qrCodePlaceholder" style="min-height: 120px;">
+                                    <span style="color: #888;">Cargando QR...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="universal-box" style="margin-top:1rem;">
+                    <div class="card-header universal-header">Estado del Hardware</div>
+                    <div class="card-body">
+                        <div class="usb-status"
+                            style="margin-bottom:1rem; padding:1rem; background:#111; border-radius:8px;">
                             <div class="usb-led" id="usbLed"></div>
                             <span id="usbText" style="font-size:1rem; font-weight:600;">Verificando...</span>
                         </div>
                         <p style="font-size:0.75rem; color:#888; margin-bottom:1rem;">
-                            Utilice el botón inferior para desconectar el transponder de forma segura. 
+                            Utilice el botón inferior para desconectar el transponder de forma segura.
                             Esto detendrá los servicios internos y protegerá el hardware antes de ser retirado.
                         </p>
-                        <button class="btn btn-danger" id="resetUsbBtn" style="width:100%; padding:0.8rem; font-weight:600;">Desconexion Segura del Decoder</button>
-                        
+                        <button class="btn btn-danger" id="resetUsbBtn"
+                            style="width:100%; padding:0.8rem; font-weight:600;">Desconexion Segura del Decoder</button>
+
                         <div style="margin-top:2rem; padding-top:1rem; border-top:1px solid #333;">
                             <h4 style="color:#e5484d; margin-bottom:0.5rem; font-size:0.8rem;">ZONA DE PELIGRO</h4>
                             <p style="font-size:0.7rem; color:#888; margin-bottom:1rem;">
-                                Si el tablero está bloqueado o quieres limpiar todos los pilotos y vueltas de la sesión actual:
+                                Si el tablero está bloqueado o quieres limpiar todos los pilotos y vueltas de la sesión
+                                actual:
                             </p>
-                            <button class="btn" id="hardResetBtn" style="width:100%; border-color:#e5484d; color:#e5484d;">Reset Total del Tablero</button>
+                            <button class="btn" id="hardResetBtn"
+                                style="width:100%; border-color:#e5484d; color:#e5484d;">Reinicio Forzado Total</button>
                         </div>
                     </div>
                 </div>
+                </div>
+
             </div>
         </div>
+
     </div>
-    
-    <div id="modal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
-        <div class="modal-content" style="background:#0d0d0d; border:1px solid #333; border-radius:12px; padding:1.5rem; max-width:400px;">
+
+
+
+    <div id="modal" class="modal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
+        <div class="modal-content"
+            style="background:#0d0d0d; border:1px solid #333; border-radius:12px; padding:1.5rem; max-width:400px;">
             <h3 id="modalTitle">Confirmar</h3>
             <p id="modalMessage">¿Estás seguro?</p>
             <div class="modal-buttons" style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1rem;">
@@ -740,759 +989,170 @@
             </div>
         </div>
     </div>
-    
-    <script>
-        let pendingAction = null;
-        let tvLapDetailsCache = [];
-        let tvRotationIndex = 0;
-        
-        function showLoader(message) {
-            document.getElementById('loaderMessage').innerText = message || 'Procesando...';
-            document.getElementById('loaderOverlay').style.display = 'flex';
-        }
 
-        function hideLoader() {
-            document.getElementById('loaderOverlay').style.display = 'none';
-        }
+    <!-- Modal Ganador -->
+    <div id="winnerModalComplete" class="winner-modal" style="display:none;">
+        <div class="winner-modal-content" style="max-width: 500px;">
 
-        async function apiCall(url, options = {}) {
-            try {
-                const res = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...options });
-                return await res.json();
-            } catch(e) { console.error(e); return null; }
-        }
-        
-        function showModal(title, message, onConfirm) {
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalMessage').innerText = message;
-            document.getElementById('modal').style.display = 'flex';
-            pendingAction = onConfirm;
-        }
-        
-        document.getElementById('modalCancel').onclick = () => {
-            document.getElementById('modal').style.display = 'none';
-            pendingAction = null;
-        };
-        document.getElementById('modalConfirm').onclick = () => {
-            if (pendingAction) pendingAction();
-            document.getElementById('modal').style.display = 'none';
-            pendingAction = null;
-        };
-        
-        // Navegación
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const panelId = link.dataset.panel;
-                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-                document.getElementById(`panel-${panelId}`).classList.add('active');
-                document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-                link.classList.add('active');
-                if (panelId === 'drivers') loadDrivers();
-                if (panelId === 'transponders') loadTransponders();
-                if (panelId === 'public') loadPublicView();
-                if (panelId === 'tv') loadTvView();
-            });
-        });
-        
-        // Cargar datos en vivo
-        async function loadLiveData() {
-            try {
-                const data = await apiCall('/api/session/current');
-                if (data && data.active) {
-                    const session = data.session;
-                    const status = session.status || 'pending';
-                    
-                    document.getElementById('circuitName').innerText = session.circuit_name || '--';
-                    document.getElementById('lapsLimit').innerText = session.laps_limit || '--';
-                    document.getElementById('totalDrivers').innerText = data.leaderboard?.length || 0;
-                    document.getElementById('finishedDrivers').innerText = data.leaderboard?.filter(d => d.is_finished).length || 0;
-                    const raceNameLabel = document.getElementById('raceNameForEnrollment');
-                    if (raceNameLabel) raceNameLabel.innerText = session.circuit_name || '--';
-                    
-                    // Control dinámico de botones según el estado
-                    const btnStart = document.getElementById('startRaceBtn');
-                    const btnPause = document.getElementById('pauseRaceBtn');
-                    const btnResume = document.getElementById('resumeRaceBtn');
-                    const btnFinish = document.getElementById('finishRaceBtn');
-                    const btnRepeat = document.getElementById('repeatRaceBtn');
+            <div style="margin: 10px 0; padding: 10px; background: rgba(255,215,0,0.1); border-radius: 20px;">
+                <div style="font-size: 0.9rem; color: #ffd700;">🏆 CAMPEÓN</div>
+                <div id="modalWinnerName" style="font-size: 1.3rem; font-weight: bold; color: white;">--</div>
+                <div id="modalWinnerTime" style="font-size: 1rem; color: #ffd700;">--</div>
+            </div>
 
-                    if (btnStart && btnPause && btnResume && btnFinish && btnRepeat) {
-                        if (status === 'active') {
-                            btnStart.style.display = 'none';
-                            btnFinish.style.display = 'inline-block';
-                            btnPause.style.display = 'inline-block';
-                            btnResume.style.display = 'none';
-                            btnRepeat.disabled = true;
-                            btnRepeat.style.opacity = '0.5';
-                        } else if (status === 'paused') {
-                            btnStart.style.display = 'none';
-                            btnFinish.style.display = 'inline-block';
-                            btnPause.style.display = 'none';
-                            btnResume.style.display = 'inline-block';
-                            btnRepeat.disabled = false;
-                            btnRepeat.style.opacity = '1';
-                        } else if (status === 'completed') {
-                            btnStart.style.display = 'inline-block';
-                            btnFinish.style.display = 'none';
-                            btnPause.style.display = 'none';
-                            btnResume.style.display = 'none';
-                            btnRepeat.disabled = false;
-                            btnRepeat.style.opacity = '1';
-                        } else { // pending
-                            btnStart.style.display = 'inline-block';
-                            btnFinish.style.display = 'none';
-                            btnPause.style.display = 'none';
-                            btnResume.style.display = 'none';
-                            btnRepeat.disabled = false;
-                            btnRepeat.style.opacity = '1';
-                        }
-                    }
+            <div id="modalSecondContainer"
+                style="margin: 15px 0; padding: 10px; background: rgba(192,192,192,0.1); border-radius: 15px; display: none;">
+                <div style="font-size: 0.9rem; color: #c0c0c0;">🥈 SUBCAMPEÓN</div>
+                <div id="modalSecondName" style="font-size: 1.3rem; font-weight: bold; color: white;">--</div>
+                <div id="modalSecondTime" style="font-size: 1rem; color: #ccc;">--</div>
+            </div>
 
-                    const tbody = document.getElementById('leaderboardBody');
-                    if (data.leaderboard && data.leaderboard.length > 0) {
-                        tbody.innerHTML = data.leaderboard.map(d => {
-                            let posClass = '';
-                            if (d.position === 1) posClass = 'pos-1';
-                            else if (d.position === 2) posClass = 'pos-2';
-                            else if (d.position === 3) posClass = 'pos-3';
-                            const isWinner = d.position === 1 && (d.is_finished || status === 'completed');
-                            const winnerTag = isWinner ? '<span class="winner-pill">Ganador</span>' : '';
-                            const best = d.best_lap ? d.best_lap.toFixed(3) : '--';
-                            const last = d.last_lap ? d.last_lap.toFixed(3) : '--';
-                            return `<tr class="${isWinner ? 'winner-row' : ''}"><td class="${posClass}">${d.position}</td><td class="${isWinner ? 'winner-name' : ''}">${d.full_name || d.name}${winnerTag}</td><td>${d.transponder_id}</td><td>${d.total_laps || 0}</td><td class="best-lap">${best}</td><td>${last}</td><td>${d.laps_remaining}</td></tr>`;
-                        }).join('');
-                    } else {
-                        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:1rem;">Sin pilotos en esta sesión</td></tr>';
-                    }
-                    document.getElementById('refreshTime').innerHTML = new Date().toLocaleTimeString();
-                    await loadPublicView(data);
-                    await loadTvView(data);
-                } else {
-                    document.getElementById('circuitName').innerText = '--';
-                    document.getElementById('lapsLimit').innerText = '--';
-                    document.getElementById('totalDrivers').innerText = '0';
-                    document.getElementById('finishedDrivers').innerText = '0';
-                    document.getElementById('leaderboardBody').innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin carrera activa</td></tr>';
-                    document.getElementById('refreshTime').innerHTML = new Date().toLocaleTimeString();
-                    const raceNameLabel = document.getElementById('raceNameForEnrollment');
-                    if (raceNameLabel) raceNameLabel.innerText = '--';
-                    await loadPublicView(data);
-                    await loadTvView(data);
-                }
-            } catch (error) {
-                console.error("Error en loadLiveData:", error);
-            }
-            
-            const usb = await apiCall('/api/usb/status');
-            const usbLed = document.getElementById('usbLed');
-            if (usb?.connected) { 
-                if (usbLed) usbLed.className = 'usb-led on'; 
-                const usbText = document.getElementById('usbText');
-                if (usbText) usbText.innerText = `Conectado: ${usb.port}`; 
-            } else { 
-                if (usbLed) usbLed.className = 'usb-led off'; 
-                const usbText = document.getElementById('usbText');
-                if (usbText) usbText.innerText = 'Desconectado'; 
-            }
+            <div id="modalThirdContainer"
+                style="margin: 15px 0; padding: 10px; background: rgba(205,127,50,0.1); border-radius: 15px; display: none;">
+                <div style="font-size: 0.9rem; color: #cd7f32;">🥉 TERCER PUESTO</div>
+                <div id="modalThirdName" style="font-size: 1.3rem; font-weight: bold; color: white;">--</div>
+                <div id="modalThirdTime" style="font-size: 1rem; color: #ccc;">--</div>
+            </div>
 
-            // Monitor de Señales
-        const signals = await apiCall('/api/signals/recent?limit=20');
-        const signalsBody = document.getElementById('signalsBody');
-        if (signalsBody && signals) {
-            signalsBody.innerHTML = signals.map(s => {
-                const time = s.last_seen ? s.last_seen.split('T')[1].split('.')[0] : '--';
-                const hl = (s.last_signal_h !== null && s.last_signal_l !== null) ? `${s.last_signal_h}/${s.last_signal_l}` : '--';
-                return `<tr>
-                    <td style="font-family:monospace; color:#e5484d; font-weight:bold;">${s.transponder_id}</td>
-                    <td>${hl}</td>
-                    <td>${s.last_time_accumulated || '--'}</td>
-                    <td>${s.last_physical_laps || 0}</td>
-                    <td style="font-size:0.7rem; color:#666;">${time}</td>
-                </tr>`;
-            }).join('');
-        }
-    }
+            <button onclick="closeWinnerModalComplete()"
+                style="background: #e5484d; color: white; border: none; padding: 12px 30px; border-radius: 30px; cursor: pointer; margin-top: 10px;">CERRAR</button>
+        </div>
+    </div>
 
-        async function loadPublicView(preloaded = null) {
-            const data = preloaded || await apiCall('/api/session/current');
-            const body = document.getElementById('publicLeaderboardBody');
-            const lapsDetail = document.getElementById('publicLapsDetail');
-            const publicRaceName = document.getElementById('publicRaceName');
-            const publicLapsLimit = document.getElementById('publicLapsLimit');
-            const publicRaceLabel = document.getElementById('publicRaceLabel');
-            const publicRaceStatus = document.getElementById('publicRaceStatus');
-            const publicDriversCount = document.getElementById('publicDriversCount');
-            const publicLeaderName = document.getElementById('publicLeaderName');
+    <!-- Modal para confirmación con texto -->
+    <div id="confirmTextModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:3500; align-items:center; justify-content:center;">
+        <div
+            style="background: var(--bg-elev-2); border: 1px solid var(--line); border-radius:20px; padding:2rem; width:100%; max-width:450px;">
+            <h3 id="confirmTextModalTitle" style="margin-bottom:1rem; color:#e5484d;">⚠️ REINICIO TOTAL</h3>
+            <p id="confirmTextModalMessage" style="margin-bottom:1rem; color:var(--muted); font-size:0.9rem;">Para
+                confirmar, escribe "BORRAR TODO":</p>
+            <input type="text" id="confirmTextModalInput" placeholder="Escribe BORRAR TODO"
+                style="width:100%; padding:0.8rem; margin-bottom:1.5rem; background:#0d1218; border:1px solid #2a3240; border-radius:8px; color:white;">
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button class="btn" id="confirmTextModalCancel">Cancelar</button>
+                <button class="btn btn-danger" id="confirmTextModalConfirm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+    <!-- OVERLAY: CUENTA REGRESIVA -->
+    <div id="countdownOverlay">
+        <div class="countdown-content">
+            <div class="countdown-label">SALIDA EN</div>
+            <div id="countdownNumber" class="countdown-number">10</div>
+            <div id="countdownHint" class="countdown-hint">PREPÁRENSE</div>
+        </div>
+    </div>
 
-            if (!body || !lapsDetail) return;
 
-            if (!data || !data.active || !data.session) {
-                body.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:1.5rem;">Sin carrera activa</td></tr>';
-                lapsDetail.innerHTML = '<p class="muted-text">No hay informacion de vueltas disponible.</p>';
-                if (publicRaceName) publicRaceName.innerText = '--';
-                if (publicLapsLimit) publicLapsLimit.innerText = '--';
-                if (publicRaceLabel) publicRaceLabel.innerText = '--';
-                if (publicRaceStatus) publicRaceStatus.innerText = '--';
-                if (publicDriversCount) publicDriversCount.innerText = '0';
-                if (publicLeaderName) publicLeaderName.innerText = '--';
-                return;
-            }
+    <!-- SPLASH DE INICIO DE CARRERA (GLOBAL) - Solo intro -->
+    <div id="raceStartSplash" class="race-start-splash">
+        <div class="splash-content">
+            <img src="{{ url_for('static', filename='LogoVectorizadoGoKarting.svg') }}" alt="Chronit"
+                style="width: 120px; margin-bottom: 20px;">
+            <div style="font-size:1.2rem; color:#ffd700; letter-spacing:2px; text-transform:uppercase;">🏁 CARRERA
+                INICIADA 🏁</div>
+            <div id="splashRaceName" style="font-size:2rem; font-weight:800; color:white; margin:15px 0;">--</div>
+            <div id="splashLapsLimit" style="font-size:1.2rem; color:#00c853; margin-bottom:20px;">Vueltas: --</div>
+            <div style="font-size:0.9rem; color:#888;">Preparando cuenta regresiva...</div>
+        </div>
+    </div>
 
-            const session = data.session;
-            const leaderboard = data.leaderboard || [];
-            const leader = leaderboard[0];
+    <!-- Modal Minimalista para Editar Transponder -->
+    <div id="editTransponderFullModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(4px); z-index:4000; align-items:center; justify-content:center;">
+        <div style="background: #1a1e26; border-radius:16px; width:100%; max-width:420px; padding:0; overflow:hidden;">
 
-            if (publicRaceName) publicRaceName.innerText = session.circuit_name || '--';
-            if (publicLapsLimit) publicLapsLimit.innerText = session.laps_limit || '--';
-            if (publicRaceLabel) publicRaceLabel.innerText = session.circuit_name || '--';
-            if (publicRaceStatus) publicRaceStatus.innerText = session.status || 'pending';
-            if (publicDriversCount) publicDriversCount.innerText = String(leaderboard.length || 0);
-            if (publicLeaderName) publicLeaderName.innerText = leader ? (leader.full_name || leader.name) : '--';
+            <div style="padding:1.2rem 1.5rem; border-bottom:1px solid #2a2f3a;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.2rem;">✏️</span>
+                    <h3 style="margin:0; font-size:1rem; font-weight:600; color:#e4e4e4;">EDITAR TRANSPONDER</h3>
+                </div>
+            </div>
 
-            if (!leaderboard.length) {
-                body.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:1.5rem;">No hay pilotos inscritos</td></tr>';
-                lapsDetail.innerHTML = '<p class="muted-text">Todavia no hay vueltas registradas.</p>';
-                return;
-            }
+            <div style="padding:1.5rem;">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:0.7rem; color:#9ca3af; margin-bottom:0.3rem;">ID
+                        TRANSPONDER</label>
+                    <input type="number" id="editModalTransponderId"
+                        style="width:100%; padding:0.7rem 1rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white; font-size:0.9rem;">
+                </div>
 
-            body.innerHTML = leaderboard.map((d, idx) => {
-                const total = d.total_time ? Number(d.total_time).toFixed(3) : '--';
-                const best = d.best_lap ? Number(d.best_lap).toFixed(3) : '--';
-                const last = d.last_lap ? Number(d.last_lap).toFixed(3) : '--';
-                const isWinner = d.position === 1 && (d.is_finished || session.status === 'completed');
-                const winnerTag = isWinner ? '<span class="winner-pill">Ganador</span>' : '';
-                return `<tr>
-                    <td class="${idx === 0 ? 'pos-1' : idx === 1 ? 'pos-2' : idx === 2 ? 'pos-3' : ''}">${d.position || idx + 1}</td>
-                    <td class="${isWinner ? 'winner-name' : ''}">${d.full_name || d.name}${winnerTag}</td>
-                    <td>${d.total_laps || 0}</td>
-                    <td>${total}</td>
-                    <td class="best-lap">${best}</td>
-                    <td>${last}</td>
-                </tr>`;
-            }).join('');
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:0.7rem; color:#9ca3af; margin-bottom:0.3rem;">NÚMERO DE
+                        KART</label>
+                    <input type="text" id="editModalKartId" placeholder="Ej: 44"
+                        style="width:100%; padding:0.7rem 1rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white; font-size:0.9rem;">
+                </div>
 
-            const allLapDetails = await Promise.all(
-                leaderboard.map(async (d) => {
-                    const laps = await apiCall(`/api/race/lap-details/${session.id}/${d.driver_id}`);
-                    return { driver: d, laps: Array.isArray(laps) ? laps : [] };
-                })
-            );
+                <div style="margin-bottom:1.5rem;">
+                    <label
+                        style="display:block; font-size:0.7rem; color:#9ca3af; margin-bottom:0.3rem;">DESCRIPCIÓN</label>
+                    <input type="text" id="editModalDesc" placeholder="Ej: Chasis rojo"
+                        style="width:100%; padding:0.7rem 1rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white; font-size:0.9rem;">
+                </div>
 
-            const lapBlocks = allLapDetails.map(({ driver, laps }) => {
-                if (!laps.length) {
-                    return `<div class="lap-box">
-                        <h4>${driver.full_name || driver.name}</h4>
-                        <div style="padding:0.7rem; font-size:0.72rem; color:#a4adbc;">Sin vueltas registradas aun.</div>
-                    </div>`;
-                }
+                <div style="display:flex; gap:0.75rem;">
+                    <button id="editModalCancelBtn"
+                        style="flex:1; padding:0.7rem; background:#2a2f3a; border:none; border-radius:8px; color:#cbd5e1; font-size:0.8rem; cursor:pointer;">Cancelar</button>
+                    <button id="editModalConfirmBtn"
+                        style="flex:1; padding:0.7rem; background:#3b82f6; border:none; border-radius:8px; color:white; font-size:0.8rem; font-weight:600; cursor:pointer;">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                const rows = laps.map(l => {
-                    const lapTime = l.lap_seconds !== null ? Number(l.lap_seconds).toFixed(3) : '--';
-                    const gap = l.gap_to_leader !== null ? `+${Number(l.gap_to_leader).toFixed(3)} s` : '--';
-                    return `<tr>
-                        <td>V${l.lap_number}</td>
-                        <td>${lapTime}</td>
-                        <td>${gap}</td>
-                    </tr>`;
-                }).join('');
+    <!-- Modal Minimalista para Editar Piloto -->
+    <div id="editDriverMinimalModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(4px); z-index:4000; align-items:center; justify-content:center;">
+        <div style="background: #1a1e26; border-radius:16px; width:100%; max-width:420px; padding:0; overflow:hidden;">
 
-                return `<div class="lap-box">
-                    <h4>${driver.full_name || driver.name}</h4>
-                    <table>
-                        <thead><tr><th>Vuelta</th><th>Tiempo</th><th>Dif. lider</th></tr></thead>
-                        <tbody>${rows}</tbody>
-                    </table>
-                </div>`;
-            }).join('');
+            <div style="padding:1.2rem 1.5rem; border-bottom:1px solid #2a2f3a;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.2rem;">👤</span>
+                    <h3 style="margin:0; font-size:1rem; font-weight:600; color:#e4e4e4;">EDITAR PILOTO</h3>
+                </div>
+            </div>
 
-            lapsDetail.innerHTML = lapBlocks || '<p class="muted-text">Sin detalles de vueltas.</p>';
-        }
+            <div style="padding:1.5rem;">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:0.7rem; color:#9ca3af; margin-bottom:0.3rem;">NOMBRE</label>
+                    <input type="text" id="editDriverNameInput" placeholder="Nombre"
+                        style="width:100%; padding:0.75rem 1rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white; font-size:0.9rem;">
+                </div>
 
-        function formatGap(value) {
-            if (value === null || value === undefined || Number.isNaN(Number(value))) return '--';
-            const n = Number(value);
-            if (n <= 0) return 'Lider';
-            return `+${n.toFixed(3)} s`;
-        }
+                <div style="margin-bottom:1rem;">
+                    <label
+                        style="display:block; font-size:0.7rem; color:#9ca3af; margin-bottom:0.3rem;">APELLIDO</label>
+                    <input type="text" id="editDriverLastnameInput" placeholder="Apellido"
+                        style="width:100%; padding:0.75rem 1rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white; font-size:0.9rem;">
+                </div>
 
-        function renderTvLapRotator() {
-            const box = document.getElementById('tvLapsRotator');
-            if (!box) return;
-            if (!tvLapDetailsCache.length) {
-                box.innerHTML = '<p class="muted-text">Esperando datos de vueltas...</p>';
-                return;
-            }
+                <div style="margin-bottom:1.5rem;">
+                    <label style="display:block; font-size:0.7rem; color:#9ca3af; margin-bottom:0.3rem;">ID
+                        TRANSPONDER</label>
+                    <input type="number" id="editDriverTransponderInput" placeholder="ID Transponder"
+                        style="width:100%; padding:0.75rem 1rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white; font-size:0.9rem;">
+                </div>
 
-            const current = tvLapDetailsCache[tvRotationIndex % tvLapDetailsCache.length];
-            const driverName = current.driver.full_name || current.driver.name || 'Piloto';
+                <div style="display:flex; gap:0.75rem;">
+                    <button id="editDriverMinimalCancel"
+                        style="flex:1; padding:0.7rem; background:#2a2f3a; border:none; border-radius:8px; color:#cbd5e1; font-size:0.8rem; cursor:pointer;">
+                        Cancelar
+                    </button>
+                    <button id="editDriverMinimalConfirm"
+                        style="flex:1; padding:0.7rem; background:#3b82f6; border:none; border-radius:8px; color:white; font-size:0.8rem; font-weight:600; cursor:pointer;">
+                        Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            if (!current.laps.length) {
-                box.innerHTML = `<h4>${driverName}</h4><p class="muted-text">Aun sin vueltas registradas.</p>`;
-                return;
-            }
+    <!-- JavaScript externo -->
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 
-            const recentLaps = current.laps.slice(-8).reverse();
-            const rows = recentLaps.map((lap) => {
-                const lapTime = lap.lap_seconds !== null ? Number(lap.lap_seconds).toFixed(3) : '--';
-                const gap = formatGap(lap.gap_to_leader);
-                return `<tr>
-                    <td>V${lap.lap_number}</td>
-                    <td>${lapTime}</td>
-                    <td>${gap}</td>
-                </tr>`;
-            }).join('');
 
-            box.innerHTML = `<h4>${driverName} - Ultimas Vueltas</h4>
-                <table>
-                    <thead><tr><th>Vuelta</th><th>Tiempo</th><th>Dif. Lider</th></tr></thead>
-                    <tbody>${rows}</tbody>
-                </table>`;
-        }
-
-        async function loadTvView(preloaded = null) {
-            const data = preloaded || await apiCall('/api/session/current');
-            const body = document.getElementById('tvLeaderboardBody');
-            const title = document.getElementById('tvRaceTitle');
-            const status = document.getElementById('tvRaceStatus');
-            const leaderName = document.getElementById('tvLeaderName');
-            const leaderMeta = document.getElementById('tvLeaderMeta');
-            const driversCount = document.getElementById('tvDriversCount');
-            const lapsLimit = document.getElementById('tvLapsLimit');
-            const refreshTime = document.getElementById('tvRefreshTime');
-            const clock = document.getElementById('tvClock');
-
-            if (clock) clock.innerText = new Date().toLocaleTimeString();
-            if (!body) return;
-
-            if (!data || !data.active || !data.session) {
-                body.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;">Sin carrera activa</td></tr>';
-                if (title) title.innerText = 'Carrera en Espera';
-                if (status) status.innerText = '--';
-                if (leaderName) leaderName.innerText = '--';
-                if (leaderMeta) leaderMeta.innerText = 'Lider actual';
-                if (driversCount) driversCount.innerText = '0';
-                if (lapsLimit) lapsLimit.innerText = '--';
-                if (refreshTime) refreshTime.innerText = '--';
-                tvLapDetailsCache = [];
-                tvRotationIndex = 0;
-                renderTvLapRotator();
-                return;
-            }
-
-            const session = data.session;
-            const leaderboard = data.leaderboard || [];
-            const leader = leaderboard[0];
-            if (title) title.innerText = session.circuit_name || 'Carrera en Curso';
-            if (status) status.innerText = session.status || 'pending';
-            if (driversCount) driversCount.innerText = String(leaderboard.length || 0);
-            if (lapsLimit) lapsLimit.innerText = String(session.laps_limit || '--');
-            if (refreshTime) refreshTime.innerText = new Date().toLocaleTimeString();
-
-            if (leader) {
-                const leadBest = leader.best_lap ? Number(leader.best_lap).toFixed(3) : '--';
-                leaderName.innerText = leader.full_name || leader.name || '--';
-                leaderMeta.innerText = `Posicion 1 | Mejor vuelta ${leadBest}`;
-            } else {
-                leaderName.innerText = '--';
-                leaderMeta.innerText = 'Lider actual';
-            }
-
-            body.innerHTML = leaderboard.length ? leaderboard.map((d, idx) => {
-                const total = d.total_time ? Number(d.total_time).toFixed(3) : '--';
-                const best = d.best_lap ? Number(d.best_lap).toFixed(3) : '--';
-                const gapLeader = idx === 0 ? 'Lider' : formatGap((d.total_time || 0) - (leader?.total_time || 0));
-                const isWinner = d.position === 1 && (d.is_finished || session.status === 'completed');
-                const winnerTag = isWinner ? '<span class="winner-pill">Ganador</span>' : '';
-                return `<tr>
-                    <td class="${idx === 0 ? 'pos-1' : idx === 1 ? 'pos-2' : idx === 2 ? 'pos-3' : ''}">${d.position || (idx + 1)}</td>
-                    <td class="${isWinner ? 'winner-name' : ''}">${d.full_name || d.name}${winnerTag}</td>
-                    <td>${d.total_laps || 0}</td>
-                    <td>${total}</td>
-                    <td class="best-lap">${best}</td>
-                    <td>${gapLeader}</td>
-                </tr>`;
-            }).join('') : '<tr><td colspan="6" style="text-align:center;padding:2rem;">No hay pilotos inscritos</td></tr>';
-
-            tvLapDetailsCache = await Promise.all(
-                leaderboard.map(async (d) => {
-                    const laps = await apiCall(`/api/race/lap-details/${session.id}/${d.driver_id}`);
-                    return { driver: d, laps: Array.isArray(laps) ? laps : [] };
-                })
-            );
-            renderTvLapRotator();
-        }
-        
-        // Pilotos
-        async function loadDrivers() {
-            const drivers = await apiCall('/api/drivers');
-            const tbody = document.getElementById('driversList');
-            if (tbody) {
-                if (drivers?.length) {
-                    tbody.innerHTML = drivers.map(d => `
-                        <tr>
-                            <td>${d.id}</td>
-                            <td><span id="name-${d.id}">${d.name} ${d.lastname || ''}</span></td>
-                            <td>${d.transponder_id || '--'}</td>
-                            <td>
-                                <button class="btn btn-sm" onclick="editDriver(${d.id}, '${d.name}', '${d.lastname || ''}', ${d.transponder_id})">✏️</button>
-                                <button class="btn btn-sm" onclick="deleteDriver(${d.id})">🗑️</button>
-                            </td>
-                        </tr>`).join('');
-                } else { 
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay pilotos</td></tr>'; 
-                }
-            }
-            
-            const session = await apiCall('/api/session/current');
-            if (session?.active) {
-                const raceDrivers = await apiCall(`/api/race/drivers/${session.session.id}`);
-                const raceTbody = document.getElementById('raceDriversList');
-                if (raceDrivers?.length) {
-                    raceTbody.innerHTML = raceDrivers.map(d => `<tr><td>${d.name} ${d.lastname || ''}</td><td>${d.transponder_id}</td><td><button class="btn btn-sm" onclick="removeFromRace(${d.driver_id})">❌</button></td></tr>`).join('');
-                } else { raceTbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Sin pilotos inscritos</td></tr>'; }
-            }
-            
-            const select = document.getElementById('selectDriverToAdd');
-            select.innerHTML = '<option value="">-- Seleccionar --</option>' + (drivers || []).map(d => `<option value="${d.id}" data-transponder="${d.transponder_id}">${d.name} ${d.lastname || ''} (${d.transponder_id})</option>`).join('');
-        }
-        
-        window.deleteDriver = async (id) => {
-            showModal('Eliminar Piloto', '¿Eliminar este piloto?', async () => {
-                await apiCall(`/api/drivers/${id}`, { method: 'DELETE' });
-                loadDrivers();
-                loadTransponders();
-            });
-        };
-
-        window.editDriver = (id, name, lastname, transponder) => {
-            document.getElementById('driverName').value = name;
-            document.getElementById('driverLastname').value = lastname;
-            document.getElementById('driverTransponder').value = transponder;
-            
-            const saveBtn = document.getElementById('saveDriverBtn');
-            const originalText = saveBtn.innerText;
-            saveBtn.innerText = '💾 ACTUALIZAR PILOTO';
-            saveBtn.className = 'btn btn-warning';
-            saveBtn.style.width = '100%';
-            
-            saveBtn.onclick = async () => {
-                const data = {
-                    name: document.getElementById('driverName').value,
-                    lastname: document.getElementById('driverLastname').value,
-                    transponder_id: parseInt(document.getElementById('driverTransponder').value)
-                };
-                
-                showLoader('Actualizando piloto...');
-                const res = await apiCall(`/api/drivers/${id}`, { 
-                    method: 'PUT', 
-                    body: JSON.stringify(data) 
-                });
-                hideLoader();
-                
-                if (res?.success) {
-                    saveBtn.innerText = originalText;
-                    saveBtn.className = 'btn btn-primary';
-                    saveBtn.onclick = createDriverHandler; // Restaurar el handler original
-                    document.getElementById('driverName').value = '';
-                    document.getElementById('driverLastname').value = '';
-                    document.getElementById('driverTransponder').value = '';
-                    loadDrivers();
-                }
-            };
-        };
-        
-        const createDriverHandler = async () => {
-            const data = {
-                transponder_id: parseInt(document.getElementById('driverTransponder').value),
-                name: document.getElementById('driverName').value,
-                lastname: document.getElementById('driverLastname').value
-            };
-            if (!data.transponder_id || !data.name) { return; }
-            
-            showLoader('Guardando piloto...');
-            const res = await apiCall('/api/drivers', { method: 'POST', body: JSON.stringify(data) });
-            hideLoader();
-            
-            if (res?.success) {
-                document.getElementById('driverTransponder').value = '';
-                document.getElementById('driverName').value = '';
-                document.getElementById('driverLastname').value = '';
-                loadDrivers();
-                loadTransponders();
-            }
-        };
-
-        document.getElementById('saveDriverBtn').onclick = createDriverHandler;
-
-        window.removeFromRace = async (driverId) => {
-            const session = await apiCall('/api/session/current');
-            if (session?.active) {
-                showLoader('Eliminando de la carrera...');
-                await apiCall('/api/race/remove', { 
-                    method: 'POST', 
-                    body: JSON.stringify({ 
-                        session_id: session.session.id, 
-                        driver_id: driverId 
-                    }) 
-                });
-                hideLoader();
-                loadDrivers();
-                loadLiveData();
-            }
-        };
-        
-        document.getElementById('addDriverToRaceBtn').onclick = async () => {
-            const select = document.getElementById('selectDriverToAdd');
-            const driverId = select.value;
-            if (!driverId) { return; }
-            const session = await apiCall('/api/session/current');
-            if (!session?.active) { return; }
-            const drivers = await apiCall('/api/drivers');
-            const driver = drivers.find(d => d.id == driverId);
-            if (!driver) { return; }
-            
-            showLoader('Inscribiendo piloto...');
-            const res = await apiCall('/api/race/add', { method: 'POST', body: JSON.stringify({ session_id: session.session.id, driver_id: parseInt(driverId), transponder_id: driver.transponder_id }) });
-            hideLoader();
-            
-            if (res?.success) { 
-                loadDrivers(); 
-                loadLiveData(); // Actualizar el tablero de en vivo inmediatamente
-            }
-        };
-        
-        // Transponders
-        async function loadTransponders() {
-            const detected = await apiCall('/api/transponders/unassigned');
-            const detectedTbody = document.getElementById('detectedTranspondersList');
-            if (detectedTbody) {
-                if (detected?.length) {
-                    detectedTbody.innerHTML = detected.map(t => `<tr><td>${t.id}</td><td><button class="btn btn-sm" onclick="assignTransponder(${t.id})">👤 Asignar</button></td></tr>`).join('');
-                } else { 
-                    detectedTbody.innerHTML = '<tr><td colspan="2" style="text-align:center;">Sin transponders detectados</td></tr>'; 
-                }
-            }
-            
-            const all = await apiCall('/api/transponders/all');
-            const allTbody = document.getElementById('allTranspondersList');
-            if (allTbody) {
-                if (all?.length) {
-                    const drivers = await apiCall('/api/drivers');
-                    allTbody.innerHTML = all.map(t => { 
-                        const assigned = drivers?.find(d => d.transponder_id === t.id); 
-                        const actionButtons = assigned ? '' : `
-                            <button class="btn btn-sm" onclick="editTransponderId(${t.id})">✏️</button>
-                            <button class="btn btn-sm" onclick="deleteTransponder(${t.id})">🗑️</button>
-                        `;
-                        return `<tr>
-                            <td>${t.id}</td>
-                            <td>${t.description || '--'}</td>
-                            <td>${assigned ? `${assigned.name} ${assigned.lastname || ''}` : 'Sin asignar'}</td>
-                            <td>${actionButtons}</td>
-                        </tr>`; 
-                    }).join('');
-                } else { 
-                    allTbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay transponders registrados</td></tr>'; 
-                }
-            }
-        }
-
-        window.editTransponderId = (id) => {
-            const newId = prompt('Ingrese el nuevo ID para el transponder:', id);
-            if (newId && newId != id) {
-                const numId = parseInt(newId);
-                if (isNaN(numId)) {
-                    alert('El ID debe ser un número');
-                    return;
-                }
-                showModal('Editar Transponder', `¿Cambiar el ID ${id} por ${numId}?`, async () => {
-                    showLoader('Actualizando transponder...');
-                    const res = await apiCall(`/api/transponders/${id}`, { 
-                        method: 'PUT', 
-                        body: JSON.stringify({ new_id: numId }) 
-                    });
-                    hideLoader();
-                    if (res?.success) {
-                        loadTransponders();
-                    } else {
-                        alert(res.error || 'Error al actualizar');
-                    }
-                });
-            }
-        };
-
-        window.deleteTransponder = (id) => {
-            showModal('Eliminar Transponder', `¿Eliminar el transponder ${id}?`, async () => {
-                showLoader('Eliminando transponder...');
-                const res = await apiCall(`/api/transponders/${id}`, { method: 'DELETE' });
-                hideLoader();
-                if (res?.success) {
-                    loadTransponders();
-                } else {
-                    alert(res.error || 'Error al eliminar');
-                }
-            });
-        };
-        
-        window.assignTransponder = (id) => {
-            document.getElementById('driverTransponder').value = id;
-            document.querySelector('[data-panel="drivers"]').click();
-            alert(`Transponder ${id} listo para asignar. Completa el formulario.`);
-        };
-        
-        document.getElementById('addTransponderBtn').onclick = async () => {
-            const id = parseInt(document.getElementById('manualTransponderId').value);
-            if (!id) { return; }
-            
-            showLoader('Registrando transponder...');
-            const res = await apiCall('/api/transponders/manual', { method: 'POST', body: JSON.stringify({ id }) });
-            hideLoader();
-            
-            if (res?.success) {
-                document.getElementById('manualTransponderId').value = '';
-                loadTransponders();
-            }
-        };
-        
-        // Nueva carrera
-        document.getElementById('createNewRaceBtn').onclick = () => {
-            const name = document.getElementById('newCircuitName').value;
-            const laps = document.getElementById('newLapsLimit').value;
-            if (!name) { return; }
-            showModal('Nueva Carrera', `¿Crear carrera "${name}" con ${laps} vueltas?`, async () => {
-                showLoader('Creando nuevo circuito...');
-                await apiCall('/api/restart', { method: 'POST', body: JSON.stringify({ next_race_name: name, next_race_laps: parseInt(laps) }) });
-                setTimeout(() => location.reload(), 3000);
-            });
-        };
-        
-        document.getElementById('resetUsbBtn').onclick = () => {
-            showModal('Preparar USB', '¿Preparar USB para desconectar con seguridad?', async () => {
-                showLoader('Preparando USB...');
-                await apiCall('/api/usb/reset', { method: 'POST' });
-                hideLoader();
-            });
-        };
-
-        document.getElementById('hardResetBtn').onclick = () => {
-            showModal('RESET TOTAL', '¿Estás seguro? Se limpiarán todos los pilotos y vueltas de la sesión actual y el sistema se reiniciará.', async () => {
-                showLoader('Limpiando tablero y reiniciando...');
-                const res = await apiCall('/api/race/reset', { method: 'POST' });
-                if (res?.success) {
-                    setTimeout(() => location.reload(), 3500);
-                } else {
-                    hideLoader();
-                }
-            });
-        };
-
-        function setRaceButtonsEnabled(enabled) {
-            ['startRaceBtn','pauseRaceBtn','resumeRaceBtn','repeatRaceBtn','finishRaceBtn'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.disabled = !enabled;
-            });
-        }
-
-        async function runCountdown(seconds) {
-            const overlay = document.getElementById('countdownOverlay');
-            const numberEl = document.getElementById('countdownNumber');
-            const hintEl = document.getElementById('countdownHint');
-
-            overlay.style.display = 'flex';
-            let n = seconds;
-            while (n > 0) {
-                numberEl.innerText = String(n);
-                hintEl.innerText = (n <= 3) ? '¡YA!' : 'Prepárense';
-                await new Promise(r => setTimeout(r, 1000));
-                n -= 1;
-            }
-            numberEl.innerText = '0';
-            hintEl.innerText = '¡SALIDA!';
-            await new Promise(r => setTimeout(r, 500));
-            overlay.style.display = 'none';
-        }
-
-        // Botones de control de carrera
-        document.getElementById('startRaceBtn').onclick = async () => {
-            const totalDrivers = parseInt(document.getElementById('totalDrivers').innerText) || 0;
-            if (totalDrivers === 0) {
-                showModal('🚫 SIN PILOTOS', 'No hay pilotos inscritos en la carrera. Por favor, inscribe al menos un piloto en el panel de PILOTOS antes de comenzar.', () => {});
-                return;
-            }
-
-            showModal('Iniciar Carrera', '¿Iniciar la carrera? Se mostrará una cuenta regresiva (10 → 0) y luego comenzará el conteo.', async () => {
-                try {
-                    setRaceButtonsEnabled(false);
-                    await runCountdown(10);
-                    showLoader('Iniciando carrera...');
-                    const res = await apiCall('/api/race/start', { method: 'POST' });
-                    if (res?.success) {
-                        if (res.restart_required) {
-                            setTimeout(() => location.reload(), 3500);
-                        } else {
-                            hideLoader();
-                            loadLiveData();
-                        }
-                    } else {
-                        hideLoader();
-                    }
-                } finally {
-                    setRaceButtonsEnabled(true);
-                }
-            });
-        };
-        
-        document.getElementById('pauseRaceBtn').onclick = async () => {
-            showLoader('Pausando carrera...');
-            const res = await apiCall('/api/race/pause', { method: 'POST' });
-            hideLoader();
-            if(res?.success) { 
-                loadLiveData(); // Actualizar botones inmediatamente
-            }
-        };
-        
-        document.getElementById('resumeRaceBtn').onclick = async () => {
-            showLoader('Reanudando carrera...');
-            const res = await apiCall('/api/race/resume', { method: 'POST' });
-            hideLoader();
-            if(res?.success) { 
-                loadLiveData(); // Actualizar botones inmediatamente
-            }
-        };
-        
-        document.getElementById('repeatRaceBtn').onclick = async () => {
-            showModal('Repetir Carrera', '¿Repetir la misma carrera con los mismos pilotos? Se reiniciarán las vueltas.', async () => {
-                showLoader('Reiniciando sistema con los mismos pilotos...');
-                const res = await apiCall('/api/race/repeat', { method: 'POST' });
-                if(res?.success) {
-                    setTimeout(() => location.reload(), 3500);
-                } else {
-                    hideLoader();
-                }
-            });
-        };
-        
-        document.getElementById('finishRaceBtn').onclick = async () => {
-            showModal('Finalizar Carrera', '¿Finalizar la carrera actual? Se guardarán los resultados.', async () => {
-                showLoader('Finalizando carrera...');
-                const res = await apiCall('/api/race/finish', { method: 'POST' });
-                if(res?.success) {
-                    setTimeout(() => location.reload(), 3500);
-                } else {
-                    hideLoader();
-                }
-            });
-        };
-        
-        loadLiveData();
-        setInterval(() => {
-            tvRotationIndex += 1;
-            renderTvLapRotator();
-            const clock = document.getElementById('tvClock');
-            if (clock) clock.innerText = new Date().toLocaleTimeString();
-        }, 5000);
-        setInterval(loadLiveData, 2000);
-    </script>
 </body>
+
 </html>
