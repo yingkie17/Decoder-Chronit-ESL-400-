@@ -1,0 +1,27 @@
+[05:23:49] 🏁 CARRERA INICIADA
+[05:30:14] 🏆 CARRERA FINALIZADA
+[06:00:20] 🏁 CARRERA INICIADA
+[06:00:20] 🎮 [SIMULACIÓN] Primera detección para Herbert Lee Covarrubias
+[06:00:25] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Lee Covarrubias
+[06:00:25]    🏎️  Transponder: 24417
+[06:00:25]    ⏱️  Tiempo vuelta 1: 75.424s
+[06:00:25]    📊 Tiempo total: 5.002s
+[06:00:25]    🏁 Velocidad: 14 km/h
+[06:00:25] --------------------------------------------------
+[06:00:30] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Lee Covarrubias
+[06:00:30]    🏎️  Transponder: 24417
+[06:00:30]    ⏱️  Tiempo vuelta 2: 66.292s
+[06:00:30]    📊 Tiempo total: 10.115s
+[06:00:30]    🏁 Velocidad: 16 km/h
+[06:00:31] --------------------------------------------------
+[06:00:36] 🏆 CARRERA FINALIZADA
+[06:00:41] 🏆 CARRERA FINALIZADA
+[06:06:26] 🏁 CARRERA INICIADA
+[06:06:26] 🎮 [SIMULACIÓN] Primera detección para Herbert Lee Covarrubias
+[06:06:31] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Lee Covarrubias
+[06:06:31]    🏎️  Transponder: 24417
+[06:06:31]    ⏱️  Tiempo vuelta 1: 80.464s
+[06:06:31]    📊 Tiempo total: 5.001s
+[06:06:31]    🏁 Velocidad: 13 km/h
+[06:06:31] --------------------------------------------------
+[06:06:36] 🏆 CARRERA FINALIZADA
