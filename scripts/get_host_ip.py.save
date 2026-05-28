@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+import subprocess
+import re
+import sys
+
+def get_wifi_ip():
+    try:
+        result = subprocess.run(['ip', 'addr', 'show', 'wlo1'], capture_output=True, text=True)
+        match = re.search(r'inet (\d+\.\d+\.\d+\.\d+)/', result.stdout)
+        if match:
+            return match.group(1)
+    except:
+        pass
+    
+    try:
+        result = subprocess.run(['hostname', '-I'], capture_output=True, text=True)
+        ips = result.stdout.strip().split()
+        for ip in ips:
+            if ip.startswith('192.168.') or ip.startswit

@@ -1,0 +1,174 @@
+[16:24:25] 🏁 CARRERA INICIADA
+[16:24:25] 🎮 [SIMULACIÓN] Primera detección para Andres Suarez
+[16:24:26] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:24:26]    🏎️  Transponder: 24417
+[16:24:26]    ⏱️  Tiempo vuelta 1: 83.384s
+[16:24:26]    📊 Tiempo total: 1.001s
+[16:24:26] --------------------------------------------------
+[16:24:27] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:24:27]    🏎️  Transponder: 24417
+[16:24:27]    ⏱️  Tiempo vuelta 2: 45.446s
+[16:24:27]    📊 Tiempo total: 2.099s
+[16:24:27] --------------------------------------------------
+[16:24:28] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:24:28]    🏎️  Transponder: 24417
+[16:24:28]    ⏱️  Tiempo vuelta 3: 57.030s
+[16:24:28]    📊 Tiempo total: 3.197s
+[16:24:29] --------------------------------------------------
+[16:24:30] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:24:30]    🏎️  Transponder: 24417
+[16:24:30]    ⏱️  Tiempo vuelta 4: 74.824s
+[16:24:30]    📊 Tiempo total: 4.639s
+[16:24:30] --------------------------------------------------
+[16:24:31] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:24:31]    🏎️  Transponder: 24417
+[16:24:31]    ⏱️  Tiempo vuelta 5: 45.289s
+[16:24:31]    📊 Tiempo total: 5.793s
+[16:24:31] --------------------------------------------------
+[16:24:32] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:24:32]    🏎️  Transponder: 24417
+[16:24:32]    ⏱️  Tiempo vuelta 6: 30.861s
+[16:24:32]    📊 Tiempo total: 6.871s
+[16:24:32] --------------------------------------------------
+[16:24:33] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:24:33]    🏎️  Transponder: 24417
+[16:24:33]    ⏱️  Tiempo vuelta 7: 87.250s
+[16:24:33]    📊 Tiempo total: 7.990s
+[16:24:33] --------------------------------------------------
+[16:24:34] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:24:34]    🏎️  Transponder: 24417
+[16:24:34]    ⏱️  Tiempo vuelta 8: 35.399s
+[16:24:34]    📊 Tiempo total: 9.187s
+[16:24:34] --------------------------------------------------
+[16:24:35] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:24:35]    🏎️  Transponder: 24417
+[16:24:35]    ⏱️  Tiempo vuelta 9: 33.350s
+[16:24:35]    📊 Tiempo total: 10.308s
+[16:24:35] --------------------------------------------------
+[16:24:36] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:24:36]    🏎️  Transponder: 24417
+[16:24:36]    ⏱️  Tiempo vuelta 10: 45.208s
+[16:24:36]    📊 Tiempo total: 11.407s
+[16:24:37]    🏆 ¡Andres Suarez COMPLETÓ LA CARRERA!
+[16:24:37] --------------------------------------------------
+[16:24:38] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:24:38]    🏎️  Transponder: 24417
+[16:24:38]    ⏱️  Tiempo vuelta 11: 61.929s
+[16:24:38]    📊 Tiempo total: 12.575s
+[16:24:38] --------------------------------------------------
+[16:24:39] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:24:39]    🏎️  Transponder: 24417
+[16:24:39]    ⏱️  Tiempo vuelta 12: 30.247s
+[16:24:39]    📊 Tiempo total: 13.702s
+[16:24:39] --------------------------------------------------
+[16:24:40] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:24:40]    🏎️  Transponder: 24417
+[16:24:40]    ⏱️  Tiempo vuelta 13: 67.394s
+[16:24:40]    📊 Tiempo total: 14.834s
+[16:24:40] --------------------------------------------------
+[16:24:41] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:24:41]    🏎️  Transponder: 24417
+[16:24:41]    ⏱️  Tiempo vuelta 14: 40.636s
+[16:24:41]    📊 Tiempo total: 15.988s
+[16:24:41] --------------------------------------------------
+[16:24:42] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:24:42]    🏎️  Transponder: 24417
+[16:24:42]    ⏱️  Tiempo vuelta 15: 54.940s
+[16:24:42]    📊 Tiempo total: 17.078s
+[16:24:42] --------------------------------------------------
+[16:24:43] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:24:43]    🏎️  Transponder: 24417
+[16:24:43]    ⏱️  Tiempo vuelta 16: 43.125s
+[16:24:43]    📊 Tiempo total: 18.184s
+[16:24:43] --------------------------------------------------
+[16:24:44] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:24:44]    🏎️  Transponder: 24417
+[16:24:44]    ⏱️  Tiempo vuelta 17: 55.055s
+[16:24:44]    📊 Tiempo total: 19.382s
+[16:24:44] --------------------------------------------------
+[16:24:45] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:24:45]    🏎️  Transponder: 24417
+[16:24:45]    ⏱️  Tiempo vuelta 18: 61.256s
+[16:24:45]    📊 Tiempo total: 20.503s
+[16:24:46] --------------------------------------------------
+[16:24:47] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:24:47]    🏎️  Transponder: 24417
+[16:24:47]    ⏱️  Tiempo vuelta 19: 88.430s
+[16:24:47]    📊 Tiempo total: 21.614s
+[16:24:47] --------------------------------------------------
+[16:24:48] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:24:48]    🏎️  Transponder: 24417
+[16:24:48]    ⏱️  Tiempo vuelta 20: 34.616s
+[16:24:48]    📊 Tiempo total: 22.745s
+[16:24:48] --------------------------------------------------
+[16:24:49] 🏆 CARRERA FINALIZADA
+[16:25:18] 🏁 CARRERA INICIADA
+[16:25:18] 🎮 [SIMULACIÓN] Primera detección para Andres Suarez
+[16:25:19] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:25:19]    🏎️  Transponder: 24417
+[16:25:19]    ⏱️  Tiempo vuelta 1: 31.058s
+[16:25:19]    📊 Tiempo total: 1.003s
+[16:25:19] --------------------------------------------------
+[16:25:20] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:25:20]    🏎️  Transponder: 24417
+[16:25:20]    ⏱️  Tiempo vuelta 2: 49.545s
+[16:25:20]    📊 Tiempo total: 2.109s
+[16:25:20] --------------------------------------------------
+[16:25:21] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:25:21]    🏎️  Transponder: 24417
+[16:25:21]    ⏱️  Tiempo vuelta 3: 52.096s
+[16:25:21]    📊 Tiempo total: 3.229s
+[16:25:21] --------------------------------------------------
+[16:25:22] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:25:22]    🏎️  Transponder: 24417
+[16:25:22]    ⏱️  Tiempo vuelta 4: 64.582s
+[16:25:22]    📊 Tiempo total: 4.339s
+[16:25:22] --------------------------------------------------
+[16:25:23] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:25:23]    🏎️  Transponder: 24417
+[16:25:23]    ⏱️  Tiempo vuelta 5: 77.370s
+[16:25:23]    📊 Tiempo total: 5.415s
+[16:25:23] --------------------------------------------------
+[16:25:24] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:25:24]    🏎️  Transponder: 24417
+[16:25:24]    ⏱️  Tiempo vuelta 6: 67.696s
+[16:25:24]    📊 Tiempo total: 6.534s
+[16:25:24] --------------------------------------------------
+[16:25:25] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:25:25]    🏎️  Transponder: 24417
+[16:25:25]    ⏱️  Tiempo vuelta 7: 43.900s
+[16:25:25]    📊 Tiempo total: 7.645s
+[16:25:26] --------------------------------------------------
+[16:25:27] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:25:27]    🏎️  Transponder: 24417
+[16:25:27]    ⏱️  Tiempo vuelta 8: 75.814s
+[16:25:27]    📊 Tiempo total: 8.775s
+[16:25:27] --------------------------------------------------
+[16:25:28] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:25:28]    🏎️  Transponder: 24417
+[16:25:28]    ⏱️  Tiempo vuelta 9: 36.231s
+[16:25:28]    📊 Tiempo total: 9.875s
+[16:25:28] --------------------------------------------------
+[16:25:29] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:25:29]    🏎️  Transponder: 24417
+[16:25:29]    ⏱️  Tiempo vuelta 10: 73.634s
+[16:25:29]    📊 Tiempo total: 10.995s
+[16:25:29]    🏆 ¡Andres Suarez COMPLETÓ LA CARRERA!
+[16:25:29] --------------------------------------------------
+[16:25:30] 🎮 [SIMULACIÓN] Vuelta generada para Andres Suarez
+[16:25:30]    🏎️  Transponder: 24417
+[16:25:30]    ⏱️  Tiempo vuelta 11: 77.862s
+[16:25:30]    📊 Tiempo total: 12.137s
+[16:25:30] --------------------------------------------------
+[16:25:31] 🏆 CARRERA FINALIZADA
+[16:27:01] [DECODER] Comando START enviado - Transmisión activada
+[16:27:31] 🏁 CARRERA INICIADA
+[16:36:20] 🏁 CARRERA INICIADA
+[16:37:37] 🏁 CARRERA INICIADA
+[16:51:02] [DECODER] Comando START enviado - Transmisión activada
+[16:54:49] [DECODER] Comando START enviado - Transmisión activada
+[16:58:05] [DECODER] Comando START enviado - Transmisión activada
+[17:12:11] [DECODER] Comando START enviado - Transmisión activada
+[17:16:54] [DECODER] Comando START enviado - Transmisión activada
+[17:28:34] [DECODER] Comando START enviado - Transmisión activada
+[17:38:30] [DECODER] Comando START enviado - Transmisión activada

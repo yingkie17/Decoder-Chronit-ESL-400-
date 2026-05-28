@@ -3,31 +3,26 @@ services:
     build:
       context: ..
       dockerfile: infrastructure/Dockerfile
-    container_name: chronit-hardware
     privileged: true
-    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    group_add:
+      - dialout
+    devices:
+      - "${SERIAL_PORT:-/dev/ttyUSB0}:${SERIAL_PORT:-/dev/ttyUSB0}"
+    restart: always
     ports:
       - "5000:5000"
-    working_dir: /app/src
+    working_dir: /app/src 
     volumes:
       - ../data:/app/data
       - ../src:/app/src
     environment:
       - SERIAL_PORT=${SERIAL_PORT:-/dev/ttyUSB0}
-      - PYTHONUNBUFFERED=1
-    devices:
-      - "${SERIAL_PORT:-/dev/ttyUSB0}:${SERIAL_PORT:-/dev/ttyUSB0}"
-    networks:
-      - chronit-network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
 
   # Panel web para chronit.db
   sqlite-web-chronit:
-    image: coleifer/sqlite-web:latest
+    image: coleifer/sqlite-web
     container_name: chronit-sqlite-web
     restart: unless-stopped
     ports:
@@ -37,17 +32,10 @@ services:
     environment:
       - SQLITE_DATABASE=chronit.db
     command: sqlite_web --host 0.0.0.0 /data/chronit.db
-    networks:
-      - chronit-network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
 
   # Panel web para users.db
   sqlite-web-users:
-    image: coleifer/sqlite-web:latest
+    image: coleifer/sqlite-web
     container_name: users-sqlite-web
     restart: unless-stopped
     ports:
@@ -57,17 +45,10 @@ services:
     environment:
       - SQLITE_DATABASE=users.db
     command: sqlite_web --host 0.0.0.0 /data/users.db
-    networks:
-      - chronit-network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
 
-  # Panel web para respaldos
+  # Panel web para respaldos (puedes cambiar la base de datos desde la interfaz)
   sqlite-web-temp:
-    image: coleifer/sqlite-web:latest
+    image: coleifer/sqlite-web
     container_name: backups-temp-sqlite-web
     restart: unless-stopped
     ports:
@@ -77,14 +58,3 @@ services:
     environment:
       - SQLITE_DATABASE=_temp_view.db
     command: sqlite_web --host 0.0.0.0 /data/_temp_view.db
-    networks:
-      - chronit-network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
-
-networks:
-  chronit-network:
-    driver: bridge
