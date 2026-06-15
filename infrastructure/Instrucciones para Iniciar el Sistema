@@ -1,0 +1,25 @@
+--Servidor
+ Comando para reiniciar el contendor de pythong
+1. Esto solo reinicia el proceso de Python. Tarda unos 2-3 segundos y es mucho más seguro para el puerto serial que el autoguardado de Flask
+>>>>    docker compose restart hardware
+
+--Base de Datos
+
+para que esto funcione en la parte de base de datos seguir estos pasos: 
+        a.>>>>  cd /home/nancy/Escritorio/AmbientePruebas/Chronit/infrastructure
+        b.>>>>  docker compose up -d
+        c.>>>> docker exec infrastructure-hardware-1 python /app/src/cleanup.py --stats
+
+
+
+1. Comando para ver ayuda
+>>>>   docker exec hardware-1 python /app/src/cleanup.py --help
+
+2. Comando para ver estadísticas de la base de datos (sin borrar nada)
+>>>>    docker exec hardware-1 python /app/src/cleanup.py --stats
+
+3. Comando para eliminar carreras antiguas y consevar las ultimas 30 carreras
+>>>>    docker exec hardware-1 python /app/src/cleanup.py --keep-last 30
+
+4. Comando para eliminar carreras antiguas y consevar las ultimas 10 carreras
+>>>>    docker exec hardware-1 python /app/src/cleanup.py --keep-last 10

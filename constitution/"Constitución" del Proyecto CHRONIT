@@ -1,0 +1,160 @@
+# CONSTITUCIÓN DEL PROYECTO CHRONIT 
+
+## 📌 Artículo 1 - Inmutabilidad del núcleo
+El código que detecta transponders y controla la carrera **NO SE TOCA**.
+
+### Archivos CONGELADOS (no modificar bajo ninguna circunstancia):
+- `src/main.py` (funciones: `procesar_cadena_esl400`, `listen_chronit`, `check_race_commands`)
+- `src/database.py` (NO modificar tablas existentes, solo AGREGAR)
+
+### Excepciones permitidas:
+- ✅ Agregar nuevas funciones al final del archivo
+- ✅ Agregar nuevas tablas en `init_db()` (nunca modificar las existentes)
+- ✅ Agregar nuevas columnas con `ALTER TABLE` (solo si es estrictamente necesario)
+
+---
+
+## 📌 Artículo 2 - Zonas seguras para cambios
+Solo se pueden modificar **AGREGANDO** código, nunca eliminando o modificando el existente.
+
+### Archivos modificables (con precaución):
+| Archivo | Qué se puede hacer |
+|---------|-------------------|
+| `src/templates/dashboard.html` | ✅ Agregar HTML/CSS, modificar existente con cuidado |
+| `src/static/dashboard.css` | ✅ Agregar estilos, modificar existente |
+| `src/static/dashboard.js` | ✅ Agregar funciones, modificar existente con cuidado |
+| `src/api.py` | ✅ AGREGAR nuevos endpoints (nunca modificar existentes) |
+
+### Archivos que NO se tocan:
+- `src/main.py` (totalmente congelado)
+- `src/users_db.py` (solo agregar funciones al final)
+- `src/cleanup.py` (congelado)
+
+---
+
+## 📌 Artículo 3 - Nuevas funcionalidades implementadas (v2.0)
+
+### 3.1 Cronometraje Individual (Timestamp del Servidor)
+- ✅ **Selector de fuente de tiempo** en panel Carrera: `Servidor` (por defecto) o `Decoder`
+- ✅ **Filtro anti-fantasmas**: tiempo mínimo por vuelta (solo para modo servidor)
+- ✅ **Tabla `timing_config`** en base de datos
+- ✅ **Endpoints:** `GET/POST /api/config/timing`
+
+### 3.2 Logout con invalidación de token
+- ✅ **Función `delete_session(token)`** en `users_db.py`
+- ✅ **Endpoint `/api/auth/logout`** modificado para eliminar token
+- ✅ **Persistencia de sesión** con localStorage y `sessionToken`
+
+### 3.3 Liberación de Puerto Serial (Errno 5)
+- ✅ **Función `cleanup_serial()`** con `atexit` y `signal`
+- ✅ **Variable global `serial_port_global`** en `main.py`
+
+### 3.4 Countdown mejorado
+- ✅ **Pausa de 1 segundo** después del countdown
+- ✅ **Verificación post-inicio** con reintento automático
+
+### 3.5 Botón de IP de Conexión
+- ✅ **Endpoint `/api/system/ip`** para obtener IP local
+- ✅ **Generación de código QR** (quickchart.io)
+- ✅ **Botón copiar IP** al portapapeles
+
+### 3.6 Modos de Carrera
+- ✅ **Position Race** (gana el primero en completar vueltas)
+- ✅ **Time Attack** (gana el menor tiempo total)
+- ✅ Selector en `dashboard.html` (panel Carrera)
+
+---
+
+## 📌 Artículo 4 - Principio de no regresión
+Antes de cualquier cambio, se debe verificar que el sistema funciona.
+
+### Regla de oro:
+> Si algo funcionaba antes y deja de funcionar, **se REVIERTE el cambio inmediatamente**.
+
+### Pruebas obligatorias antes de guardar:
+1. ✅ Iniciar el sistema: `docker compose up --build`
+2. ✅ Verificar que el puerto 5000 responde
+3. ✅ Verificar que la base de datos no está corrupta
+4. ✅ Probar al menos una detección de transponder
+
+---
+
+## 📌 Artículo 5 - Cambios atómicos
+- **Un cambio a la vez**, probar antes de continuar
+- No hacer múltiples cambios simultáneamente
+- **Commit por cada cambio funcional**
+
+---
+
+## 📌 Artículo 6 - Estructura de la base de datos (v2.0)
+
+### Tablas principales:
+| Tabla | Propósito |
+|-------|-----------|
+| `drivers` | Pilotos registrados |
+| `transponders` | Transponders detectados |
+| `race_sessions` | Sesiones de carrera |
+| `race_drivers` | Pilotos inscritos por carrera |
+| `laps` | Vueltas registradas |
+| `settings` | Configuración general |
+| `antenna_config` | Configuración de antena (umbral H, tiempo filtro) |
+| `timing_config` | **NUEVA**: Fuente de tiempo (server/decoder, min_lap_time) |
+| `users` | Usuarios del sistema |
+| `user_sessions` | Tokens de sesión persistentes |
+
+### Reglas de migración:
+- ❌ No eliminar columnas existentes
+- ✅ Solo agregar nuevas columnas con `ALTER TABLE`
+- ✅ Solo agregar nuevas tablas al final de `init_db()`
+
+---
+
+## 📌 Artículo 7 - Comandos de mantenimiento
+
+### Inicio normal:
+```bash
+cd infrastructure && docker compose up --build
+
+Limpieza total (cuando algo falla):
+bash
+cd infrastructure
+docker compose down -v
+docker system prune -a -f
+docker compose up --build
+Ver logs:
+bash
+docker compose logs -f hardware-1
+Ver IP de conexión:
+bash
+hostname -I
+📌 Artículo 8 - Scripts para el cliente (pendiente)
+Archivos a crear (AL FINAL del desarrollo):
+CHRONIT-Iniciar.sh - Linux (inicio)
+
+CHRONIT-Detener.sh - Linux (detener)
+
+CHRONIT-Limpiar.sh - Linux (limpieza)
+
+CHRONIT-Iniciar.bat - Windows
+
+CHRONIT-Detener.bat - Windows
+
+CHRONIT-Limpiar.bat - Windows
+
+📌 Artículo 9 - Contacto y soporte
+Desarrollador: Herbert Ying Kie Lee Covarrubias
+
+Email: yingkie17@gmail.com
+
+Repositorio: https://github.com/yingkie17/Decoder-Chronit-ESL-400-
+
+📌 Artículo 10 - Versión y fecha
+Versión: 2.0
+
+Última actualización: 12 de Mayo de 2026
+
+Estado: Producción estable
+
+⚠️ ADVERTENCIA FINAL
+Cualquier IA o desarrollador que modifique este proyecto debe leer y respetar esta Constitución.
+El incumplimiento puede causar fallos en la detección de transponders y pérdida de datos de carrera.
