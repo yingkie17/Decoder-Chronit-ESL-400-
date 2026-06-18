@@ -4,9 +4,16 @@ RUN apt-get update && apt-get install -y \
     coreutils \
     python3-dev \
     usbutils \
+    gcc \
+    musl-dev \
+    python3-dev \
+    libffi-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir pyserial flask flask-cors
+
+# Instalar netifaces con build dependencies
+RUN pip install --no-cache-dir netifaces
 
 WORKDIR /app
 
