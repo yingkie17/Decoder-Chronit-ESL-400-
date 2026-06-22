@@ -132,6 +132,7 @@
                     </div>
 
                     <div id="lista-pilotos"></div>
+
                 </div>
             </div>
         </div>
@@ -157,6 +158,7 @@
                 </button>
                 <button class="btn btn-danger" id="finishRaceBtn" style="display:none;">Finalizar</button>
                 <button class="btn btn-primary" id="showWinnerBtn" style="display:none;">🏆 Mostrar Ganadores</button>
+                <button class="btn btn-primary" id="showClassificationBtn" style="display:none;">🏁 Mostrar Clasificación</button>
             </div>
 
             <!-- Grid principal: 2 columnas -->
@@ -319,10 +321,9 @@
                             </div>
                             <div class="stat"><span>Cronometro</span><span class="stat-value"
                                     id="publicRaceClock">00:00</span></div>
-                            <div id="timeRemainingBox" class="race-timer-box status-pending"
-                                style="display: none; background-color: #6c757d; color: #ffffff; border-color: #5a6268; margin-top: 0.5rem;">
-                                00:00.000
-                            </div>
+                            <div id="timeRemainingBoxPublic" class="race-timer-box status-pending" style="display: none; background-color: #6c757d; color: #ffffff; border-color: #5a6268; margin-top: 0.5rem;">
+                                    00:00.000
+                                </div>
                             <div class="stat"><span>Pilotos en pista</span><span class="stat-value"
                                     id="publicDriversCount">0</span></div>
                             <div class="stat"><span>Lider actual</span><span class="stat-value"
@@ -419,27 +420,55 @@
                                 Registrar Piloto</div>
 
                             <div class="card-body">
-                                <label for="newLapsLimit">Código de Transponder:</label>
-                                <input type="number" id="driverTransponder" placeholder="ID Transponder"
-                                    style=" margin-top: 0.5rem;">
-                                <label for="newLapsLimit">Nombre de Piloto:</label>
-                                <input type="text" id="driverName" placeholder="Nombre" style=" margin-top: 0.5rem;">
-                                <label for="newLapsLimit">Apellido de Piloto:</label>
-                                <input type="text" id="driverLastname" placeholder="Apellido"
-                                    style=" margin-top: 0.5rem;">
+                                <!-- Foto centrada y grande -->
+                                <div style="text-align:center;margin-bottom:0.8rem;">
+                                    <img id="driverPhotoPreview" src="/static/pilotcircle1.png" onclick="document.getElementById('driverPhotoFile').click()"
+                                         style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #ffd700;cursor:pointer;display:block;margin:0 auto;" title="Clic para subir foto">
+                                    <input type="file" id="driverPhotoFile" accept="image/*" style="display:none;">
+                                    <span style="font-size:0.6rem;color:#888;">Clic en el círculo para subir foto</span>
+                                </div>
+                                <!-- Campos obligatorios -->
+                                <label>Nombre de Piloto <span style="color:#e5484d;">*</span></label>
+                                <input type="text" id="driverName" placeholder="Nombre" required style="margin-top:0.2rem;">
+                                <label>Apellido de Piloto</label>
+                                <input type="text" id="driverLastname" placeholder="Apellido" style="margin-top:0.2rem;">
+                                <label>Carnet / CI <span style="color:#e5484d;">*</span></label>
+                                <input type="text" id="driverCarnet" placeholder="Nro. de carnet" required style="margin-top:0.2rem;">
+                                <label>Código de Transponder (opcional)</label>
+                                <select id="driverTransponder" style="margin-top:0.2rem;width:100%;padding:0.6rem;background:#0f1117;border:1px solid #2a2f3a;border-radius:10px;color:white;">
+                                    <option value="">-- Sin Transponder --</option>
+                                </select>
+                                <!-- Botón para mostrar más campos -->
+                                <button type="button" id="toggleExtraFieldsBtn" onclick="toggleExtraDriverFields()"
+                                    style="width:100%; margin-top:0.8rem; padding:0.4rem; background:#2a2f3a; border:1px solid #3a3f4a; border-radius:8px; color:#a4adbc; cursor:pointer; font-size:0.75rem;">
+                                    ▼ Más campos</button>
+                                <!-- Campos ocultos (no obligatorios) -->
+                                <div id="extraDriverFields" style="display:none;margin-top:0.5rem;">
+                                    <label>Email</label>
+                                    <input type="email" id="driverEmail" placeholder="email@ejemplo.com" style="margin-top:0.2rem;">
+                                    <label>Teléfono / Celular</label>
+                                    <input type="text" id="driverPhone" placeholder="+591 77777777" style="margin-top:0.2rem;">
+                                    <label>Edad</label>
+                                    <input type="number" id="driverAge" placeholder="Edad" min="5" max="99" style="margin-top:0.2rem;">
+                                </div>
                                 <button class="btn btn-primary" id="saveDriverBtn"
-                                    style="width:90%; margin-top: 1rem;">Guardar</button>
+                                    style="width:100%; margin-top: 0.8rem;">Guardar</button>
                             </div>
                         </div>
                         <div class="universal-box">
                             <div class="card-header universal-header">Lista de Pilotos Registrados</div>
+                            <input type="text" id="driverSearchInput" placeholder="🔍 Buscar por nombre, email, carnet, teléfono..."
+                                style="width:100%; padding:0.5rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:8px; color:white; margin-bottom:0.5rem;">
 
+                                
                             <div style="overflow-x: auto; max-height: 230px;">
                                 <table>
                                     <thead>
                                         <tr>
                                             <th>ID</th>
+                                            <th>Foto</th>
                                             <th>Nombre</th>
+                                            <th>Kart</th>
                                             <th>Transponder</th>
                                             <th>Acción</th>
                                         </tr>
@@ -447,14 +476,16 @@
                                     <tbody id="driversList"></tbody>
                                 </table>
                             </div>
-                            <!-- Botón de refrescar global -->
-                            <div style="display: flex; justify-content: flex-end; margin-top: 1rem; padding: 0 0.5rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
+                             
                                 <button id="refreshAllPilotsBtn" class="btn "
                                     style="background: #2196f3; display: flex; align-items: flex-end; gap: 8px;">
                                     <img src="{{ url_for('static', filename='refresh2.svg') }}" alt="Refrescar"
                                         style="width: 16px; height: 16px;">
-                                    REFRESCAR LISTAS
+                                    Refrescar Listas
                                 </button>
+                                   <button class="btn" id="clearTranspondersBtn"
+                                    style="background:#e5484d;">Desvincular transponders</button>
                             </div>
 
                         </div>
@@ -467,20 +498,20 @@
                     <div class="universal-box">
                         <div class="card-header universal-header">Inscribir a Carrera</div>
                         <div class="card-body">
-                            <label for="newLapsLimit">Inscripción de pilotos para carrera:</label>
-                            <div class="race-context">
-                                <span style="font-size: medium;">Carrera: </span> <span> </span><strong
-                                    id="raceNameForEnrollment" style=" color: #2196f3; font-size: medium;">--</strong>
+                            <label>Inscripción de pilotos para carrera:</label>
+                            <div class="race-context" style="display:flex; align-items:center; gap:1rem;">
+                                <span style="font-size: medium;">Carrera: <strong
+                                    id="raceNameForEnrollment" style=" color: #2196f3; font-size: medium;">--</strong></span>
+                                <span style="background:#ff980020;color:#ff9800;padding:0.15rem 0.6rem;border-radius:10px;font-size:0.72rem;font-weight:bold;" id="raceModeForEnrollment">--</span>
                             </div>
-                            <span style="font-size:0.72rem; color:#a4adbc; margin-top:0.5rem;">
-                                Seleccione el piloto a inscribir:
-                            </span>
-                            <select id="selectDriverToAdd" style="margin-top:0.5rem;">
-                                <option value="">-- Seleccionar Piloto --</option>
-                            </select>
+                            <div id="raceDescForEnrollment" style="font-size:0.68rem;color:#a4adbc;margin-top:0.3rem;margin-bottom:0.3rem;">--</div>
+                            <input type="text" id="enrollmentSearch" placeholder="🔍 Buscar piloto para inscribir..." 
+                                style="width:100%; margin-top:0.5rem; padding:0.5rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:8px; color:white;">
+                            <div id="enrollmentCheckboxList" style="max-height: 200px; overflow-y: auto; margin-top: 0.5rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:8px; padding:0.4rem;">
+                                <span style="font-size:0.7rem;color:#888;">Cargando pilotos...</span>
+                            </div>
                             <button class="btn " id="addDriverToRaceBtn"
-                                style="width:100%; margin-top:0.5rem; background: #2196f3;">Inscribir
-                                Piloto</button>
+                                style="width:100%; margin-top:0.5rem; background: #2196f3;">Inscribir Seleccionados</button>
                         </div>
                     </div>
 
@@ -504,13 +535,16 @@
                                 <tbody id="raceDriversList"></tbody>
                             </table>
                         </div>
-                        <div style="display: flex; justify-content: flex-end; margin-top: 1rem; padding: 0 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
+                            
                             <button id="refreshAllPilotsBtn2" class="btn "
                                 style="background: #2196f3; display: flex; align-items: flex-end; gap: 8px;">
                                 <img src="{{ url_for('static', filename='refresh2.svg') }}" alt="Refrescar"
                                     style="width: 16px; height: 16px;">
-                                REFRESCAR LISTAS
+                                Refrescar Listas
                             </button>
+                            <button id="unenrollAllBtn" class="btn"
+                                style="background:#e5484d;">Des-inscribir Todos</button>
                         </div>
                     </div>
 
@@ -642,9 +676,9 @@
                                         <select id="newRaceMode" onchange="toggleTimeLimitInput()"
                                             style="width:100%; padding:0.7rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white;">
                                             <option value="position">🏎️ CARRERA (primero en terminar)</option>
-                                            <option value="time_attack">🏁 CLASIFICACIÓN (menor tiempo total,
+                                            <option value="time_attack">⏱️ TIME ATTACK (menor tiempo total,
                                                 obligatorio completar vueltas)</option>
-                                            <option value="time_limit">⏱️ TIME LIMIT (mejor vuelta con tiempo
+                                            <option value="classification">🏁 CLASIFICACIÓN (mejor vuelta con tiempo
                                                 límite)
                                             </option>
                                             <option value="endurance">🏆 ENDURANCE (más vueltas en tiempo límite)
@@ -660,7 +694,8 @@
                                     </div>
                                 </div>
 
-                                <!-- ✅ TIME LIMIT CONTAINER -->
+                                
+                                <!-- ✅ TIME LIMIT / ENDURANCE / CLASSIFICATION CONTAINER -->
                                 <div id="timeLimitContainer" style="display:none; margin-top: 0.5rem;">
                                     <label for="timeLimitMinutes"
                                         style="display:block; margin-bottom:0.3rem; font-size:0.8rem;">⏱️ Duración
@@ -1357,9 +1392,9 @@
 
 
     <div id="modal" class="modal"
-        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center; overflow-y:auto; padding:1rem;">
         <div class="modal-content"
-            style="background:#0d0d0d; border:1px solid #333; border-radius:12px; padding:1.5rem; max-width:400px;">
+            style="background:#0d0d0d; border:1px solid #333; border-radius:12px; padding:1.5rem; max-width:520px; width:100%; max-height:90vh; overflow-y:auto; margin:auto;">
             <h3 id="modalTitle">Confirmar</h3>
             <p id="modalMessage">¿Estás seguro?</p>
             <div class="modal-buttons" style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1rem;">

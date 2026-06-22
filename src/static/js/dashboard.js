@@ -209,10 +209,11 @@ function getTimeColorClass(seconds) {
 function normalizeRaceMode(value) {
     const v = String(value || '').trim().toLowerCase();
     if (v === 'time_attack' || v === 'time-attack' || v === 'timeattack' || v === 'ta') return 'time_attack';
-    if (v === 'time_limit' || v === 'timelimit' || v === 'tl') return 'time_limit';
+    if (v === 'classification' || v === 'clasificacion' || v === 'class' || v === 'cl') return 'classification';
     if (v === 'endurance' || v === 'enduro' || v === 'en') return 'endurance';
     return 'position';
 }
+
 
 function getTimeAttackElapsedSeconds(driver) {
     // Priorizar accumulated_lap_time (suma de tiempos de vuelta)
@@ -231,24 +232,22 @@ function renderRaceClock() {
     }
     const label = formatRaceClock(seconds);
 
-    // Actualizar TODOS los cronómetros en la interfaz
+    // ⭐ ACTUALIZAR LOS CRONÓMETROS GENERALES DE CARRERA ⭐
     ['liveTotalTime', 'publicRaceClock', 'tvRaceClock'].forEach((id) => {
         const el = document.getElementById(id);
         if (el) {
             el.innerText = label;
-
-            // Si es el cronómetro principal, también actualizar las clases CSS
-            if (id === 'liveTotalTime') {
-                el.classList.remove('status-pending', 'status-active', 'status-paused', 'status-completed', 'status-timeout');
-                el.classList.add(`status-${raceTimerState.status}`);
-            }
+            // Eliminar clases antiguas y agregar la nueva
+            el.classList.remove('status-pending', 'status-active', 'status-paused', 'status-completed', 'status-timeout');
+            el.classList.add(`status-${raceTimerState.status}`);
         }
     });
 }
+
 function raceModeLabel(mode) {
     const m = normalizeRaceMode(mode);
     if (m === 'time_attack') return 'CLASIFICACIÓN';
-    if (m === 'time_limit') return 'TIME LIMIT';
+    if (m === 'classification') return 'CLASIFICACIÓN';
     if (m === 'endurance') return 'ENDURANCE';
     return 'CARRERA';
 }
@@ -256,10 +255,10 @@ function raceModeLabel(mode) {
 function raceModeDescription(mode) {
     const m = normalizeRaceMode(mode);
     if (m === 'time_attack') {
-        return '🏁 CLASIFICACIÓN: Gana el piloto con el menor tiempo acumulado completando TODAS las vueltas. Los que no completen todas las vueltas quedan DESCLASIFICADOS (DNQ).';
+        return '⏱️ TIME ATTACK: Gana el piloto con el menor tiempo acumulado completando TODAS las vueltas. Los que no completen todas las vueltas quedan DESCLASIFICADOS (DNQ).';
     }
-    if (m === 'time_limit') {
-        return '⏱️ TIME LIMIT: Gana el piloto con la MEJOR vuelta dentro del tiempo límite. Los que no tengan vuelta válida quedan desclasificados.';
+    if (m === 'classification') {
+        return '🏁 CLASIFICACIÓN: Gana el piloto con la MEJOR vuelta dentro del tiempo límite.';
     }
     if (m === 'endurance') {
         return '🏆 ENDURANCE: Gana el piloto con MÁS vueltas completadas en el tiempo límite. Desempate: menor tiempo acumulado.';
@@ -274,100 +273,6 @@ function applyRaceTimerState(session) {
         lastSyncMs: Date.now()
     };
     renderRaceClock();
-}
-
-async function updateTimeRemaining() {
-    try {
-        const session = await apiCall('/api/session/current');
-        if (!session || !session.session) return;
-
-        const raceMode = normalizeRaceMode(session.session.race_mode);
-        const isTimedMode = (raceMode === 'endurance' || raceMode === 'time_limit');
-        const status = session.session.status || 'pending';
-
-        const timerBox = document.getElementById('timeRemainingBox');
-        const publicTimerBox = document.getElementById('publicTimeRemainingBox');
-        const tvTimerBox = document.getElementById('tvTimeRemaining');
-
-        // Si no es modo con tiempo, OCULTAR TODO
-        if (!isTimedMode) {
-            if (timerBox) { timerBox.style.display = 'none'; }
-            if (publicTimerBox) { publicTimerBox.style.display = 'none'; }
-            if (tvTimerBox) { tvTimerBox.style.display = 'none'; }
-            return;
-        }
-
-        // Obtener tiempo restante
-        const res = await apiCall('/api/race/time-remaining');
-        if (!res || !res.success) {
-            if (timerBox) { timerBox.style.display = 'none'; }
-            if (publicTimerBox) { publicTimerBox.style.display = 'none'; }
-            if (tvTimerBox) { tvTimerBox.style.display = 'none'; }
-            return;
-        }
-
-        const formatted = res.remaining_formatted || '00:00.000';
-        const remaining = res.remaining_seconds || 0;
-        const isActive = res.is_active || false;
-
-        // === ACTUALIZAR BOX DE TIEMPO RESTANTE ===
-        if (timerBox) {
-            timerBox.style.display = 'inline-block';
-            timerBox.innerText = formatted;
-
-            // Limpiar clases
-            timerBox.className = 'race-timer-box';
-
-            // Asignar clase según estado (SIN ANIMACIONES)
-            if (status === 'completed' || remaining <= 0) {
-                timerBox.classList.add('status-completed');
-                timerBox.innerText = '00:00.000';
-            } else if (remaining < 60) {
-                timerBox.classList.add('status-active-warning');
-            } else {
-                timerBox.classList.add('status-active');
-            }
-        }
-
-        // === PANEL PÚBLICO ===
-        if (publicTimerBox) {
-            publicTimerBox.style.display = 'inline-block';
-            publicTimerBox.innerText = formatted;
-            publicTimerBox.className = 'race-timer-box';
-
-            if (status === 'completed' || remaining <= 0) {
-                publicTimerBox.classList.add('status-completed');
-                publicTimerBox.innerText = '00:00.000';
-            } else if (remaining < 60) {
-                publicTimerBox.classList.add('status-active-warning');
-            } else {
-                publicTimerBox.classList.add('status-active');
-            }
-        }
-
-        // === TV / PIT WALL ===
-        if (tvTimerBox) {
-            tvTimerBox.style.display = 'inline-block';
-            tvTimerBox.innerText = formatted;
-            tvTimerBox.className = 'race-timer-box';
-            tvTimerBox.style.fontSize = '0.85rem';
-            tvTimerBox.style.padding = '2px 10px';
-
-            if (status === 'completed' || remaining <= 0) {
-                tvTimerBox.classList.add('status-completed');
-                tvTimerBox.innerText = '00:00.000';
-            } else if (remaining < 60) {
-                tvTimerBox.classList.add('status-active-warning');
-            } else {
-                tvTimerBox.classList.add('status-active');
-            }
-        }
-
-    } catch (e) {
-        console.error('Error en updateTimeRemaining:', e);
-        const timerBox = document.getElementById('timeRemainingBox');
-        if (timerBox) timerBox.style.display = 'none';
-    }
 }
 
 function toggleTimeLimitInput() {
@@ -386,7 +291,7 @@ function toggleTimeLimitInput() {
     if (enduranceContainer) enduranceContainer.style.display = 'none';
 
     // ✅ Mostrar el que corresponde según el modo seleccionado
-    if (normalized === 'time_limit') {
+    if (normalized === 'classification') {
         if (timeLimitContainer) timeLimitContainer.style.display = 'block';
         // ✅ Ocultar el campo de vueltas para TIME LIMIT
         if (lapsLimitContainer) lapsLimitContainer.style.display = 'none';
@@ -400,6 +305,19 @@ function toggleTimeLimitInput() {
     }
 }
 
+function toggleExtraDriverFields() {
+    const extra = document.getElementById('extraDriverFields');
+    const btn = document.getElementById('toggleExtraFieldsBtn');
+    if (!extra || !btn) return;
+    if (extra.style.display === 'none' || extra.style.display === '') {
+        extra.style.display = 'block';
+        btn.innerHTML = '▲ Menos campos';
+    } else {
+        extra.style.display = 'none';
+        btn.innerHTML = '▼ Más campos';
+    }
+}
+
 function updateRaceControls(session) {
     const status = session?.status || 'pending';
     const btnStart = document.getElementById('startRaceBtn');
@@ -409,6 +327,7 @@ function updateRaceControls(session) {
     const btnRepeat = document.getElementById('repeatRaceBtn');
     const btnResetBoard = document.getElementById('resetBoardBtn');
     const showWinnerBtn = document.getElementById('showWinnerBtn');
+    const showClassificationBtn = document.getElementById('showClassificationBtn');
 
     if (!(btnStart && btnPause && btnResume && btnFinish && btnRepeat && btnResetBoard)) return;
 
@@ -420,6 +339,7 @@ function updateRaceControls(session) {
         btnRepeat.style.display = 'none';
         btnResetBoard.style.display = 'none';
         if (showWinnerBtn) showWinnerBtn.style.display = 'none';
+        if (showClassificationBtn) showClassificationBtn.style.display = 'none';
         btnRepeat.disabled = true;
         btnResetBoard.disabled = true;
     } else if (status === 'paused') {
@@ -430,6 +350,7 @@ function updateRaceControls(session) {
         btnRepeat.style.display = 'none';
         btnResetBoard.style.display = 'none';
         if (showWinnerBtn) showWinnerBtn.style.display = 'none';
+        if (showClassificationBtn) showClassificationBtn.style.display = 'none';
         btnRepeat.disabled = true;
         btnResetBoard.disabled = true;
     } else if (status === 'completed') {
@@ -439,7 +360,13 @@ function updateRaceControls(session) {
         btnFinish.style.display = 'none';
         btnRepeat.style.display = 'inline-block';
         btnResetBoard.style.display = 'inline-block';
-        if (showWinnerBtn) showWinnerBtn.style.display = 'inline-block';
+        if (currentRaceMode === 'classification') {
+            if (showWinnerBtn) showWinnerBtn.style.display = 'none';
+            if (showClassificationBtn) showClassificationBtn.style.display = 'inline-block';
+        } else {
+            if (showWinnerBtn) showWinnerBtn.style.display = 'inline-block';
+            if (showClassificationBtn) showClassificationBtn.style.display = 'none';
+        }
         btnRepeat.disabled = false;
         btnResetBoard.disabled = false;
     } else {
@@ -589,6 +516,7 @@ if (document.getElementById('refreshTranspondersBtn')) {
 }
 
 function showModal(title, message, onConfirm) {
+    document.getElementById('modalConfirm').style.display = 'inline-block';
     document.getElementById('modalTitle').innerText = title;
     document.getElementById('modalMessage').innerText = message;
     document.getElementById('modal').style.display = 'flex';
@@ -722,6 +650,10 @@ async function loadLiveData() {
 
         const raceNameLabel = document.getElementById('raceNameForEnrollment');
         if (raceNameLabel) raceNameLabel.innerText = session.circuit_name || '--';
+        const raceModeLabelEl = document.getElementById('raceModeForEnrollment');
+        if (raceModeLabelEl) raceModeLabelEl.innerText = raceModeLabel(session.race_mode);
+        const raceDescLabelEl = document.getElementById('raceDescForEnrollment');
+        if (raceDescLabelEl) raceDescLabelEl.innerText = raceModeDescription(session.race_mode);
 
         // Obtener tiempos individuales
         const individualTimes = await apiCall(`/api/race/driver-times/${session.id}`);
@@ -793,7 +725,16 @@ async function loadLiveData() {
         if (status === 'completed' && !winnerModalShown) {
             const podiumRes = await apiCall('/api/session/current/podium');
             const podium = podiumRes?.podium || [];
-            if (podium.length) {
+            const podiumRaceMode = normalizeRaceMode(podiumRes?.race_mode || 'position');
+            currentRaceMode = podiumRaceMode;
+            
+            if (podiumRaceMode === 'classification') {
+                const groups = podiumRes?.classification_groups;
+                if (groups && (groups.q1?.length || groups.q2?.length || groups.q3?.length || groups.dnq?.length)) {
+                    showClassificationModal(groups.q1, groups.q2, groups.q3, groups.dnq);
+                    winnerModalShown = true;
+                }
+            } else if (podium.length) {
                 showWinnerModalComplete(podium[0], podium[1], podium[2]);
                 winnerModalShown = true;
             }
@@ -824,14 +765,13 @@ async function updateTimeRemaining() {
         if (!session || !session.session) return;
 
         const raceMode = normalizeRaceMode(session.session.race_mode);
-        const isTimedMode = (raceMode === 'endurance' || raceMode === 'time_limit');
+        const isTimedMode = (raceMode === 'endurance' || raceMode === 'classification');
         const status = session.session.status || 'pending';
 
         // Obtener elementos
         const timerBox = document.getElementById('timeRemainingBox');
         const publicTimerBox = document.getElementById('publicTimeRemainingBox');
         const tvTimerBox = document.getElementById('tvTimeRemaining');
-        const liveTimer = document.getElementById('liveTotalTime');
 
         // Si no es modo con tiempo O está pendiente, OCULTAR TODO
         if (!isTimedMode || status === 'pending') {
@@ -839,6 +779,25 @@ async function updateTimeRemaining() {
             if (publicTimerBox) { publicTimerBox.style.display = 'none'; }
             if (tvTimerBox) { tvTimerBox.style.display = 'none'; }
             return;
+        }
+
+        // ⭐ PAUSA: congelar display, no llamar API
+        if (status === 'paused') {
+            if (timerBox) {
+                timerBox.style.display = 'block';
+                timerBox.className = 'race-timer-box time-remaining-status-active';
+            }
+            if (publicTimerBox) {
+                publicTimerBox.style.display = 'block';
+                publicTimerBox.className = 'race-timer-box time-remaining-status-active';
+            }
+            if (tvTimerBox) {
+                tvTimerBox.style.display = 'inline-block';
+                tvTimerBox.className = 'race-timer-box time-remaining-status-active';
+                tvTimerBox.style.fontSize = '0.85rem';
+                tvTimerBox.style.padding = '2px 10px';
+            }
+            return;  // No actualizar, dejar congelado
         }
 
         // Obtener tiempo restante
@@ -853,25 +812,6 @@ async function updateTimeRemaining() {
         const formatted = res.remaining_formatted || '00:00.000';
         const remaining = res.remaining_seconds || 0;
         const isActive = res.is_active || false;
-
-        // === ACTUALIZAR CRONÓMETRO PRINCIPAL (liveTotalTime) ===
-        if (liveTimer) {
-            if (status === 'completed' || (!isActive && remaining <= 0)) {
-                // ✅ TIEMPO CUMPLIDO: Verde congelado en 00:00.000
-                liveTimer.innerText = '00:00.000';
-                liveTimer.className = 'race-timer-box status-completed';
-            } else if (isActive && remaining > 0) {
-                // ✅ CUENTA REGRESIVA ACTIVA
-                liveTimer.innerText = formatted;
-                if (remaining < 60) {
-                    liveTimer.className = 'race-timer-box status-active-warning';
-                } else {
-                    liveTimer.className = 'race-timer-box status-active';
-                }
-            } else {
-                liveTimer.className = 'race-timer-box status-pending';
-            }
-        }
 
         // === ACTUALIZAR BOX DE TIEMPO RESTANTE (Control de Carrera) ===
         if (timerBox) {
@@ -1133,6 +1073,8 @@ async function loadTableroPublicoFromData(session, leaderboard, speedsMap = {}) 
         '#00acc1', '#c0ca33', '#ec407a', '#42a5f5', '#26a69a',
     ];
 
+    const DEFAULT_PHOTO = '/static/default-avatar.png';
+
     if (!session || !leaderboard || !leaderboard.length) {
         listaPilotos.innerHTML = '';
         if (raceTimer) raceTimer.innerText = '00:00';
@@ -1171,6 +1113,7 @@ async function loadTableroPublicoFromData(session, leaderboard, speedsMap = {}) 
             default: statusBadge.innerText = '⏳ PENDIENTE'; statusBadge.classList.add('status-pending');
         }
     }
+
     const publicTimerEl = document.getElementById('publicTimeRemainingDisplay');
     if (publicTimerEl) {
         const res = await apiCall('/api/race/time-remaining');
@@ -1186,14 +1129,12 @@ async function loadTableroPublicoFromData(session, leaderboard, speedsMap = {}) 
         }
     }
 
-    // Obtener tiempos individuales
     const individualTimes = await apiCall(`/api/race/driver-times/${session.id}`);
     const timesMap = {};
     if (individualTimes && Array.isArray(individualTimes)) {
         individualTimes.forEach(t => { timesMap[t.driver_id] = t.individual_time_formatted || '--'; });
     }
 
-    // Actualizar el cronómetro principal
     if (raceTimer) {
         let seconds = session.race_elapsed_seconds || 0;
         if (session.status === 'active') {
@@ -1211,15 +1152,8 @@ async function loadTableroPublicoFromData(session, leaderboard, speedsMap = {}) 
 
     listaPilotos.innerHTML = leaderboard.map((driver, idx) => {
         const color = driverColors[idx % driverColors.length];
-
-        // MEJOR VUELTA
         const best = driver.best_lap != null && driver.best_lap > 0 ? formatRaceClock(driver.best_lap) : '--';
 
-        // TIEMPO INDIVIDUAL (desde primera detección hasta última vuelta)
-
-
-
-        // ✅ CALCULAR TIEMPO INDIVIDUAL desde first_detection y last_detection
         let calculatedTotalTime = '--';
         if (driver.first_detection && driver.last_detection) {
             const first = new Date(driver.first_detection).getTime();
@@ -1230,10 +1164,8 @@ async function loadTableroPublicoFromData(session, leaderboard, speedsMap = {}) 
             }
         }
 
-        // Usar el calculado si no hay total_time
         const individualTime = driver.total_time != null ? formatRaceClock(driver.total_time) : calculatedTotalTime;
 
-        // TIEMPO TOTAL (cronómetro general)
         let totalTime = '--';
         if (session.race_elapsed_seconds !== undefined && session.race_elapsed_seconds !== null) {
             let seconds = session.race_elapsed_seconds;
@@ -1243,57 +1175,45 @@ async function loadTableroPublicoFromData(session, leaderboard, speedsMap = {}) 
             totalTime = formatRaceClock(seconds);
         }
 
-        // ===== ASIGNAR COLUMNAS SEGÚN MODO =====
-            let tiempoPrincipal = '--';      // Columna TIEMPO
-            let tiempoSecundario = '--';     // Columna T.INDIV
+        let tiempoPrincipal = '--';
+        let tiempoSecundario = '--';
 
-            if (raceMode === 'time_attack') {
-                // ✅ CLASIFICACIÓN: 
-                // TIEMPO = race_total_time (CONGELADO al terminar)
-                // T.INDIV = tiempo desde primera detección (sigue corriendo hasta que termina)
-                
-                // 1. TIEMPO: usar race_total_time (se congela)
-                const driverTotal = (driver.race_total_time != null && driver.race_total_time > 0) 
-                    ? formatRaceClock(driver.race_total_time) 
-                    : '--';
-                tiempoPrincipal = driverTotal;
-                
-                // 2. T.INDIV: tiempo desde primera detección
-                let tiempoTranscurrido = '--';
-                if (driver.first_detection) {
-                    const now = Date.now();
-                    const firstDetMs = new Date(driver.first_detection).getTime();
-                    if (!isNaN(firstDetMs)) {
-                        const elapsedSec = (now - firstDetMs) / 1000;
-                        // Si el piloto ya terminó, mostrar el tiempo final (congelado)
-                        if (driver.is_finished && driver.race_total_time != null && driver.race_total_time > 0) {
-                            tiempoTranscurrido = formatRaceClock(driver.race_total_time);
-                        } else {
-                            tiempoTranscurrido = elapsedSec > 0 ? formatRaceClock(elapsedSec) : '--';
-                        }
+        if (raceMode === 'time_attack') {
+            const driverTotal = (driver.race_total_time != null && driver.race_total_time > 0) 
+                ? formatRaceClock(driver.race_total_time) 
+                : '--';
+            tiempoPrincipal = driverTotal;
+            
+            let tiempoTranscurrido = '--';
+            if (driver.first_detection) {
+                const now = Date.now();
+                const firstDetMs = new Date(driver.first_detection).getTime();
+                if (!isNaN(firstDetMs)) {
+                    const elapsedSec = (now - firstDetMs) / 1000;
+                    if (driver.is_finished && driver.race_total_time != null && driver.race_total_time > 0) {
+                        tiempoTranscurrido = formatRaceClock(driver.race_total_time);
+                    } else {
+                        tiempoTranscurrido = elapsedSec > 0 ? formatRaceClock(elapsedSec) : '--';
                     }
                 }
-                tiempoSecundario = tiempoTranscurrido;
-                
-            } else if (raceMode === 'time_limit') {
-                // TIME LIMIT: TIEMPO = mejor vuelta, T.INDIV = número de vueltas
-                const bestLap = driver.best_lap ? formatRaceClock(driver.best_lap) : '--';
-                tiempoPrincipal = bestLap;
-                tiempoSecundario = `${driver.total_laps || 0} v`;
-                
-            } else if (raceMode === 'endurance') {
-                // ENDURANCE: TIEMPO = número de vueltas, T.INDIV = mejor vuelta
-                const bestLap = driver.best_lap ? formatRaceClock(driver.best_lap) : '--';
-                tiempoPrincipal = `${driver.total_laps || 0} v`;
-                tiempoSecundario = bestLap;
-                
-            } else {
-                // POSITION RACE: TIEMPO = tiempo INDIVIDUAL del piloto, T.INDIV = cronómetro general
-                tiempoPrincipal = individualTime;
-                tiempoSecundario = totalTime;
             }
+            tiempoSecundario = tiempoTranscurrido;
+            
+        } else if (raceMode === 'classification') {
+            const bestLap = driver.best_lap ? formatRaceClock(driver.best_lap) : '--';
+            tiempoPrincipal = bestLap;
+            tiempoSecundario = `${driver.total_laps || 0} v`;
+            
+        } else if (raceMode === 'endurance') {
+            const bestLap = driver.best_lap ? formatRaceClock(driver.best_lap) : '--';
+            tiempoPrincipal = `${driver.total_laps || 0} v`;
+            tiempoSecundario = bestLap;
+            
+        } else {
+            tiempoPrincipal = individualTime;
+            tiempoSecundario = totalTime;
+        }
 
-        // VELOCIDAD
         const speed = speedsMap[driver.driver_id];
         const speedValue = (speed && speed > 0 && speed < 400) ? `${Math.round(speed)}` : '--';
 
@@ -1301,16 +1221,18 @@ async function loadTableroPublicoFromData(session, leaderboard, speedsMap = {}) 
         const progressLineClass = idx === 0 ? 'line-gold' : 'line-blue';
         const kartLabel = driver.kart_id ? driver.kart_id : driver.transponder_id || '--';
 
+        const photoUrl = driver.photo && driver.photo.startsWith('/static/') 
+            ? driver.photo 
+            : DEFAULT_PHOTO;
+
         let cupIcon = '';
         if (raceMode === 'time_attack') {
-            // TIME ATTACK: copas solo cuando la carrera está COMPLETADA
             if (session.status === 'completed') {
                 if (idx === 0) cupIcon = ' 🏆';
                 else if (idx === 1) cupIcon = ' 🥈';
                 else if (idx === 2) cupIcon = ' 🥉';
             }
         } else {
-            // POSITION RACE: copas cuando el piloto termina todas sus vueltas
             if (driver.is_finished && driver.total_laps >= (session.laps_limit || 0)) {
                 if (idx === 0) cupIcon = ' 🏆';
                 else if (idx === 1) cupIcon = ' 🥈';
@@ -1322,6 +1244,7 @@ async function loadTableroPublicoFromData(session, leaderboard, speedsMap = {}) 
             <div class="k-row ${rowClass}">
                 <div class="k-col-pos">${driver.position || (idx + 1)}</div>
                 <div class="k-col-name">
+                    <img src="${photoUrl}" class="driver-photo-leaderboard" onerror="this.src='${DEFAULT_PHOTO}'">
                     <span class="driver-name">${driver.full_name || driver.name}${cupIcon}</span>
                     <div class="progress-line ${progressLineClass}" style="background: linear-gradient(90deg, ${color}, transparent);"></div>
                 </div>
@@ -2112,35 +2035,28 @@ async function loadTableroPublico(preloaded = null) {
     await loadTableroPublicoFromData(session, leaderboard, {});
 }
 
-async function loadDrivers() {
+let allDriversData = []; // Cache global para búsquedas
+
+async function loadDrivers(searchTerm) {
     console.log("🔵 loadDrivers iniciada");
     try {
         const drivers = await apiCall('/api/drivers');
-        const tbody = document.getElementById('driversList');
-        if (tbody) {
-            if (drivers && drivers.length > 0) {
-                tbody.innerHTML = drivers.map(d => `
-                    <tr>
-                        <td>${d.id}</td>
-                        <td><span id="name-${d.id}">${d.name} ${d.lastname || ''}</span></td>
-                        <td>${d.transponder_id || '--'}</td>
-                        <td>
-                            <button class="btn btn-sm" onclick="editDriverMinimal(${d.id}, '${d.name.replace(/'/g, "\\'")}', '${(d.lastname || '').replace(/'/g, "\\'")}', ${d.transponder_id})">✏️</button>
-                            <button class="btn btn-sm" onclick="deleteDriver(${d.id})">🗑️</button>
-                        </td>
-                    </tr>
-                `).join('');
-                console.log("✅ Pilotos cargados:", drivers.length);
-            } else {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay pilotos registrados</td></tr>';
-            }
-        }
+        allDriversData = drivers || [];
+        
+        // Ordenar por más reciente primero (id DESC)
+        allDriversData.sort((a, b) => b.id - a.id);
+        
+        renderDriversTable(searchTerm || '');
+        
+        // También actualizar los checkboxes de inscripción
+        loadEnrollmentCheckboxes(searchTerm || '');
     } catch (e) {
         console.error("Error cargando pilotos:", e);
         const tbody = document.getElementById('driversList');
-        if (tbody) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#ef7a86;">❌ Error al cargar pilotos</td></tr>';
+        if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#ef7a86;">❌ Error al cargar pilotos</td></tr>';
     }
 
+    // ⭐ CARGAR PILOTOS INSCRITOS
     try {
         const session = await apiCall('/api/session/current');
         const raceTbody = document.getElementById('raceDriversList');
@@ -2150,7 +2066,6 @@ async function loadDrivers() {
             if (session?.active && session?.session?.id) {
                 const raceDrivers = await apiCall(`/api/race/drivers/${session.session.id}`);
                 if (raceDrivers && raceDrivers.length > 0) {
-                    // ✅ AGREGAR CONTADOR DE POSICIÓN (1, 2, 3...)
                     raceTbody.innerHTML = raceDrivers.map((d, index) => `
                             <tr>
                                 <td style="text-align: center; font-weight: bold">${index + 1}</td>
@@ -2159,9 +2074,7 @@ async function loadDrivers() {
                                 <td><button class="btn " onclick="removeFromRace(${d.driver_id})" style=" color: white;">❌</button></td>
                             </tr>
                         `).join('');
-                    // Actualizar contador
                     if (inscritosCount) inscritosCount.innerText = raceDrivers.length;
-                    console.log("✅ Pilotos inscritos cargados:", raceDrivers.length);
                 } else {
                     raceTbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Sin pilotos inscritos</td></tr>';
                     if (inscritosCount) inscritosCount.innerText = '0';
@@ -2178,31 +2091,104 @@ async function loadDrivers() {
         const inscritosCount = document.getElementById('inscritosCount');
         if (inscritosCount) inscritosCount.innerText = '0';
     }
+}
 
-    try {
-        const drivers = await apiCall('/api/drivers');
-        const session = await apiCall('/api/session/current');
-
-        let inscritosIds = [];
-        if (session?.active && session?.session?.id) {
-            const raceDrivers = await apiCall(`/api/race/drivers/${session.session.id}`);
-            inscritosIds = raceDrivers ? raceDrivers.map(d => d.driver_id) : [];
-        }
-
-        const select = document.getElementById('selectDriverToAdd');
-        if (select && drivers) {
-            const disponibles = drivers.filter(d => !inscritosIds.includes(d.id));
-
-            select.innerHTML = '<option value="">-- Seleccionar Piloto --</option>' +
-                disponibles.map(d => `<option value="${d.id}" data-transponder="${d.transponder_id}">${d.name} ${d.lastname || ''} (${d.transponder_id})</option>`).join('');
-
-            if (disponibles.length === 0 && drivers.length > 0) {
-                select.innerHTML = '<option value="">-- Todos los pilotos ya están inscritos --</option>';
-            }
-        }
-    } catch (e) {
-        console.error("Error cargando select:", e);
+function renderDriversTable(searchTerm) {
+    const tbody = document.getElementById('driversList');
+    if (!tbody) return;
+    
+    let filtered = allDriversData;
+    if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        filtered = allDriversData.filter(d => 
+            (d.name || '').toLowerCase().includes(term) ||
+            (d.lastname || '').toLowerCase().includes(term) ||
+            (d.email || '').toLowerCase().includes(term) ||
+            (d.carnet || '').toLowerCase().includes(term) ||
+            (d.phone || '').toLowerCase().includes(term) ||
+            String(d.transponder_id || '').includes(term) ||
+            String(d.id || '').includes(term)
+        );
     }
+    
+    if (filtered.length > 0) {
+        tbody.innerHTML = filtered.map(d => {
+            const photo = d.photo || '/static/pilotcircle1.png';
+            const kart = d.transponder_kart_id || '--';
+            return `<tr data-driver-id="${d.id}">
+                <td>${d.id}</td>
+                <td style="text-align:center;cursor:pointer;" class="driver-edit-trigger">
+                    <img src="${photo}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;" onerror="this.src='/static/pilotcircle1.png'">
+                </td>
+                <td style="cursor:pointer;" class="driver-edit-trigger">
+                    <span id="name-${d.id}">${d.name} ${d.lastname || ''}</span>
+                    ${d.email ? `<br><small style="color:#888;">📧 ${d.email}</small>` : ''}
+                    ${d.carnet ? `<br><small style="color:#888;">🪪 ${d.carnet}</small>` : ''}
+                    ${d.phone ? `<br><small style="color:#888;">📱 ${d.phone}</small>` : ''}
+                </td>
+                <td style="font-size:0.72rem;color:#ffd700;text-align:center;font-weight:bold;">${kart}</td>
+                <td class="driver-edit-trigger" style="cursor:pointer;">${d.transponder_id || '--'}</td>
+                <td>
+                    <button class="btn btn-sm driver-edit-trigger">✏️</button>
+                    <button class="btn btn-sm" onclick="window.deleteDriver(${d.id})">🗑️</button>
+                </td>
+            </tr>`;
+        }).join('');
+    } else {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay pilotos registrados</td></tr>';
+    }
+}
+
+async function loadEnrollmentCheckboxes(searchTerm) {
+    const container = document.getElementById('enrollmentCheckboxList');
+    if (!container) return;
+    
+    // Obtener inscritos actuales
+    const session = await apiCall('/api/session/current');
+    let inscritosIds = [];
+    if (session?.active && session?.session?.id) {
+        const raceDrivers = await apiCall(`/api/race/drivers/${session.session.id}`);
+        inscritosIds = raceDrivers ? raceDrivers.map(d => d.driver_id) : [];
+    }
+    
+    // Filtrar por búsqueda
+    let filtered = allDriversData;
+    if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        filtered = allDriversData.filter(d => 
+            (d.name || '').toLowerCase().includes(term) ||
+            (d.lastname || '').toLowerCase().includes(term) ||
+            (d.email || '').toLowerCase().includes(term) ||
+            (d.carnet || '').toLowerCase().includes(term) ||
+            (d.phone || '').toLowerCase().includes(term) ||
+            String(d.transponder_id || '').includes(term)
+        );
+    }
+    
+    // Solo mostrar no inscritos
+    const disponibles = filtered.filter(d => !inscritosIds.includes(d.id));
+    
+    // Guardar IDs de checkboxes ya seleccionados
+    const checkedIds = new Set();
+    container.querySelectorAll('.enrollment-checkbox:checked').forEach(cb => checkedIds.add(cb.value));
+    
+    if (disponibles.length === 0) {
+        container.innerHTML = '<span style="font-size:0.7rem;color:#888;">No hay pilotos disponibles</span>';
+        return;
+    }
+    
+    container.innerHTML = disponibles.map(d => {
+        const photo = d.photo || '/static/pilotcircle1.png';
+        const checked = checkedIds.has(String(d.id)) ? ' checked' : '';
+        const kart = d.transponder_kart_id || '';
+        return `<label style="display:flex;align-items:center;gap:0.35rem;padding:0.25rem 0.3rem;cursor:pointer;font-size:0.72rem;border-bottom:1px solid #1a1e26;">
+            <input type="checkbox" value="${d.id}" class="enrollment-checkbox" data-transponder="${d.transponder_id||d.id}" ${checked} style="width:14px;height:14px;flex-shrink:0;">
+            <img src="${photo}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.src='/static/pilotcircle1.png'">
+            <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.name} ${d.lastname || ''}</span>
+            ${kart ? `<span style="color:#00AAE4;font-size:0.6rem;flex-shrink:0;font-weight:bold;">${kart}</span>` : ''}
+            <span style="color:#ffd700;font-size:0.62rem;flex-shrink:0;font-weight:bold;">${d.transponder_id||'--'}</span>
+        </label>`;
+    }).join('');
 }
 
 window.deleteDriver = async (id) => {
@@ -2213,10 +2199,156 @@ window.deleteDriver = async (id) => {
     });
 };
 
-window.editDriver = (id, name, lastname, transponder) => {
+window.editDriverMinimal = (id, name, lastname, transponder, email, carnet, phone) => {
     document.getElementById('driverName').value = name;
     document.getElementById('driverLastname').value = lastname;
-    document.getElementById('driverTransponder').value = transponder;
+    const transpSel = document.getElementById('driverTransponder');
+    if (transpSel) transpSel.value = transponder || '';
+    else document.getElementById('driverTransponder').value = transponder || '';
+    document.getElementById('driverEmail').value = email || '';
+    document.getElementById('driverCarnet').value = carnet || '';
+    document.getElementById('driverPhone').value = phone || '';
+    document.getElementById('driverAge').value = '';
+    document.getElementById('driverPhotoFile').value = '';
+    document.getElementById('driverPhotoPreview').src = '/static/pilotcircle1.png';
+    editDriverInner(id, name, lastname, transponder, email, carnet, phone);
+};
+
+window.editDriver = (id, name, lastname, transponder) => {
+    editDriverMinimal(id, name, lastname, transponder, '', '', '');
+};
+
+// ⭐ MODAL DE EDICIÓN COMPLETO (con foto y todos los campos)
+window.openDriverEditModal = async (driver) => {
+    const id = driver.id;
+    const name = driver.name || '';
+    const lastname = driver.lastname || '';
+    const transponder = driver.transponder_id || '';
+    const email = driver.email || '';
+    const carnet = driver.carnet || '';
+    const phone = driver.phone || '';
+    const photo = driver.photo || '';
+    const age = driver.age || '';
+    const photoSrc = photo || '/static/pilotcircle1.png';
+    
+    const inp = 'padding:0.55rem;background:#0f1117;border:1px solid #2a2f3a;border-radius:8px;color:white;font-size:0.82rem;width:100%;box-sizing:border-box;';
+    
+    const modalHTML = `<div style="text-align:center;margin-bottom:1.2rem;padding-top:0.3rem;">
+            <img id="_mp" src="${photoSrc}" 
+                 style="width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid #ffd700;cursor:pointer;display:block;margin:0 auto;"
+                 onclick="document.getElementById('_mf').click()" title="Clic para cambiar foto">
+            <input type="file" id="_mf" accept="image/*" style="display:none;" onchange="window._previewModalPhoto()">
+            <p style="font-size:0.65rem;color:#888;margin-top:0.3rem;">Clic en el círculo para cambiar foto</p>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem 0.8rem;">
+            <div style="grid-column:1/-1;">
+                <label style="font-size:0.7rem;color:#a4adbc;">Nombre <span style="color:#e5484d;">*</span></label>
+                <input id="_mn" value="${name.replace(/"/g,'&quot;')}" style="${inp}">
+            </div>
+            <div>
+                <label style="font-size:0.7rem;color:#a4adbc;">Apellido</label>
+                <input id="_mln" value="${lastname.replace(/"/g,'&quot;')}" style="${inp}">
+            </div>
+            <div>
+                <label style="font-size:0.7rem;color:#a4adbc;">Carnet <span style="color:#e5484d;">*</span></label>
+                <input id="_mc" value="${carnet.replace(/"/g,'&quot;')}" style="${inp}">
+            </div>
+            <div>
+                <label style="font-size:0.7rem;color:#a4adbc;">Transponder</label>
+                <select id="_mt" style="${inp}">
+                    <option value="">-- Sin Transponder --</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size:0.7rem;color:#a4adbc;">Edad</label>
+                <input id="_ma" type="number" value="${age}" style="${inp}" min="5" max="99">
+            </div>
+            <div>
+                <label style="font-size:0.7rem;color:#a4adbc;">Email</label>
+                <input id="_me" type="email" value="${email.replace(/"/g,'&quot;')}" style="${inp}">
+            </div>
+            <div>
+                <label style="font-size:0.7rem;color:#a4adbc;">Teléfono</label>
+                <input id="_mph" value="${phone.replace(/"/g,'&quot;')}" style="${inp}">
+            </div>
+        </div>`;
+        
+    
+    // Poner el HTML en el modal
+    document.getElementById('modalMessage').innerHTML = modalHTML;
+    document.getElementById('modalTitle').innerText = 'Editar Piloto';
+    document.getElementById('modalConfirm').innerText = 'Guardar Cambios';
+    document.getElementById('modal').style.display = 'flex';
+    
+    // Guardar callback para el botón confirmar
+    window._pendingEditSave = async () => {
+        const photoFile = document.getElementById('_mf')?.files?.[0];
+        let photoData = null;
+        if (photoFile) {
+            photoData = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.readAsDataURL(photoFile);
+            });
+        }
+        const transpVal = document.getElementById('_mt')?.value;
+        const data = {
+            name: document.getElementById('_mn').value,
+            lastname: document.getElementById('_mln').value,
+            transponder_id: transpVal ? parseInt(transpVal) : null,
+            email: document.getElementById('_me').value,
+            carnet: document.getElementById('_mc').value,
+            phone: document.getElementById('_mph').value,
+            age: document.getElementById('_ma').value || null,
+            photo: photoData || undefined
+        };
+        const res = await apiCall(`/api/drivers/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+        if (res?.success) {
+            showToast('✅', 'Piloto actualizado', 'success');
+            loadDrivers();
+        }
+    };
+    pendingAction = window._pendingEditSave;
+    
+    // Cargar transponders en el select del modal
+    setTimeout(async () => {
+        const transponders = await apiCall('/api/transponders/all');
+        const sel = document.getElementById('_mt');
+        if (sel && transponders) {
+            for (const t of transponders) {
+                const opt = document.createElement('option');
+                opt.value = t.id;
+                opt.textContent = `${t.id}${t.kart_id ? ' - '+t.kart_id : ''}`;
+                if (String(t.id) === String(transponder)) opt.selected = true;
+                sel.appendChild(opt);
+            }
+        }
+    }, 200);
+};
+
+// Photo preview for modal
+window._previewModalPhoto = () => {
+    const file = document.getElementById('_mf')?.files?.[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            document.getElementById('_mp').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+};
+
+function editDriverInner(id, name, lastname, transponder, email, carnet, phone) {
+    document.getElementById('driverName').value = name;
+    document.getElementById('driverLastname').value = lastname;
+    const tSel2 = document.getElementById('driverTransponder');
+    if (tSel2 && tSel2.tagName === 'SELECT') {
+        tSel2.value = transponder || '';
+    }
+    document.getElementById('driverEmail').value = email || '';
+    document.getElementById('driverCarnet').value = carnet || '';
+    document.getElementById('driverPhone').value = phone || '';
+    document.getElementById('driverAge').value = '';
 
     const saveBtn = document.getElementById('saveDriverBtn');
     const originalText = saveBtn.innerText;
@@ -2225,10 +2357,24 @@ window.editDriver = (id, name, lastname, transponder) => {
     saveBtn.style.width = '100%';
 
     saveBtn.onclick = async () => {
+        const photoFile = document.getElementById('driverPhotoFile')?.files?.[0];
+        let photoData = null;
+        if (photoFile) {
+            photoData = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.readAsDataURL(photoFile);
+            });
+        }
         const data = {
             name: document.getElementById('driverName').value,
             lastname: document.getElementById('driverLastname').value,
-            transponder_id: parseInt(document.getElementById('driverTransponder').value)
+            transponder_id: (() => { const v = document.getElementById('driverTransponder'); return v && v.value ? parseInt(v.value) : null; })(),
+            email: document.getElementById('driverEmail')?.value || '',
+            carnet: document.getElementById('driverCarnet')?.value || '',
+            phone: document.getElementById('driverPhone')?.value || '',
+            age: document.getElementById('driverAge')?.value || null,
+            photo: photoData
         };
 
         showLoader('Actualizando piloto...');
@@ -2241,37 +2387,87 @@ window.editDriver = (id, name, lastname, transponder) => {
         if (res?.success) {
             saveBtn.innerText = originalText;
             saveBtn.className = 'btn btn-primary';
-            saveBtn.onclick = createDriverHandler; // Restaurar el handler original
+            saveBtn.onclick = createDriverHandler;
             document.getElementById('driverName').value = '';
             document.getElementById('driverLastname').value = '';
-            document.getElementById('driverTransponder').value = '';
+            const tSel = document.getElementById('driverTransponder');
+            if (tSel) tSel.value = '';
+            document.getElementById('driverEmail').value = '';
+            document.getElementById('driverCarnet').value = '';
+            document.getElementById('driverPhone').value = '';
+            document.getElementById('driverAge').value = '';
+            document.getElementById('driverPhotoFile').value = '';
+            document.getElementById('driverPhotoPreview').src = '/static/pilotcircle1.png';
+            document.getElementById('extraDriverFields').style.display = 'none';
+            document.getElementById('toggleExtraFieldsBtn').innerHTML = '▼ Más campos';
             loadDrivers();
         }
     };
-};
+}
 
 const createDriverHandler = async () => {
+    const name = document.getElementById('driverName').value.trim();
+    const carnet = document.getElementById('driverCarnet').value.trim();
+    if (!name) { showToast('⚠️', 'El nombre es obligatorio', 'warning'); return; }
+    if (!carnet) { showToast('⚠️', 'El carnet es obligatorio', 'warning'); return; }
+
+    const photoFile = document.getElementById('driverPhotoFile')?.files?.[0];
+    let photoData = null;
+    if (photoFile) {
+        photoData = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.readAsDataURL(photoFile);
+        });
+    }
+    const transponderSel = document.getElementById('driverTransponder');
+    const transponderVal = transponderSel?.value || '';
     const data = {
-        transponder_id: parseInt(document.getElementById('driverTransponder').value),
-        name: document.getElementById('driverName').value,
-        lastname: document.getElementById('driverLastname').value
+        transponder_id: transponderVal ? parseInt(transponderVal) : null,
+        name: name,
+        lastname: document.getElementById('driverLastname').value,
+        email: document.getElementById('driverEmail')?.value || '',
+        carnet: carnet,
+        phone: document.getElementById('driverPhone')?.value || '',
+        age: document.getElementById('driverAge')?.value || null,
+        photo: photoData
     };
-    if (!data.transponder_id || !data.name) { return; }
 
     showLoader('Guardando piloto...');
     const res = await apiCall('/api/drivers', { method: 'POST', body: JSON.stringify(data) });
     hideLoader();
 
     if (res?.success) {
-        document.getElementById('driverTransponder').value = '';
+        if (transponderSel) transponderSel.value = '';
         document.getElementById('driverName').value = '';
         document.getElementById('driverLastname').value = '';
+        document.getElementById('driverEmail').value = '';
+        document.getElementById('driverCarnet').value = '';
+        document.getElementById('driverPhone').value = '';
+        document.getElementById('driverAge').value = '';
+        document.getElementById('driverPhotoFile').value = '';
+        document.getElementById('driverPhotoPreview').src = '/static/pilotcircle1.png';
+        document.getElementById('extraDriverFields').style.display = 'none';
+        document.getElementById('toggleExtraFieldsBtn').innerHTML = '▼ Más campos';
         loadDrivers();
         loadTransponders();
+        loadTranspondersIntoSelect();
     }
 };
 
 document.getElementById('saveDriverBtn').onclick = createDriverHandler;
+
+// Photo preview
+document.getElementById('driverPhotoFile')?.addEventListener('change', function() {
+    const file = this.files?.[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            document.getElementById('driverPhotoPreview').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
 
 window.removeFromRace = async (driverId) => {
     const session = await apiCall('/api/session/current');
@@ -2291,10 +2487,9 @@ window.removeFromRace = async (driverId) => {
 };
 
 document.getElementById('addDriverToRaceBtn').onclick = async () => {
-    const select = document.getElementById('selectDriverToAdd');
-    const driverId = select.value;
-    if (!driverId) {
-        showToast('⚠️', 'Selecciona un piloto primero', 'warning');
+    const checkboxes = document.querySelectorAll('.enrollment-checkbox:checked');
+    if (checkboxes.length === 0) {
+        showToast('⚠️', 'Selecciona al menos un piloto', 'warning');
         return;
     }
 
@@ -2304,40 +2499,30 @@ document.getElementById('addDriverToRaceBtn').onclick = async () => {
         return;
     }
 
-    const drivers = await apiCall('/api/drivers');
-    const driver = drivers.find(d => d.id == driverId);
-    if (!driver) {
-        showToast('❌', 'Piloto no encontrado', 'error');
-        return;
+    showLoader(`Inscribiendo ${checkboxes.length} piloto(s)...`);
+    let inscritos = 0;
+    for (const cb of checkboxes) {
+        const driverId = parseInt(cb.value);
+        const transponderId = cb.dataset.transponder && cb.dataset.transponder !== 'undefined' ? parseInt(cb.dataset.transponder) : driverId;
+        const res = await apiCall('/api/race/add', {
+            method: 'POST',
+            body: JSON.stringify({
+                session_id: session.session.id,
+                driver_id: driverId,
+                transponder_id: transponderId
+            })
+        });
+        if (res?.success) inscritos++;
     }
-
-    const raceDrivers = await apiCall(`/api/race/drivers/${session.session.id}`);
-    const yaInscrito = raceDrivers && raceDrivers.some(d => d.driver_id == driverId);
-
-    if (yaInscrito) {
-        showToast('⚠️', `El piloto ${driver.name} ${driver.lastname || ''} YA está inscrito en esta carrera`, 'warning');
-        return;
-    }
-
-    showLoader('Inscribiendo piloto...');
-    const res = await apiCall('/api/race/add', {
-        method: 'POST',
-        body: JSON.stringify({
-            session_id: session.session.id,
-            driver_id: parseInt(driverId),
-            transponder_id: driver.transponder_id
-        })
-    });
     hideLoader();
-
-    if (res?.success) {
-        showToast('✅', `Piloto ${driver.name} inscrito correctamente`, 'success');
-        loadDrivers();  // Recargar listas
-        loadLiveData(); // Actualizar tablero
-    } else {
-        showToast('❌', res?.error || 'No se pudo inscribir el piloto', 'error');
-    }
+    showToast('✅', `${inscritos} piloto(s) inscrito(s)`, 'success');
+    loadDrivers();
+    loadLiveData();
 };
+
+// ═══════════════════════════════════════════
+// NUEVOS HANDLERS DE PILOTOS
+// ═══════════════════════════════════════════
 
 async function loadTransponders() {
     const detected = await apiCall('/api/transponders/unassigned');
@@ -2587,7 +2772,7 @@ document.getElementById('createNewRaceBtn').onclick = () => {
     let timeLimitSeconds = 0;
     let timeLimitMinutes = 0;
 
-    if (raceMode === 'time_limit') {
+    if (raceMode === 'classification') {
         timeLimitMinutes = parseInt(document.getElementById('timeLimitMinutes')?.value || 5);
         timeLimitSeconds = timeLimitMinutes * 60;
     } else if (raceMode === 'endurance') {
@@ -2608,7 +2793,7 @@ document.getElementById('createNewRaceBtn').onclick = () => {
         mensaje += `\n\n🏆 Gana el piloto con MÁS vueltas completadas.`;
         mensaje += `\n📊 Desempate: menor tiempo acumulado.`;
         mensaje += `\n⏱️ La carrera terminará automáticamente al cumplirse el tiempo.`;
-    } else if (normalizedMode === 'time_limit') {
+    } else if (normalizedMode === 'classification') {
         mensaje += ` con duración de ${timeLimitMinutes} minutos?`;
         mensaje += `\n\n🏆 Gana el piloto con la MEJOR vuelta.`;
         mensaje += `\n⏱️ Los que no tengan vuelta quedan desclasificados.`;
@@ -2684,8 +2869,8 @@ document.getElementById('createNewRaceBtn').onclick = () => {
                 await loadLiveData();
                 await updateTimeRemaining();
                 await loadDrivers();
-                const select = document.getElementById('selectDriverToAdd');
-                if (select) select.innerHTML = '<option value="">-- Seleccionar Piloto --</option>';
+                const enrollment = document.getElementById('enrollmentCheckboxList');
+                if (enrollment) enrollment.innerHTML = '<span style="font-size:0.7rem;color:#888;">Cargando pilotos...</span>';
             } else {
                 showToast('❌', res?.error || 'No se pudo crear la carrera', 'error');
             }
@@ -3056,6 +3241,58 @@ function winnerDetailsText(driver) {
 }
 
 let winnerModalTimer = null;
+
+function showClassificationModal(q1, q2, q3, dnq) {
+    const formatPilot = (d, idx) => {
+        const name = (d.full_name || (d.name || '') + ' ' + (d.lastname || '')).trim();
+        const best = d.best_lap ? (d.best_lap.toFixed(3) + 's') : '--';
+        return `<div style="display:flex;align-items:center;gap:0.4rem;padding:0.2rem 0;font-size:0.78rem;border-bottom:1px solid #1a1e26;">
+            <span style="color:#ffd700;font-weight:bold;min-width:22px;">${idx+1}.</span>
+            <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${name}</span>
+            <span style="color:#ffd700;font-family:monospace;">${best}</span>
+        </div>`;
+    };
+
+    const groups = [
+        { title: 'Q1 🏎️', color: '#ffd700', data: q1 || [] },
+        { title: 'Q2 🏁', color: '#c0c0c0', data: q2 || [] },
+        { title: 'Q3 ⏱️', color: '#cd7f32', data: q3 || [] },
+    ];
+
+    let html = '<div style="text-align:center;margin-bottom:1rem;"><h2 style="color:#ffd700;margin:0;">🏁 CLASIFICACIÓN</h2></div>';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;max-height:50vh;overflow-y:auto;">';
+    
+    for (const g of groups) {
+        html += `<div style="background:#0f1117;border:1px solid ${g.color};border-radius:10px;padding:0.5rem;">
+            <div style="text-align:center;font-weight:bold;font-size:0.85rem;color:${g.color};margin-bottom:0.4rem;">${g.title}</div>`;
+        if (g.data.length === 0) {
+            html += '<div style="text-align:center;color:#888;font-size:0.7rem;">--</div>';
+        } else {
+            html += g.data.map((d, i) => formatPilot(d, i)).join('');
+        }
+        html += '</div>';
+    }
+    html += '</div>';
+
+    if (dnq && dnq.length > 0) {
+        html += '<div style="margin-top:0.8rem;background:#1a0a0a;border:1px solid #e5484d;border-radius:10px;padding:0.5rem;">';
+        html += '<div style="text-align:center;font-weight:bold;font-size:0.85rem;color:#e5484d;margin-bottom:0.3rem;">❌ DNQ (Sin vuelta válida)</div>';
+        html += dnq.map((d, i) => `<div style="display:flex;align-items:center;gap:0.4rem;padding:0.15rem 0;font-size:0.72rem;border-bottom:1px solid #2a0a0a;">
+            <span style="color:#e5484d;">•</span>
+            <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${(d.full_name || (d.name||'') + ' ' + (d.lastname||'')).trim()}</span>
+            <span style="color:#888;font-size:0.65rem;">${d.total_laps || 0} v</span>
+        </div>`).join('');
+        html += '</div>';
+    }
+
+    html += '<div style="text-align:center;margin-top:1rem;font-size:0.65rem;color:#888;">Los grupos se dividen en tercios según mejor vuelta</div>';
+
+    document.getElementById('modalMessage').innerHTML = html;
+    document.getElementById('modalTitle').innerText = '🏁 CLASIFICACIÓN';
+    document.getElementById('modal').style.display = 'flex';
+    document.getElementById('modalConfirm').style.display = 'none';
+    document.getElementById('modalCancel').innerText = 'Cerrar';
+}
 
 function showWinnerModalComplete(winner, second, third) {
     if (winnerModalShown) return;
@@ -4290,6 +4527,78 @@ function setupIpModal() {
 }
 
 loadManualIp();
+loadTranspondersIntoSelect();
+
+// Cargar transponders en el select del formulario de registro
+async function loadTranspondersIntoSelect() {
+    const sel = document.getElementById('driverTransponder');
+    if (!sel) return;
+    const transponders = await apiCall('/api/transponders/all');
+    sel.innerHTML = '<option value="">-- Sin Transponder --</option>';
+    if (transponders && transponders.length) {
+        for (const t of transponders) {
+            const opt = document.createElement('option');
+            opt.value = t.id;
+            opt.textContent = `${t.id}${t.kart_id ? ' - ' + t.kart_id : ''}${t.description ? ' - ' + t.description : ''}`;
+            sel.appendChild(opt);
+        }
+    }
+}
+
+// Event delegation: click en cualquier parte de la fila abre modal de edición
+document.getElementById('driversList')?.addEventListener('click', function(e) {
+    const trigger = e.target.closest('.driver-edit-trigger');
+    if (!trigger) return;
+    const row = trigger.closest('tr');
+    if (!row) return;
+    const driverId = parseInt(row.dataset.driverId);
+    if (!driverId) return;
+    const driver = allDriversData.find(d => d.id === driverId);
+    if (driver) {
+        openDriverEditModal(driver);
+    }
+});
+
+// Search drivers - INDEPENDIENTE: solo filtra lista de registro
+document.getElementById('driverSearchInput')?.addEventListener('input', function() {
+    renderDriversTable(this.value);
+});
+
+// Enrollment search - INDEPENDIENTE: solo filtra checkboxes de inscripción
+document.getElementById('enrollmentSearch')?.addEventListener('input', function() {
+    loadEnrollmentCheckboxes(this.value);
+});
+
+// Clear transponders button
+document.getElementById('clearTranspondersBtn')?.addEventListener('click', function() {
+    showModal('Borrar Transponders', '¿Quitar el código de transponder de TODOS los pilotos?', async () => {
+        showLoader('Borrando transponders...');
+        const res = await apiCall('/api/drivers/clear-transponders', { method: 'POST' });
+        hideLoader();
+        if (res?.success) {
+            showToast('✅', 'Transponders borrados', 'success');
+            loadDrivers();
+        } else {
+            showToast('❌', res?.error || 'Error', 'error');
+        }
+    });
+});
+
+// Unenroll all button
+document.getElementById('unenrollAllBtn')?.addEventListener('click', function() {
+    showModal('Desinscribir Todos', '¿Desinscribir a todos los pilotos de la carrera?', async () => {
+        showLoader('Desinscribiendo pilotos...');
+        const res = await apiCall('/api/race/unenroll-all', { method: 'POST' });
+        hideLoader();
+        if (res?.success) {
+            showToast('✅', 'Todos los pilotos desinscritos', 'success');
+            loadDrivers();
+            loadLiveData();
+        } else {
+            showToast('❌', res?.error || 'Error', 'error');
+        }
+    });
+});
 setupIpModal();
 
 // ============================================================
@@ -4387,9 +4696,6 @@ function saveSimulationSpeed(speed) {
     });
 }
 
-// ============================================================
-// FUNCIONES DE RENDER (CORREGIDO - Problema #10 y #11)
-// ============================================================
 function renderLiveLeaderboardPublicStyle(leaderboard, session, speedsMap = {}, timesMap = {}) {
     const container = document.getElementById('liveLeaderboardPublicStyle');
 
@@ -4405,6 +4711,8 @@ function renderLiveLeaderboardPublicStyle(leaderboard, session, speedsMap = {}, 
         '#00acc1', '#c0ca33', '#ec407a', '#42a5f5', '#26a69a',
     ];
 
+    const DEFAULT_PHOTO = '/static/default-avatar.png';
+
     if (!leaderboard || !leaderboard.length) {
         container.innerHTML = '<div style="text-align:center; padding:2rem;">Sin pilotos inscritos</div>';
         return;
@@ -4415,17 +4723,11 @@ function renderLiveLeaderboardPublicStyle(leaderboard, session, speedsMap = {}, 
     container.innerHTML = leaderboard.map((driver, idx) => {
         const color = driverColors[idx % driverColors.length];
 
-        // MEJOR VUELTA
         let best = '--';
         if (driver.best_lap && driver.best_lap > 0) {
             best = formatRaceClock(driver.best_lap);
-        } else if (driver.best_lap_time && driver.best_lap_time > 0) {
-            best = formatRaceClock(driver.best_lap_time);
         }
 
-        // TIEMPO INDIVIDUAL
-
-        // ✅ CALCULAR TIEMPO INDIVIDUAL desde first_detection y last_detection
         let calculatedTotalTime = '--';
         if (driver.first_detection && driver.last_detection) {
             const first = new Date(driver.first_detection).getTime();
@@ -4438,7 +4740,6 @@ function renderLiveLeaderboardPublicStyle(leaderboard, session, speedsMap = {}, 
 
         const individualTime = driver.total_time != null ? formatRaceClock(driver.total_time) : calculatedTotalTime;
 
-        // TIEMPO TOTAL (cronómetro general)
         let totalTime = '--';
         if (session.race_elapsed_seconds !== undefined && session.race_elapsed_seconds !== null) {
             let seconds = session.race_elapsed_seconds;
@@ -4448,30 +4749,21 @@ function renderLiveLeaderboardPublicStyle(leaderboard, session, speedsMap = {}, 
             totalTime = formatRaceClock(seconds);
         }
 
-        
-        // ===== ASIGNAR COLUMNAS SEGÚN MODO =====
-        let tiempoPrincipal = '--';      // Columna TIEMPO
-        let tiempoSecundario = '--';     // Columna T.INDIV
+        let tiempoPrincipal = '--';
+        let tiempoSecundario = '--';
 
         if (raceMode === 'time_attack') {
-            // ✅ CLASIFICACIÓN: 
-            // TIEMPO = race_total_time (CONGELADO al terminar)
-            // T.INDIV = tiempo desde primera detección (sigue corriendo hasta que termina)
-            
-            // 1. TIEMPO: usar race_total_time (se congela)
             const driverTotal = (driver.race_total_time != null && driver.race_total_time > 0) 
                 ? formatRaceClock(driver.race_total_time) 
                 : '--';
             tiempoPrincipal = driverTotal;
             
-            // 2. T.INDIV: tiempo desde primera detección
             let tiempoTranscurrido = '--';
             if (driver.first_detection) {
                 const now = Date.now();
                 const firstDetMs = new Date(driver.first_detection).getTime();
                 if (!isNaN(firstDetMs)) {
                     const elapsedSec = (now - firstDetMs) / 1000;
-                    // Si el piloto ya terminó, mostrar el tiempo final (congelado)
                     if (driver.is_finished && driver.race_total_time != null && driver.race_total_time > 0) {
                         tiempoTranscurrido = formatRaceClock(driver.race_total_time);
                     } else {
@@ -4481,33 +4773,35 @@ function renderLiveLeaderboardPublicStyle(leaderboard, session, speedsMap = {}, 
             }
             tiempoSecundario = tiempoTranscurrido;
             
-        } else if (raceMode === 'time_limit') {
-            // TIME LIMIT: TIEMPO = mejor vuelta, T.INDIV = número de vueltas
+        } else if (raceMode === 'classification') {
             const bestLap = driver.best_lap ? formatRaceClock(driver.best_lap) : '--';
             tiempoPrincipal = bestLap;
             tiempoSecundario = `${driver.total_laps || 0} v`;
             
         } else if (raceMode === 'endurance') {
-            // ENDURANCE: TIEMPO = número de vueltas, T.INDIV = mejor vuelta
             const bestLap = driver.best_lap ? formatRaceClock(driver.best_lap) : '--';
             tiempoPrincipal = `${driver.total_laps || 0} v`;
             tiempoSecundario = bestLap;
             
         } else {
-            // POSITION RACE: TIEMPO = tiempo INDIVIDUAL del piloto, T.INDIV = cronómetro general
             tiempoPrincipal = individualTime;
             tiempoSecundario = totalTime;
         }
 
-        // VELOCIDAD
         const speed = speedsMap[driver.driver_id];
         const speedFormatted = (speed && speed > 0 && speed < 400) ? `${Math.round(speed)}` : '--';
 
         const kartLabel = driver.kart_id ? driver.kart_id : driver.transponder_id || '--';
 
+        // ✅ FOTO DEL PILOTO
+        const photoUrl = driver.photo && driver.photo.startsWith('/static/') 
+            ? driver.photo 
+            : DEFAULT_PHOTO;
+
+        const progressLineClass = idx === 0 ? 'line-gold' : 'line-blue';
+
         let cupIcon = '';
         if (raceMode === 'time_attack') {
-            // TIME ATTACK: solo mostrar copas cuando la carrera está COMPLETADA
             if (session.status === 'completed') {
                 if (idx === 0) {
                     cupIcon = `<img src="/static/golden.svg" alt="Oro" style="height: 19px; width: auto; vertical-align: middle; padding: 0px 5px 0px 5px;">`;
@@ -4518,7 +4812,6 @@ function renderLiveLeaderboardPublicStyle(leaderboard, session, speedsMap = {}, 
                 }
             }
         } else {
-            // POSITION RACE: mostrar copas cuando el piloto termina todas sus vueltas
             if (driver.is_finished && driver.total_laps >= (session.laps_limit || 0)) {
                 if (idx === 0) {
                     cupIcon = `<img src="/static/golden.svg" alt="Oro" style="height: 19px; width: auto; vertical-align: middle; padding: 0px 5px 0px 5px;">`;
@@ -4534,8 +4827,9 @@ function renderLiveLeaderboardPublicStyle(leaderboard, session, speedsMap = {}, 
             <div class="k-row ${idx === 0 ? 'row-first' : ''}">
                 <div class="k-col-pos">${driver.position || (idx + 1)}</div>
                 <div class="k-col-name">
+                    <img src="${photoUrl}" class="driver-photo-leaderboard" onerror="this.src='${DEFAULT_PHOTO}'">
                     <span class="driver-name">${driver.full_name || driver.name}${cupIcon}</span>
-                    <div class="progress-line ${idx === 0 ? 'line-gold' : 'line-blue'}" style="background: linear-gradient(90deg, ${color}, transparent);"></div>
+                    <div class="progress-line ${progressLineClass}" style="background: linear-gradient(90deg, ${color}, transparent);"></div>
                 </div>
                 <div class="k-col-vueltas">${driver.total_laps || 0}/${session.laps_limit || 0}</div>
                 <div class="k-col-dif"><span class="time-box box-black">${driver.gap || (idx === 0 ? 'Líder' : '--')}</span></div>
@@ -4544,7 +4838,6 @@ function renderLiveLeaderboardPublicStyle(leaderboard, session, speedsMap = {}, 
                 <div class="k-col-tiempo-individual"><span class="time-box box-black">${tiempoSecundario}</span></div>
                 <div class="k-col-velocidad">
                     <span class="time-box box-black">${speedFormatted} <span style="color: yellow; font-size: 0.6rem; margin-left: 2px;">km/h</span></span>
-                    
                 </div>
                 <div class="k-col-kart"><span class="kart-circle" style="background-color: ${color};">${kartLabel}</span></div>
             </div>
@@ -4603,7 +4896,7 @@ function updateLiveHeader(session) {
 
         const status = session.status || 'pending';
         const raceMode = normalizeRaceMode(session.race_mode);
-        const isTimedMode = (raceMode === 'endurance' || raceMode === 'time_limit');
+        const isTimedMode = (raceMode === 'endurance' || raceMode === 'classification');
 
         if (isTimedMode && status === 'completed') {
             timerEl.classList.add('status-timeout');
@@ -6003,33 +6296,37 @@ function closeDeleteModal() {
 }
 
 
-
-//==========SIEMPRE AL FINAL ESTE BLOQUE DE CÓDIGO =============//
-
 restoreLoginAfterReload().then(() => {
     checkAuth();
 });
 
-// ============================================================
-// CORRECCIÓN: Botón "Mostrar Ganadores" para TIME LIMIT/ENDURANCE (Problema #14)
-// ============================================================
+
 async function showWinnerForAllModes() {
     const podiumRes = await apiCall('/api/session/current/podium');
     const podium = podiumRes?.podium || [];
-    const raceMode = podiumRes?.race_mode || 'position';
+    const raceMode = normalizeRaceMode(podiumRes?.race_mode || 'position');
+    currentRaceMode = raceMode;
 
+    // ✅ CLASIFICACIÓN: usa showClassificationModal()
+    if (raceMode === 'classification') {
+        const groups = podiumRes?.classification_groups;
+        if (groups) {
+            resetWinnerModalFlag();
+            showClassificationModal(groups.q1, groups.q2, groups.q3, groups.dnq);
+        }
+        return;
+    }
+
+    // ✅ TODOS LOS OTROS MODOS: usan showWinnerModalComplete()
     if (podium.length === 0) {
         showToast('⚠️', 'No hay ganadores para mostrar', 'warning');
         return;
     }
 
-    // Guardar modo actual para usarlo en winnerDetailsText
-    currentRaceMode = normalizeRaceMode(raceMode);
-
-    // Mostrar el modal con los 3 primeros
     resetWinnerModalFlag();
     showWinnerModalComplete(podium[0], podium[1], podium[2]);
 }
 
 // Reemplazar el onclick del botón
 document.getElementById('showWinnerBtn').onclick = showWinnerForAllModes;
+document.getElementById('showClassificationBtn').onclick = showWinnerForAllModes;

@@ -30,8 +30,8 @@ def get_db():
 
 
 def init_db():
-
     with get_db() as conn:
+        # ===== TABLA DRIVERS CON FOTO CORRECTA =====
         conn.execute("""
             CREATE TABLE IF NOT EXISTS drivers (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -43,7 +43,7 @@ def init_db():
                 nationality TEXT,
                 weight REAL,
                 description TEXT,
-                photo TEXT DEFAULT 'default-avatar.png',
+                photo TEXT DEFAULT '/static/default-avatar.png',
                 best_lap_time REAL,
                 total_races INTEGER DEFAULT 0,
                 total_wins INTEGER DEFAULT 0,
@@ -83,7 +83,7 @@ def init_db():
                     f"ALTER TABLE transponders ADD COLUMN {col_name} {col_type}"
                 )
             except sqlite3.OperationalError:
-                pass  # La columna ya existe
+                pass
 
         conn.execute("""
             CREATE TABLE IF NOT EXISTS race_sessions (
@@ -196,13 +196,11 @@ def init_db():
             )
         """)
 
-        # Insertar registro por defecto si no existe
         conn.execute("""
             INSERT OR IGNORE INTO decoder_config (id, mode)
             VALUES (1, 'chronit')
         """)
 
-        # Insertar registro por defecto
         conn.execute("""
             INSERT OR IGNORE INTO circuit_config (id, circuit_name, track_length_km)
             VALUES (1, 'Circuito Principal', 0)
@@ -213,6 +211,7 @@ def init_db():
             )
         except sqlite3.OperationalError:
             pass
+
         # ========== NUEVAS COLUMNAS ==========
         try:
             conn.execute("ALTER TABLE laps ADD COLUMN avg_speed_kmh REAL")
@@ -233,11 +232,19 @@ def init_db():
             conn.execute("ALTER TABLE drivers ADD COLUMN best_session_id INTEGER")
         except sqlite3.OperationalError:
             pass
-        # Agregar columna finish_timestamp a race_drivers si no existe (para Position Race)
+
+        # Migración: email, carnet, telefono
+        for col, tipo in [("email", "TEXT"), ("carnet", "TEXT"), ("phone", "TEXT")]:
+            try:
+                conn.execute(f"ALTER TABLE drivers ADD COLUMN {col} {tipo}")
+            except sqlite3.OperationalError:
+                pass
+
+        # Agregar columna finish_timestamp a race_drivers si no existe
         try:
             conn.execute("ALTER TABLE race_drivers ADD COLUMN finish_timestamp TEXT")
         except sqlite3.OperationalError:
-            pass  # La columna ya existe
+            pass
 
         conn.execute(
             "INSERT OR IGNORE INTO settings (key, value) VALUES ('current_session_id', '0')"
@@ -279,13 +286,17 @@ def add_driver(
     nationality="",
     weight=None,
     description="",
+    email="",
+    carnet="",
+    phone="",
+    photo=None,
 ):
     with get_db() as conn:
         cursor = conn.execute(
             """
             INSERT OR REPLACE INTO drivers 
-            (transponder_id, name, lastname, age, gender, nationality, weight, description, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (transponder_id, name, lastname, age, gender, nationality, weight, description, email, carnet, phone, photo, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
             (
                 transponder_id,
@@ -296,20 +307,25 @@ def add_driver(
                 nationality,
                 weight,
                 description,
+                email,
+                carnet,
+                phone,
+                photo or None,
                 datetime.now().isoformat(),
             ),
         )
-        conn.execute(
-            """
-            INSERT OR IGNORE INTO transponders (id, code, first_detected, is_active, usage_laps_total)
-            VALUES (?, ?, ?, 1, 0)
-        """,
-            (transponder_id, str(transponder_id), datetime.now().isoformat()),
-        )
-        conn.execute(
-            "UPDATE transponders SET last_seen = ? WHERE id = ?",
-            (datetime.now().isoformat(), transponder_id),
-        )
+        if transponder_id is not None:
+            conn.execute(
+                """
+                INSERT OR IGNORE INTO transponders (id, code, first_detected, is_active, usage_laps_total)
+                VALUES (?, ?, ?, 1, 0)
+            """,
+                (transponder_id, str(transponder_id), datetime.now().isoformat()),
+            )
+            conn.execute(
+                "UPDATE transponders SET last_seen = ? WHERE id = ?",
+                (datetime.now().isoformat(), transponder_id),
+            )
         return cursor.lastrowid
 
 
@@ -367,7 +383,12 @@ def get_all_drivers():
     with get_db() as conn:
         return [
             dict(r)
-            for r in conn.execute("SELECT * FROM drivers ORDER BY name ASC").fetchall()
+            for r in conn.execute("""
+                SELECT d.*, t.kart_id as transponder_kart_id
+                FROM drivers d
+                LEFT JOIN transponders t ON d.transponder_id = t.id
+                ORDER BY d.id DESC
+            """).fetchall()
         ]
 
 
@@ -615,13 +636,13 @@ def normalize_race_mode(value):
     v = (value or "").strip().lower()
     if v in ("time_attack", "time-attack", "timeattack", "ta"):
         return "time_attack"
-    if v in ("time_limit", "time-limit", "timelimit", "tl"):
-        return "time_limit"
+    if v in ("classification", "clasificacion", "class", "cl"):
+        return "classification"
     if v in ("endurance", "enduro", "en"):
         return "endurance"
     return "position"
 
-# ==================== TIME LIMIT Y ENDURANCE - FUNCIÓN ADICIONAL ====================
+# ==================== CLASSIFICATION Y ENDURANCE - FUNCIÓN ADICIONAL ====================
 def get_session_time_limit(session_id):
     """Obtiene el tiempo límite de una sesión"""
     with get_db() as conn:
@@ -826,9 +847,10 @@ def get_race_drivers(session_id):
             dict(r)
             for r in conn.execute(
                 """
-            SELECT rd.*, d.name, d.lastname, d.transponder_id as driver_transponder, d.photo
+            SELECT rd.*, d.name, d.lastname, d.transponder_id as driver_transponder, d.photo, t.kart_id as transponder_kart_id
             FROM race_drivers rd
             JOIN drivers d ON rd.driver_id = d.id
+            LEFT JOIN transponders t ON d.transponder_id = t.id
             WHERE rd.session_id = ?
             ORDER BY rd.start_position ASC
         """,
@@ -961,17 +983,29 @@ def update_driver_finish_time(
         return True
 
 
-def update_driver(driver_id, transponder_id, name, lastname=""):
+def update_driver(driver_id, transponder_id, name, lastname="", email="", carnet="", phone="", photo=None):
     with get_db() as conn:
         conn.execute(
             """
             UPDATE drivers 
-            SET transponder_id = ?, name = ?, lastname = ?
+            SET transponder_id = ?, name = ?, lastname = ?, email = ?, carnet = ?, phone = ?
             WHERE id = ?
         """,
-            (transponder_id, name, lastname, driver_id),
+            (transponder_id, name, lastname, email or "", carnet or "", phone or "", driver_id),
         )
+        if photo:
+            conn.execute(
+                "UPDATE drivers SET photo = ? WHERE id = ?",
+                (photo, driver_id),
+            )
         return True
+
+
+def clear_all_driver_transponders():
+    """Quita el transponder_id de todos los pilotos (lo pone a NULL)"""
+    with get_db() as conn:
+        conn.execute("UPDATE drivers SET transponder_id = NULL")
+    return True
 
 
 def get_recent_signals(limit=10):
@@ -998,7 +1032,6 @@ def get_leaderboard_with_details(session_id):
         except:
             s_id = session_id
 
-        # ===== OBTENER INFORMACIÓN DE LA SESIÓN =====
         session_info = conn.execute(
             "SELECT race_mode, laps_limit, time_limit_seconds FROM race_sessions WHERE id = ?", (s_id,)
         ).fetchone()
@@ -1007,76 +1040,78 @@ def get_leaderboard_with_details(session_id):
             return []
         
         race_mode = normalize_race_mode(session_info["race_mode"])
-        laps_limit = session_info["laps_limit"] if session_info["laps_limit"] else 10
-        time_limit_seconds = session_info["time_limit_seconds"] if session_info["time_limit_seconds"] else 0
+        laps_limit = session_info["laps_limit"] if session_info["laps_limit"] is not None and session_info["laps_limit"] > 0 else 0
 
-        # ===== CONSULTA PRINCIPAL =====
-        # ✅ SOLO 4 placeholders: total_laps, best_lap, last_valid_lap_number, session_id
-        results = conn.execute("""
-            SELECT 
-                d.id as driver_id,
-                d.name,
-                d.lastname,
-                d.transponder_id,
-                t.kart_id as kart_id,
-                d.photo,
-                rd.finished as is_finished_flag,
-                rd.total_time as race_total_time,
-                rd.finish_timestamp as finish_timestamp,
-                MIN(l.timestamp) as first_detection,
-                MAX(l.timestamp) as last_detection,
-                COUNT(DISTINCT CASE WHEN l.lap_number > 0 AND l.lap_number <= ? THEN l.lap_number END) as total_laps,
-                -- ✅ CORRECCIÓN: Usar rd.total_time si existe, si no, calcular
-                CASE 
-                    WHEN rd.total_time IS NOT NULL THEN rd.total_time
-                    ELSE (julianday(COALESCE(MAX(CASE WHEN l.is_last_lap = 1 THEN l.timestamp END), MIN(l.timestamp))) - julianday(MIN(l.timestamp))) * 86400
-                END as real_total_time,
-                -- ✅ Tiempo calculado desde primera detección (NO tiene placeholder)
-                (julianday(COALESCE(MAX(CASE WHEN l.is_last_lap = 1 THEN l.timestamp END), datetime('now'))) - julianday(MIN(l.timestamp))) * 86400 as calculated_total_time,
-                MIN(CASE WHEN l.lap_number > 0 AND l.lap_number <= ? AND l.lap_seconds IS NOT NULL THEN l.lap_seconds END) as best_lap,
-                MAX(CASE WHEN l.lap_number > 0 AND l.lap_number <= ? THEN l.lap_number END) as last_valid_lap_number
-            FROM race_drivers rd
-            JOIN drivers d ON rd.driver_id = d.id
-            LEFT JOIN transponders t ON t.id = d.transponder_id
-            LEFT JOIN laps l ON l.driver_id = d.id AND l.session_id = rd.session_id
-            WHERE rd.session_id = ?
-            GROUP BY rd.id, d.id, d.name, d.lastname, d.transponder_id, t.kart_id, d.photo
-        """, (laps_limit, laps_limit, laps_limit, s_id))  # ← 4 parámetros
+        effective_laps_limit = laps_limit
+        if race_mode in ('classification', 'endurance'):
+            effective_laps_limit = 999999
+
+        # ✅ CONSULTA CORREGIDA: Agregar SUM(lap_seconds) como sum_lap_times
+        results = conn.execute(
+            """
+    SELECT 
+        d.id as driver_id,
+        d.name,
+        d.lastname,
+        d.transponder_id,
+        t.kart_id as kart_id,
+        d.photo,
+        rd.finished as is_finished_flag,
+        rd.total_time as race_total_time_stored,
+        rd.finish_timestamp as finish_timestamp,
+        MIN(l.timestamp) as first_detection,
+        MAX(l.timestamp) as last_detection,
+        COUNT(DISTINCT CASE WHEN l.lap_number > 0 AND l.lap_number <= ? THEN l.lap_number END) as total_laps,
+        (julianday(COALESCE(MAX(CASE WHEN l.is_last_lap = 1 THEN l.timestamp END), datetime('now'))) - julianday(MIN(l.timestamp))) * 86400 as real_total_time,
+        MIN(CASE WHEN l.lap_number > 0 AND l.lap_number <= ? AND l.lap_seconds IS NOT NULL THEN l.lap_seconds END) as best_lap,
+        MAX(CASE WHEN l.lap_number > 0 AND l.lap_number <= ? THEN l.lap_number END) as last_valid_lap_number,
+        (julianday(COALESCE(MAX(l.timestamp), datetime('now'))) - julianday(MIN(l.timestamp))) * 86400 as calculated_total_time,
+        SUM(CASE WHEN l.lap_number > 0 AND l.lap_number <= ? AND l.lap_seconds IS NOT NULL THEN l.lap_seconds ELSE 0 END) as sum_lap_times
+    FROM race_drivers rd
+    JOIN drivers d ON rd.driver_id = d.id
+    LEFT JOIN transponders t ON t.id = d.transponder_id
+    LEFT JOIN laps l ON l.driver_id = d.id AND l.session_id = rd.session_id
+    WHERE rd.session_id = ?
+    GROUP BY rd.id, d.id, d.name, d.lastname, d.transponder_id, t.kart_id, d.photo
+""",
+            (effective_laps_limit, effective_laps_limit, effective_laps_limit, effective_laps_limit, s_id),
+        ).fetchall()
 
         leaderboard = []
         for row in results:
             row_dict = dict(row)
             row_dict["total_laps"] = int(row_dict.get("total_laps") or 0)
-            row_dict["laps_remaining"] = max(0, laps_limit - row_dict["total_laps"])
+            if laps_limit > 0:
+                row_dict["laps_remaining"] = max(0, laps_limit - row_dict["total_laps"])
+            else:
+                row_dict["laps_remaining"] = 0
             row_dict["is_finished"] = bool(row_dict.get("is_finished_flag"))
             row_dict["full_name"] = (
                 f"{row_dict['name']} {row_dict.get('lastname', '')}".strip()
             )
             
-            # ===== CORRECCIÓN: Calcular tiempo total correctamente =====
+            # ✅ CORREGIDO: Calcular tiempo total para TIME ATTACK usando suma de vueltas
             if race_mode == "time_attack":
-                # Usar calculated_total_time si existe, si no, usar race_total_time
+                # Usar sum_lap_times (suma de tiempos de vuelta) como tiempo total
                 row_dict["race_total_time"] = (
-                    row_dict.get("calculated_total_time") if row_dict.get("calculated_total_time") and row_dict.get("calculated_total_time") > 0
-                    else row_dict.get("race_total_time")
+                    float(row_dict.get("sum_lap_times")) 
+                    if row_dict.get("sum_lap_times") is not None and row_dict.get("sum_lap_times") > 0
+                    else None
                 )
+                # Si no hay sum_lap_times, usar el valor guardado en race_drivers (por si acaso)
+                if row_dict["race_total_time"] is None and row_dict.get("race_total_time_stored") is not None:
+                    row_dict["race_total_time"] = float(row_dict["race_total_time_stored"])
+            elif race_mode == "classification":
+                row_dict["race_total_time"] = None
             else:
                 row_dict["race_total_time"] = (
-                    float(row_dict["race_total_time"])
-                    if row_dict["race_total_time"] is not None
+                    float(row_dict["race_total_time_stored"])
+                    if row_dict["race_total_time_stored"] is not None
                     else None
                 )
             
             row_dict["real_total_time"] = float(row_dict.get("real_total_time") or 0.0)
-            
-            # ===== CORRECCIÓN: Validar best_lap =====
-            row_dict["best_lap"] = (
-                float(row_dict["best_lap"]) 
-                if row_dict.get("best_lap") is not None and float(row_dict["best_lap"]) > 0
-                else None
-            )
 
-            # Obtener última vuelta
             last_lap_row = conn.execute(
                 """
                 SELECT lap_seconds, avg_speed_kmh FROM laps
@@ -1107,11 +1142,12 @@ def get_leaderboard_with_details(session_id):
 
             leaderboard.append(row_dict)
 
-        # ===== ORDENAMIENTO SEGÚN MODO DE CARRERA =====
+        # ===== ORDENAMIENTO SEGÚN MODO =====
         if race_mode == "time_attack":
             finished = [x for x in leaderboard if x["is_finished"]]
             not_finished = [x for x in leaderboard if not x["is_finished"]]
 
+            # ✅ CORREGIDO: Ordenar por race_total_time (suma de vueltas) ascendente
             finished.sort(
                 key=lambda x: (
                     x["race_total_time"] if x["race_total_time"] is not None and x["race_total_time"] > 0 else float("inf")
@@ -1127,11 +1163,11 @@ def get_leaderboard_with_details(session_id):
 
             leaderboard = finished + not_finished
 
-        elif race_mode == "time_limit":
+        elif race_mode == "classification":
             leaderboard.sort(
                 key=lambda x: (
-                    0 if x["best_lap"] is not None and x["best_lap"] > 0 else 1,
-                    x["best_lap"] if x["best_lap"] is not None and x["best_lap"] > 0 else float("inf"),
+                    -x.get("total_laps", 0),
+                    x.get("best_lap") if x.get("best_lap") is not None and x.get("best_lap") > 0 else float("inf"),
                 )
             )
 
@@ -1189,7 +1225,7 @@ def get_leaderboard_with_details(session_id):
                             driver["gap"] = f"+{gap_seconds:.3f}s" if gap_seconds > 0 else "Líder"
                         else:
                             driver["gap"] = "--"
-                elif race_mode == "time_limit":
+                elif race_mode == "classification":
                     leader_time = leader.get("best_lap", 0) or 0
                     driver_time = driver.get("best_lap", 0) or 0
                     if driver_time is not None and leader_time > 0 and driver_time > 0:
@@ -1286,6 +1322,10 @@ def get_podium(session_id):
         race_mode = normalize_race_mode(session["race_mode"] if session else None)
         laps_limit = int(session["laps_limit"] or 10) if session else 10
 
+        effective_laps_limit = laps_limit
+        if race_mode in ('classification', 'endurance'):
+            effective_laps_limit = 999999
+
         rows = conn.execute(
             """
             SELECT
@@ -1308,7 +1348,7 @@ def get_podium(session_id):
             WHERE rd.session_id = ?
             GROUP BY rd.id, d.id, d.name, d.lastname, d.transponder_id, t.kart_id, d.photo
         """,
-            (laps_limit, laps_limit, laps_limit, laps_limit, laps_limit, s_id),
+            (effective_laps_limit, effective_laps_limit, effective_laps_limit, effective_laps_limit, effective_laps_limit, s_id),
         ).fetchall()
 
         podium = []
@@ -1319,7 +1359,10 @@ def get_podium(session_id):
             d["total_time"] = float(d.get("total_time") or 0.0)
             d["real_total_time"] = float(d.get("real_total_time") or 0.0)
             d["finish_total_seconds"] = float(d.get("finish_total_seconds") or 0.0)
-            d["is_finished"] = d["total_laps"] >= laps_limit
+            if race_mode == 'classification':
+                d["is_finished"] = d["total_laps"] > 0
+            else:
+                d["is_finished"] = d["total_laps"] >= laps_limit
             if d.get("best_lap") is not None:
                 try:
                     d["best_lap"] = float(d["best_lap"])
@@ -1328,27 +1371,24 @@ def get_podium(session_id):
             podium.append(d)
 
         if race_mode == "time_attack":
+            # ✅ CORREGIDO: Ordenar por total_time (suma de vueltas) ascendente
             podium.sort(
                 key=lambda x: (
                     0 if x["is_finished"] else 1,
-                    x["real_total_time"]
-                    if x["is_finished"] and x["real_total_time"] > 0
-                    else float("inf"),
+                    x["total_time"] if x["is_finished"] and x["total_time"] > 0 else float("inf"),
                     -x["total_laps"],
                     x["best_lap"] if x["best_lap"] else 999999,
                 )
             )
-        elif race_mode in ("time_limit", "endurance"):
-            if race_mode == "time_limit":
-                # TIME LIMIT: mejor vuelta primero
+        elif race_mode in ("classification", "endurance"):
+            if race_mode == "classification":
                 podium.sort(
                     key=lambda x: (
-                        0 if x["best_lap"] is not None else 1,
-                        x["best_lap"] if x["best_lap"] is not None else float("inf"),
+                        -x.get("total_laps", 0),
+                        x.get("best_lap") if x.get("best_lap") is not None and x.get("best_lap") > 0 else float("inf"),
                     )
                 )
             else:
-                # ENDURANCE: más vueltas primero, luego mejor vuelta
                 podium.sort(
                     key=lambda x: (
                         -x["total_laps"],
@@ -1367,9 +1407,39 @@ def get_podium(session_id):
                 )
             )
 
+        full_podium = list(podium)
         podium = podium[:3]
-        return {"race_mode": race_mode, "podium": podium}
+        result = {"race_mode": race_mode, "podium": podium}
 
+        if race_mode == "classification":
+            with_laps = [d for d in full_podium if d.get("total_laps", 0) > 0]
+            dnq = [d for d in full_podium if d.get("total_laps", 0) <= 0]
+            n = len(with_laps)
+            if n >= 3:
+                third = max(1, n // 3)
+                q1 = with_laps[:third]
+                q2 = with_laps[third:2*third]
+                q3 = with_laps[2*third:]
+            elif n == 2:
+                q1 = with_laps[:1]
+                q2 = with_laps[1:]
+                q3 = []
+            elif n == 1:
+                q1 = with_laps
+                q2 = []
+                q3 = []
+            else:
+                q1 = []
+                q2 = []
+                q3 = []
+            result["classification_groups"] = {
+                "q1": q1,
+                "q2": q2,
+                "q3": q3,
+                "dnq": dnq,
+            }
+
+        return result
 
 JSON_STATE_FILE = "/app/data/race_state.json"
 

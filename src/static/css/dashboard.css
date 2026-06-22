@@ -453,6 +453,18 @@
        font-weight: 400;
    }
 
+   .progress-line {
+       position: absolute;
+       bottom: -4px;
+       left: 62px;
+       height: 3px;
+       width: calc(100% - 72px);
+       border-radius: 2px;
+       z-index: 1;
+       pointer-events: none;
+       opacity: 1;
+   }
+
    /* Animación de entrada y pulso */
    @keyframes fadeInScale {
        0% {
@@ -464,36 +476,7 @@
            opacity: 1;
            transform: scale(1);
        }
-   }
 
-   /* Versión móvil */
-   @media (max-width: 768px) {
-       .countdown-number {
-           font-size: 5rem;
-       }
-
-       .countdown-label {
-           font-size: 0.9rem;
-           letter-spacing: 2px;
-       }
-
-       .countdown-hint {
-           font-size: 0.9rem;
-       }
-   }
-
-   @media (max-width: 550px) {
-       .countdown-number {
-           font-size: 3.5rem;
-       }
-
-       .countdown-label {
-           font-size: 0.8rem;
-       }
-
-       .countdown-hint {
-           font-size: 0.8rem;
-       }
    }
 
 
@@ -865,77 +848,68 @@
        font-family: monospace;
    }
 
-/* ===== CRONÓMETRO GENERAL DE CARRERA (VERDE) ===== */
-.race-timer {
-    display: inline-block;
-    background: #00c853;
-    color: black;
-    padding: 5px 20px;
-    border-radius: 5px;
-    font-size: 1.1rem;
-    font-weight: 900;
-    font-family: monospace;
-    width: fit-content;
-}
+   /* ===== CRONÓMETRO GENERAL DE CARRERA (VERDE) ===== */
+   .race-timer {
+       display: inline-block;
+       background: #00c853;
+       color: black;
+       padding: 5px 20px;
+       border-radius: 5px;
+       font-size: 1.1rem;
+       font-weight: 900;
+       font-family: monospace;
+       width: fit-content;
+   }
 
-/* ===== BOX DE TIEMPO RESTANTE (AMARILLO) - SOLO PARA TIME LIMIT Y ENDURANCE ===== */
-.race-timer-box {
-    display: inline-block;
-    padding: 4px 16px;
-    border-radius: 6px;
-    background-color: #6c757d;
-    color: #ffffff;
-    font-weight: 900;
-    font-family: 'Courier New', monospace;
-    font-size: 1.1rem;
-    min-width: 120px;
-    text-align: center;
-    border: 2px solid #5a6268;
-}
+   /* ===== BOX DE TIEMPO RESTANTE (AMARILLO) - SOLO PARA TIME LIMIT Y ENDURANCE ===== */
+   .race-timer-box {
+       display: inline-block;
+       padding: 4px 16px;
+       border-radius: 6px;
+       background-color: #5eb443;
+       color: #050505;
+       font-family: 'Courier New', monospace;
+       font-size: 1rem;
+       min-width: 110px;
+       margin: 0.2rem 0.2rem 0.2rem 0.2rem;
+       text-align: center;
+       font-weight: bolder;
 
-/* Estado PENDIENTE - OCULTO */
-.race-timer-box.status-pending {
-    display: none;
-}
+   }
 
-/* Estado ACTIVO - AMARILLO FIJO (sin animación) */
-.race-timer-box.status-active {
-    background-color: #ffc107;
-    color: #000000;
-    border-color: #e0a800;
-}
+   /* Estado PENDIENTE - OCULTO */
+   .race-timer-box.status-pending {
+       display: none;
+   }
 
-/* Estado ADVERTENCIA - ROJO FIJO (sin animación) */
-.race-timer-box.status-active-warning {
-    background-color: #ff6b6b;
-    color: #ffffff;
-    border-color: #dc3545;
-}
+   /* Estado ACTIVO - AMARILLO FIJO (sin animación) */
+   .race-timer-box.status-active {
+       background-color: #ffc107;
+       color: #000000;
+       border-color: #e0a800;
+   }
 
-/* Estado COMPLETADO - VERDE FIJO (sin animación) */
-.race-timer-box.status-completed {
-    background-color: #28a745;
-    color: #ffffff;
-    border-color: #1e7e34;
-}
+   /* Estado ADVERTENCIA - ROJO FIJO (sin animación) */
+   .race-timer-box.status-active-warning {
+       background-color: #ff6b6b;
+       color: #ffffff;
+       border-color: #dc3545;
+   }
 
-/* Estado TIMEOUT - VERDE FIJO (sin animación) - para consistencia */
-.race-timer-box.status-timeout {
-    background-color: #28a745;
-    color: #ffffff;
-    border-color: #1e7e34;
-}
+   /* Estado COMPLETADO - VERDE FIJO (sin animación) */
+   .race-timer-box.status-completed {
+       background-color: #fffb00;
+       color: #000000;
+   }
 
-/* Versión móvil */
-@media (max-width: 768px) {
-    .race-timer-box {
-        font-size: 0.9rem;
-        padding: 3px 12px;
-        min-width: 90px;
-    }
-}
 
-   /* --- TABLA --- */
+   /* Estado TIMEOUT - VERDE FIJO (sin animación) - para consistencia */
+   .race-timer-box.status-timeout {
+       background-color: #fffb00;
+       color: #000000;
+   }
+
+
    .karting-leaderboard {
        padding: 20px 40px;
        overflow-x: auto;
@@ -986,9 +960,7 @@
 
        /* Propiedades para el truncado */
        white-space: nowrap;
-       /* Evita que el texto salte de línea */
-       overflow: hidden;
-       /* Oculta lo que sobra */
+       overflow: visible;
        text-overflow: ellipsis;
        /* Añade los puntos suspensivos (...) */
    }
@@ -1062,6 +1034,16 @@
        object-fit: cover;
    }
 
+   .driver-photo-leaderboard {
+       width: 30px;
+       height: 30px;
+       border-radius: 50%;
+       object-fit: cover;
+       border: 2px solid #ffd700;
+       margin-right: 8px;
+       flex-shrink: 0;
+   }
+
    .driver-name {
        font-size: 1.3rem;
        font-weight: 700;
@@ -1074,11 +1056,15 @@
    /* Línea de progreso */
    .progress-line {
        position: absolute;
-       bottom: -5px;
-       left: 70px;
+       bottom: -4px;
+       left: 62px;
        height: 3px;
-       width: calc(100% - 80px);
+       width: calc(100% - 72px);
        border-radius: 2px;
+       z-index: 1;
+       pointer-events: none;
+       transition: opacity 0.2s ease;
+       opacity: 1;
    }
 
    .line-gold {
@@ -1261,44 +1247,44 @@
 
        /* Ajustar anchos en tableta */
        .k-col-pos {
-           width: 45px;
-           font-size: 1.2rem;
+           width: 40px;
+           font-size: 1rem;
        }
 
        .k-col-name {
-           flex: 2;
-           min-width: 120px;
-           padding-left: 8px;
+           flex: 1.5;
+           min-width: 100px;
        }
 
        .k-col-vueltas {
-           width: 70px;
-           font-size: 0.9rem;
+           width: 60px;
+           font-size: 0.8rem;
        }
 
        .k-col-mejor {
-           width: 100px;
+           width: 80px;
        }
 
        .k-col-tiempo {
-           width: 100px;
+           width: 80px;
        }
 
        .k-col-tiempo-individual {
-           width: 90px;
+           width: 70px;
        }
 
        .k-col-velocidad {
            width: fit-content;
+           min-width: 60px;
            font-size: 0.6rem;
        }
 
        .k-col-kart {
-           width: 65px;
+           width: 50px;
        }
 
        .driver-name {
-           font-size: 1rem;
+           font-size: 0.9rem;
        }
 
        .winner-cup {
@@ -1313,19 +1299,25 @@
        }
 
        .time-box {
-           font-size: 0.9rem;
-           padding: 3px 8px;
-           min-width: 70px;
+           font-size: 0.75rem;
+           padding: 2px 6px;
+           min-width: 55px;
        }
 
        .kart-circle {
-           width: 34px;
-           height: 34px;
-           font-size: 0.85rem;
+           width: 30px;
+           height: 30px;
+           font-size: 0.7rem;
+       }
+
+       .driver-photo-leaderboard {
+           width: 24px;
+           height: 24px;
        }
 
        .progress-line {
-           left: 55px;
+           left: 45px;
+           width: calc(100% - 55px);
            height: 2px;
        }
 
@@ -1340,6 +1332,26 @@
 
    /* Móviles grandes (720px) */
    @media (max-width: 720px) {
+
+       .race-timer-box {
+           font-size: 0.9rem;
+           padding: 3px 12px;
+           min-width: 90px;
+       }
+
+       .countdown-number {
+           font-size: 5rem;
+       }
+
+       .countdown-label {
+           font-size: 0.9rem;
+           letter-spacing: 2px;
+       }
+
+       .countdown-hint {
+           font-size: 0.9rem;
+       }
+
        .tablero-header {
            padding: 10px 12px;
        }
@@ -1353,71 +1365,88 @@
            padding: 4px 10px;
        }
 
-       .karting-leaderboard {
-           padding: 10px 12px;
-       }
-
-       .k-row {
-           width: 100%;
-           border: 1px solid blue;
-           /* border-bottom: 1px solid rgba(255, 255, 255, 0.1); */
-       }
-
-       /* Ocultar columna "Mejor" y "Tiempo Individual" */
        .k-col-tiempo,
        .k-header .k-col-tiempo {
-           display: none;
-           /* Ocultar TIEMPO en móvil */
+           display: none !important;
        }
 
        .k-col-tiempo-individual,
        .k-header .k-col-tiempo-individual {
-           display: block;
-           /* Mostrar T.INDIV en móvil */
-           width: 90px;
+           display: block !important;
+           width: 70px;
+           font-size: 0.7rem;
        }
 
        .k-col-pos {
-           width: 38px;
-           font-size: 1rem;
+           width: 32px;
+           font-size: 0.9rem;
        }
 
        .k-col-name {
-           flex: 2;
-           min-width: 100px;
+           flex: 1.5;
+           min-width: 80px;
        }
 
        .k-col-vueltas {
+           width: 50px;
+           font-size: 0.7rem;
+       }
+
+       .k-col-mejor {
+           width: 65px;
+       }
+
+       .k-col-dif {
            width: 60px;
-           font-size: 0.8rem;
        }
 
-       .k-col-tiempo {
-           width: 85px;
-       }
-
-       /* responsive 720*/
        .k-col-velocidad {
            width: fit-content;
+           min-width: 50px;
            font-size: 0.5rem;
        }
 
-       .time-box {
-           font-size: 0.85rem;
-           min-width: 65px;
-           padding: 4px 8px;
-       }
-
-       .k-col-velocidad span:last-child {
-           font-size: 0.5rem !important;
-       }
-
        .k-col-kart {
-           width: 55px;
+           width: 40px;
        }
 
        .driver-name {
-           font-size: 0.85rem;
+           font-size: 0.75rem;
+       }
+
+       .kart-circle {
+           width: 24px;
+           height: 24px;
+           font-size: 0.6rem;
+       }
+
+       .time-box {
+           font-size: 0.65rem;
+           padding: 2px 4px;
+           min-width: 45px;
+       }
+
+       .driver-photo-leaderboard {
+           width: 20px;
+           height: 20px;
+           margin-right: 4px;
+       }
+
+       .progress-line {
+           left: 35px;
+           width: calc(100% - 45px);
+           height: 2px;
+       }
+
+       .k-row {
+           flex-wrap: nowrap !important;
+           overflow-x: auto !important;
+           padding: 4px 0 !important;
+       }
+
+       .karting-leaderboard {
+           padding: 10px 8px !important;
+           overflow-x: auto !important;
        }
 
        .winner-cup {
@@ -1431,59 +1460,93 @@
            height: 14px;
        }
 
-
-       .kart-circle {
-           width: 28px;
-           height: 28px;
-           font-size: 0.7rem;
-       }
-
-       .progress-line {
-           left: 45px;
-           height: 2px;
-       }
-
    }
 
    /* Móviles pequeños (550px) */
    @media (max-width: 550px) {
+       .countdown-number {
+           font-size: 3.5rem;
+       }
+
+       .countdown-label {
+           font-size: 0.8rem;
+       }
+
+       .countdown-hint {
+           font-size: 0.8rem;
+       }
 
        .k-col-vueltas,
        .k-header .k-col-vueltas {
-           display: none;
+           display: none !important;
        }
 
        .k-col-pos {
-           width: 35px;
-           font-size: 0.9rem;
+           width: 28px;
+           font-size: 0.8rem;
        }
 
        .k-col-name {
-           min-width: 80px;
+           flex: 1.5;
+           min-width: 60px;
        }
 
-       .k-col-tiempo {
-           width: 75px;
+       .k-col-mejor {
+           width: 55px;
+       }
+
+       .k-col-dif {
+           width: 50px;
+       }
+
+       .k-col-tiempo-individual {
+           width: 60px;
+           font-size: 0.6rem;
+       }
+
+       .k-col-velocidad {
+           width: fit-content;
+           min-width: 40px;
+           font-size: 0.45rem;
        }
 
        .k-col-kart {
-           width: 45px;
+           width: 32px;
        }
 
        .driver-name {
-           font-size: 0.75rem;
-       }
-
-       .time-box {
            font-size: 0.65rem;
-           padding: 2px 4px;
-           min-width: 45px;
        }
 
        .kart-circle {
-           width: 24px;
-           height: 24px;
-           font-size: 0.6rem;
+           width: 20px;
+           height: 20px;
+           font-size: 0.5rem;
+       }
+
+       .time-box {
+           font-size: 0.55rem;
+           padding: 1px 3px;
+           min-width: 35px;
+       }
+
+       .driver-photo-leaderboard {
+           width: 16px;
+           height: 16px;
+           margin-right: 3px;
+           border-width: 1px;
+       }
+
+       .progress-line {
+           left: 25px;
+           width: calc(100% - 35px);
+           height: 2px;
+       }
+
+       .k-row {
+           flex-wrap: nowrap !important;
+           overflow-x: auto !important;
+           padding: 3px 0 !important;
        }
 
        .winner-cup {

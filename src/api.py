@@ -42,6 +42,7 @@ from database import (
     remove_driver_from_race,
     delete_driver,
     update_driver,
+    clear_all_driver_transponders,
     start_new_session,
     clear_race_drivers,
     get_lap_details,
@@ -124,7 +125,7 @@ def get_current_session_podium():
     if not session_info:
         return jsonify({'active': False, 'session_id': None, 'race_mode': 'position', 'podium': []})
     res = get_podium(session_info['id'])
-    return jsonify({'active': True, 'session_id': session_info['id'], 'race_mode': res.get('race_mode', 'position'), 'podium': res.get('podium', [])})
+    return jsonify({'active': True, 'session_id': session_info['id'], 'race_mode': res.get('race_mode', 'position'), 'podium': res.get('podium', []), 'classification_groups': res.get('classification_groups')})
 
 @app.route('/api/leaderboard')
 def get_leaderboard_api():
@@ -282,11 +283,11 @@ def create_new_race():
         time_limit_seconds = data.get('time_limit_seconds', 0)
         
         # ✅ Validar que el tiempo límite sea positivo para TIME LIMIT y ENDURANCE
-        if race_mode in ('time_limit', 'endurance'):
+        if race_mode in ('classification', 'endurance'):
             if time_limit_seconds <= 0:
                 return jsonify({'success': False, 'error': 'Para TIME LIMIT y ENDURANCE, la duración debe ser mayor a 0 minutos'}), 400
             # ✅ Si es TIME LIMIT, el límite de vueltas no aplica (se usa para mostrar)
-            if race_mode == 'time_limit':
+            if race_mode == 'classification':
                 laps_limit = 0  # Sin límite de vueltas
         elif race_mode == 'position':
             # ✅ Position Race: asegurar que tenga vueltas
@@ -339,9 +340,10 @@ def create_driver():
     try:
         data = request.get_json()
         driver_id = add_driver(
-            data['transponder_id'], data['name'], data.get('lastname', ''),
+            data.get('transponder_id') or None, data['name'], data.get('lastname', ''),
             data.get('age'), data.get('gender', ''), data.get('nationality', ''),
-            data.get('weight'), data.get('description', '')
+            data.get('weight'), data.get('description', ''),
+            data.get('email', ''), data.get('carnet', ''), data.get('phone', '')
         )
         return jsonify({'success': True, 'driver_id': driver_id})
     except Exception as e:
@@ -351,7 +353,11 @@ def create_driver():
 def update_driver_api(driver_id):
     try:
         data = request.get_json()
-        update_driver(driver_id, data['transponder_id'], data['name'], data.get('lastname', ''))
+        update_driver(
+            driver_id, data.get('transponder_id') or None, data['name'], data.get('lastname', ''),
+            data.get('email', ''), data.get('carnet', ''), data.get('phone', ''),
+            data.get('photo')
+        )
         return jsonify({'success': True})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -361,6 +367,25 @@ def delete_driver_by_id(driver_id):
     try:
         delete_driver(driver_id)
         return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/drivers/clear-transponders', methods=['POST'])
+def clear_transponders_api():
+    try:
+        clear_all_driver_transponders()
+        return jsonify({'success': True, 'message': 'Transponders eliminados de todos los pilotos'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/race/unenroll-all', methods=['POST'])
+def unenroll_all_drivers():
+    try:
+        session_info = get_current_session() or get_latest_session()
+        if not session_info:
+            return jsonify({'success': False, 'error': 'No hay sesión activa'}), 400
+        clear_race_drivers(session_info['id'])
+        return jsonify({'success': True, 'message': 'Todos los pilotos desinscritos'})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -1035,17 +1060,16 @@ def start_api_server():
 
 @app.route('/api/race/time-remaining', methods=['GET'])
 def get_time_remaining():
-    """Obtiene el tiempo restante para carreras con tiempo límite"""
     try:
         session_info = get_current_session()
         if not session_info:
             return jsonify({'success': False, 'error': 'No hay carrera activa'}), 404
         
         race_mode = session_info.get('race_mode', 'position')
-        if race_mode not in ('time_limit', 'endurance'):
+        # ✅ CORREGIDO: Aceptar 'classification' y 'endurance'
+        if race_mode not in ('classification', 'endurance'):
             return jsonify({'success': False, 'error': 'La carrera actual no tiene tiempo límite'}), 400
         
-        # Obtener tiempo límite desde archivo temporal
         time_limit_file = os.path.join(BASE_DATA_DIR, 'time_limit_info.json')
         if os.path.exists(time_limit_file):
             with open(time_limit_file, 'r') as f:
