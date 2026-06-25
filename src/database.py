@@ -292,6 +292,18 @@ def add_driver(
     photo=None,
 ):
     with get_db() as conn:
+        # ✅ Validar que el transponder no esté ya asignado a otro piloto
+        if transponder_id is not None:
+            existing = conn.execute(
+                "SELECT id, name, lastname FROM drivers WHERE transponder_id = ?",
+                (transponder_id,)
+            ).fetchone()
+            if existing:
+                raise ValueError(
+                    f"El transponder {transponder_id} ya está asignado al piloto "
+                    f"{existing['name']} {existing.get('lastname', '')} (ID: {existing['id']})"
+                )
+
         cursor = conn.execute(
             """
             INSERT OR REPLACE INTO drivers 
@@ -985,6 +997,18 @@ def update_driver_finish_time(
 
 def update_driver(driver_id, transponder_id, name, lastname="", email="", carnet="", phone="", photo=None):
     with get_db() as conn:
+        # ✅ Validar transponder duplicado (excluyendo al piloto actual)
+        if transponder_id is not None:
+            existing = conn.execute(
+                "SELECT id, name, lastname FROM drivers WHERE transponder_id = ? AND id != ?",
+                (transponder_id, driver_id)
+            ).fetchone()
+            if existing:
+                raise ValueError(
+                    f"El transponder {transponder_id} ya está asignado al piloto "
+                    f"{existing['name']} {existing.get('lastname', '')} (ID: {existing['id']})"
+                )
+
         conn.execute(
             """
             UPDATE drivers 
@@ -2037,3 +2061,45 @@ def update_decoder_mode(mode):
             (mode,),
         )
         return True
+
+# ==================== GESTIÓN DE FOTOS DE PILOTOS ====================
+
+def update_driver_photo(driver_id, photo_filename):
+    """
+    Actualiza solo la foto de un piloto
+    Guarda el nombre del archivo, NO el contenido de la imagen
+    """
+    with get_db() as conn:
+        conn.execute(
+            "UPDATE drivers SET photo = ? WHERE id = ?",
+            (photo_filename, driver_id)
+        )
+        return True
+
+def get_driver_photo_filename(driver_id):
+    """Obtiene el nombre del archivo de foto de un piloto"""
+    with get_db() as conn:
+        result = conn.execute(
+            "SELECT photo FROM drivers WHERE id = ?",
+            (driver_id,)
+        ).fetchone()
+        return result['photo'] if result else 'default-avatar.png'
+
+def get_photo_storage_path():
+    """Obtiene la ruta donde se almacenan las fotos según el SO"""
+    if IS_WINDOWS:
+        base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'uploads', 'drivers')
+    else:
+        base_dir = '/app/static/uploads/drivers'
+    
+    if not os.path.exists(base_dir):
+        os.makedirs(base_dir)
+    return base_dir
+
+def get_thumbnails_path():
+    """Obtiene la ruta donde se almacenan los thumbnails"""
+    base_dir = get_photo_storage_path()
+    thumb_dir = os.path.join(base_dir, 'thumbnails')
+    if not os.path.exists(thumb_dir):
+        os.makedirs(thumb_dir)
+    return thumb_dir

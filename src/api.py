@@ -5,25 +5,109 @@ import time
 import platform
 import secrets
 import logging
-from flask import Flask, jsonify, request, render_template, make_response, session
+import uuid
+from datetime import datetime
+from flask import Flask, jsonify, request, render_template, make_response, session, send_from_directory
 from flask_cors import CORS
 from users_db import init_users_db, verify_user, verify_session
-import netifaces
+from PIL import Image
 
+# ============================================
+# CONFIGURACIÓN DE RUTAS
+# ============================================
 current_dir = os.path.dirname(os.path.abspath(__file__))
 static_path = os.path.join(current_dir, 'static')
 template_path = os.path.join(current_dir, 'templates')
 
+# Detectar sistema operativo
+IS_WINDOWS = platform.system() == 'Windows'
+
+# ============================================
+# FUNCIONES DE UTILIDAD PARA FOTOS (DEFINIDAS ANTES DE app)
+# ============================================
+def get_upload_folder():
+    """Obtiene la carpeta de uploads según SO"""
+    if IS_WINDOWS:
+        upload_dir = os.path.join(current_dir, 'static', 'uploads', 'drivers')
+    else:
+        upload_dir = '/app/static/uploads/drivers'
+    
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir)
+    return upload_dir
+
+def get_thumbnails_folder():
+    """Obtiene la carpeta de thumbnails"""
+    upload_dir = get_upload_folder()
+    thumb_dir = os.path.join(upload_dir, 'thumbnails')
+    if not os.path.exists(thumb_dir):
+        os.makedirs(thumb_dir)
+    return thumb_dir
+
+# ============================================
+# CREAR LA APLICACIÓN FLASK
+# ============================================
 app = Flask(__name__, 
             static_folder=os.path.join(current_dir, 'static'),
+            static_url_path='/static',
             template_folder=os.path.join(current_dir, 'templates'))
 app.secret_key = secrets.token_hex(32)
+
+app.config['UPLOAD_FOLDER'] = get_upload_folder()
+app.config['THUMBNAIL_FOLDER'] = get_thumbnails_folder()
 
 CORS(app, supports_credentials=True)
 
 # Configurar logging después de crear app
 logging.getLogger('werkzeug').setLevel(logging.ERROR)
 
+# ============================================
+# FUNCIONES DE UTILIDAD ADICIONALES
+# ============================================
+def get_photo_url(filename):
+    """Obtiene la URL pública de una foto"""
+    if not filename or filename == 'default-avatar.png':
+        return '/static/default-avatar.png'
+    return f'/static/uploads/drivers/{filename}'
+
+def create_thumbnail(image_path, thumb_path, size=(80, 80)):
+    """Crea un thumbnail de la imagen usando PIL"""
+    try:
+        with Image.open(image_path) as img:
+            if img.mode in ('RGBA', 'P'):
+                img = img.convert('RGB')
+            img.thumbnail(size, Image.Resampling.LANCZOS)
+            img.save(thumb_path, 'JPEG', quality=85, optimize=True)
+            return True
+    except Exception as e:
+        print(f"[PHOTO] Error creando thumbnail: {e}")
+        return False
+
+def delete_driver_photo_files(driver_id, filename):
+    """Elimina los archivos de foto de un piloto"""
+    try:
+        if not filename or filename == 'default-avatar.png':
+            return
+        
+        upload_dir = get_upload_folder()
+        thumb_dir = get_thumbnails_folder()
+        
+        filepath = os.path.join(upload_dir, filename)
+        if os.path.exists(filepath):
+            os.remove(filepath)
+        
+        thumb_filename = f"thumb_{filename}"
+        thumb_path = os.path.join(thumb_dir, thumb_filename)
+        if os.path.exists(thumb_path):
+            os.remove(thumb_path)
+            
+        print(f"[PHOTO] Archivos eliminados para driver {driver_id}: {filename}")
+    except Exception as e:
+        print(f"[PHOTO] Error eliminando archivos: {e}")
+
+# ============================================
+# IMPORTS DE BASE DE DATOS
+# ============================================
 from database import (
     init_db,
     get_current_session,
@@ -64,10 +148,9 @@ from database import (
     update_decoder_mode,
 )
 
-# Detectar sistema operativo
-IS_WINDOWS = platform.system() == 'Windows'
-
-# Configurar rutas de archivos según SO
+# ============================================
+# CONFIGURACIÓN DE ARCHIVOS DEL SISTEMA
+# ============================================
 if IS_WINDOWS:
     BASE_DATA_DIR = os.path.join(current_dir, 'data')
     if not os.path.exists(BASE_DATA_DIR):
@@ -82,6 +165,7 @@ NEXT_RACE_LAPS_FILE = os.path.join(BASE_DATA_DIR, 'next_race_laps.txt')
 NEXT_RACE_MODE_FILE = os.path.join(BASE_DATA_DIR, 'next_race_mode.txt')
 RACE_COMMAND_FILE = os.path.join(BASE_DATA_DIR, 'race_command.txt')
 SIMULATION_MODE_FILE = os.path.join(BASE_DATA_DIR, 'simulation_mode.flag')
+SIMULATION_SPEED_FILE = os.path.join(BASE_DATA_DIR, 'simulation_speed.txt')
 LOG_BUFFER_FILE = os.path.join(BASE_DATA_DIR, 'logs_buffer.txt')
 
 def send_race_command(command):
@@ -89,6 +173,9 @@ def send_race_command(command):
         f.write(command)
     return True
 
+# ============================================
+# ENDPOINTS - PÁGINA PRINCIPAL
+# ============================================
 @app.route('/')
 def index():
     resp = make_response(render_template('dashboard.html'))
@@ -97,10 +184,169 @@ def index():
     resp.headers['Expires'] = '0'
     return resp
 
+# ============================================
+# ENDPOINTS - ARCHIVOS ESTÁTICOS (FOTOS)
+# ============================================
+@app.route('/static/uploads/drivers/<path:filename>')
+def serve_driver_photo(filename):
+    """Sirve las fotos de pilotos desde la carpeta uploads"""
+    try:
+        upload_dir = get_upload_folder()
+        filepath = os.path.join(upload_dir, filename)
+        if os.path.exists(filepath):
+            return send_from_directory(upload_dir, filename)
+        
+        thumb_dir = get_thumbnails_folder()
+        if filename.startswith('thumb_'):
+            return send_from_directory(thumb_dir, filename)
+        
+        return send_from_directory(
+            os.path.join(current_dir, 'static'),
+            'default-avatar.png'
+        )
+    except Exception as e:
+        print(f"[STATIC] Error sirviendo foto: {e}")
+        return send_from_directory(
+            os.path.join(current_dir, 'static'),
+            'default-avatar.png'
+        )
+
+@app.route('/static/default-avatar.png')
+def serve_default_avatar():
+    """Sirve el avatar por defecto"""
+    try:
+        return send_from_directory(
+            os.path.join(current_dir, 'static'),
+            'default-avatar.png'
+        )
+    except Exception as e:
+        return send_from_directory(
+            os.path.join(current_dir, 'static'),
+            'pilotcircle1.png'
+        )
+
+# ============================================
+# ENDPOINTS - FOTOS DE PILOTOS (API)
+# ============================================
+@app.route("/api/drivers/<int:driver_id>/photo", methods=["POST"])
+def upload_driver_photo(driver_id):
+    """Sube una foto para un piloto (multipart/form-data)"""
+    try:
+        from database import get_driver_by_id, update_driver_photo
+        
+        driver = get_driver_by_id(driver_id)
+        if not driver:
+            return jsonify({"success": False, "error": "Piloto no encontrado"}), 404
+
+        if "photo" not in request.files:
+            return jsonify({"success": False, "error": "No se envió ningún archivo"}), 400
+        
+        file = request.files["photo"]
+        if file.filename == "":
+            return jsonify({"success": False, "error": "Nombre de archivo vacío"}), 400
+
+        allowed_extensions = {"jpg", "jpeg", "png", "gif", "webp"}
+        extension = file.filename.rsplit(".", 1)[1].lower() if "." in file.filename else ""
+        if extension not in allowed_extensions:
+            return jsonify({
+                "success": False,
+                "error": f"Formato no permitido. Use: {', '.join(allowed_extensions)}"
+            }), 400
+
+        file.seek(0, os.SEEK_END)
+        size = file.tell()
+        file.seek(0)
+        if size > 5 * 1024 * 1024:
+            return jsonify({"success": False, "error": "La imagen no puede superar los 5MB"}), 400
+
+        unique_id = str(uuid.uuid4())[:8]
+        filename = f"driver_{driver_id}_{unique_id}.{extension}"
+
+        upload_dir = get_upload_folder()
+        filepath = os.path.join(upload_dir, filename)
+        file.save(filepath)
+        print(f"[PHOTO] Foto guardada: {filepath}")
+
+        thumb_dir = get_thumbnails_folder()
+        thumb_filename = f"thumb_{filename}"
+        thumb_path = os.path.join(thumb_dir, thumb_filename)
+        create_thumbnail(filepath, thumb_path)
+        print(f"[PHOTO] Thumbnail creado: {thumb_path}")
+
+        old_photo = driver.get("photo")
+        if old_photo and old_photo != "default-avatar.png":
+            delete_driver_photo_files(driver_id, old_photo)
+
+        update_driver_photo(driver_id, filename)
+
+        photo_url = get_photo_url(filename)
+        thumb_url = f"/static/uploads/drivers/thumbnails/{thumb_filename}"
+
+        return jsonify({
+            "success": True,
+            "photo_url": photo_url,
+            "thumbnail_url": thumb_url,
+            "filename": filename,
+            "message": "Foto subida correctamente"
+        })
+
+    except Exception as e:
+        print(f"[PHOTO] Error en upload: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/drivers/<int:driver_id>/photo", methods=["DELETE"])
+def delete_driver_photo(driver_id):
+    """Elimina la foto de un piloto (vuelve a default)"""
+    try:
+        from database import get_driver_by_id, update_driver_photo
+        
+        driver = get_driver_by_id(driver_id)
+        if not driver:
+            return jsonify({"success": False, "error": "Piloto no encontrado"}), 404
+
+        old_photo = driver.get("photo")
+        if old_photo and old_photo != "default-avatar.png":
+            delete_driver_photo_files(driver_id, old_photo)
+
+        update_driver_photo(driver_id, "default-avatar.png")
+
+        return jsonify({
+            "success": True,
+            "message": "Foto eliminada, usando imagen por defecto"
+        })
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/drivers/<int:driver_id>/photo", methods=["GET"])
+def get_driver_photo(driver_id):
+    """Obtiene la URL de la foto de un piloto"""
+    try:
+        from database import get_driver_photo_filename
+        
+        filename = get_driver_photo_filename(driver_id)
+        photo_url = get_photo_url(filename)
+        return jsonify({
+            "success": True,
+            "photo_url": photo_url,
+            "filename": filename
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+# ============================================
+# ENDPOINTS - ESTADO DEL SISTEMA
+# ============================================
 @app.route('/api/status')
 def status():
     session_info = get_current_session()
-    return jsonify({'status': 'online', 'current_session': session_info, 'timestamp': time.time()})
+    return jsonify({
+        'status': 'online', 
+        'current_session': session_info, 
+        'timestamp': time.time()
+    })
 
 @app.route('/api/session/current')
 def get_current_session_info():
@@ -123,9 +369,20 @@ def get_current_session_info():
 def get_current_session_podium():
     session_info = get_current_session() or get_latest_session()
     if not session_info:
-        return jsonify({'active': False, 'session_id': None, 'race_mode': 'position', 'podium': []})
+        return jsonify({
+            'active': False, 
+            'session_id': None, 
+            'race_mode': 'position', 
+            'podium': []
+        })
     res = get_podium(session_info['id'])
-    return jsonify({'active': True, 'session_id': session_info['id'], 'race_mode': res.get('race_mode', 'position'), 'podium': res.get('podium', []), 'classification_groups': res.get('classification_groups')})
+    return jsonify({
+        'active': True, 
+        'session_id': session_info['id'], 
+        'race_mode': res.get('race_mode', 'position'), 
+        'podium': res.get('podium', []), 
+        'classification_groups': res.get('classification_groups')
+    })
 
 @app.route('/api/leaderboard')
 def get_leaderboard_api():
@@ -139,8 +396,9 @@ def get_recent_signals_api():
     limit = request.args.get('limit', 10, type=int)
     return jsonify(get_recent_signals(limit))
 
-# ==================== CONTROL DE CARRERA ====================
-
+# ============================================
+# ENDPOINTS - CONTROL DE CARRERA
+# ============================================
 @app.route('/api/race/start', methods=['POST'])
 def race_start():
     token = request.headers.get('X-Session-Token')
@@ -181,7 +439,6 @@ def race_start():
             'error': 'Ya hay una carrera activa.'
         }), 400
         
-    
     send_race_command('start')
     
     time.sleep(0.5)
@@ -223,7 +480,10 @@ def race_repeat():
         if not session_info:
             return jsonify({'success': False, 'error': 'No hay carrera disponible'}), 400
         if session_info.get('status') != 'completed':
-            return jsonify({'success': False, 'error': 'Solo se puede repetir cuando la carrera ha finalizado'}), 400
+            return jsonify({
+                'success': False, 
+                'error': 'Solo se puede repetir cuando la carrera ha finalizado'
+            }), 400
 
         race_drivers_list = get_race_drivers(session_info['id'])
         if not race_drivers_list:
@@ -251,7 +511,6 @@ def race_reset():
     try:
         session_info = get_current_session() or get_latest_session()
         
-        # Si no hay ninguna carrera, crear una por defecto
         if not session_info:
             from database import start_new_session
             from datetime import datetime
@@ -282,20 +541,23 @@ def create_new_race():
         race_mode = data.get('next_race_mode', 'position')
         time_limit_seconds = data.get('time_limit_seconds', 0)
         
-        # ✅ Validar que el tiempo límite sea positivo para TIME LIMIT y ENDURANCE
         if race_mode in ('classification', 'endurance'):
             if time_limit_seconds <= 0:
-                return jsonify({'success': False, 'error': 'Para TIME LIMIT y ENDURANCE, la duración debe ser mayor a 0 minutos'}), 400
-            # ✅ Si es TIME LIMIT, el límite de vueltas no aplica (se usa para mostrar)
+                return jsonify({
+                    'success': False, 
+                    'error': 'Para TIME LIMIT y ENDURANCE, la duración debe ser mayor a 0 minutos'
+                }), 400
             if race_mode == 'classification':
-                laps_limit = 0  # Sin límite de vueltas
+                laps_limit = 0
         elif race_mode == 'position':
-            # ✅ Position Race: asegurar que tenga vueltas
             if laps_limit <= 0:
                 laps_limit = 10
         
         if not race_name:
-            return jsonify({'success': False, 'error': 'Nombre de carrera requerido'}), 400
+            return jsonify({
+                'success': False, 
+                'error': 'Nombre de carrera requerido'
+            }), 400
         
         current_session = get_current_session()
         if current_session:
@@ -317,8 +579,9 @@ def create_new_race():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# ==================== DETALLES DE CARRERA ====================
-
+# ============================================
+# ENDPOINTS - DETALLES DE CARRERA
+# ============================================
 @app.route('/api/race/lap-details/<int:session_id>/<int:driver_id>')
 def get_driver_lap_details(session_id, driver_id):
     laps = get_lap_details(session_id, driver_id)
@@ -329,8 +592,59 @@ def race_history():
     history = get_race_history()
     return jsonify(history)
 
-# ==================== PILOTOS ====================
+@app.route('/api/race/time-remaining', methods=['GET'])
+def get_time_remaining():
+    try:
+        session_info = get_current_session()
+        if not session_info:
+            return jsonify({'success': False, 'error': 'No hay carrera activa'}), 404
+        
+        race_mode = session_info.get('race_mode', 'position')
+        if race_mode not in ('classification', 'endurance'):
+            return jsonify({
+                'success': False, 
+                'error': 'La carrera actual no tiene tiempo límite'
+            }), 400
+        
+        time_limit_file = os.path.join(BASE_DATA_DIR, 'time_limit_info.json')
+        if os.path.exists(time_limit_file):
+            with open(time_limit_file, 'r') as f:
+                data = json.load(f)
+                time_limit_end = data.get('time_limit_end', 0)
+                time_limit_active = data.get('time_limit_active', False)
+                
+                if time_limit_active and time_limit_end > 0:
+                    remaining = max(0, time_limit_end - time.time())
+                    return jsonify({
+                        'success': True,
+                        'remaining_seconds': remaining,
+                        'remaining_formatted': format_race_clock(remaining),
+                        'is_active': True
+                    })
+        
+        return jsonify({
+            'success': True,
+            'remaining_seconds': 0,
+            'remaining_formatted': '00:00',
+            'is_active': False
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/race/time-limit-status', methods=['POST'])
+def update_time_limit_status():
+    try:
+        data = request.get_json()
+        time_limit_file = os.path.join(BASE_DATA_DIR, 'time_limit_info.json')
+        with open(time_limit_file, 'w') as f:
+            json.dump(data, f)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# ============================================
+# ENDPOINTS - PILOTOS
+# ============================================
 @app.route('/api/drivers', methods=['GET'])
 def get_drivers():
     return jsonify(get_all_drivers())
@@ -339,13 +653,63 @@ def get_drivers():
 def create_driver():
     try:
         data = request.get_json()
+        
         driver_id = add_driver(
-            data.get('transponder_id') or None, data['name'], data.get('lastname', ''),
-            data.get('age'), data.get('gender', ''), data.get('nationality', ''),
-            data.get('weight'), data.get('description', ''),
-            data.get('email', ''), data.get('carnet', ''), data.get('phone', '')
+            data.get('transponder_id') or None, 
+            data['name'], 
+            data.get('lastname', ''),
+            data.get('age'), 
+            data.get('gender', ''), 
+            data.get('nationality', ''),
+            data.get('weight'), 
+            data.get('description', ''),
+            data.get('email', ''), 
+            data.get('carnet', ''), 
+            data.get('phone', ''),
+            None
         )
-        return jsonify({'success': True, 'driver_id': driver_id})
+        
+        photo_data = data.get('photo')
+        if photo_data and photo_data.startswith('data:image'):
+            try:
+                import base64
+                import io
+                
+                if ',' in photo_data:
+                    photo_data = photo_data.split(',')[1]
+                image_bytes = base64.b64decode(photo_data)
+                
+                extension = 'jpg'
+                unique_id = str(uuid.uuid4())[:8]
+                filename = f"driver_{driver_id}_{unique_id}.{extension}"
+                
+                upload_dir = get_upload_folder()
+                filepath = os.path.join(upload_dir, filename)
+                with open(filepath, 'wb') as f:
+                    f.write(image_bytes)
+                
+                thumb_dir = get_thumbnails_folder()
+                thumb_filename = f"thumb_{filename}"
+                thumb_path = os.path.join(thumb_dir, thumb_filename)
+                
+                from PIL import Image
+                with Image.open(io.BytesIO(image_bytes)) as img:
+                    if img.mode in ('RGBA', 'P'):
+                        img = img.convert('RGB')
+                    img.thumbnail((80, 80), Image.Resampling.LANCZOS)
+                    img.save(thumb_path, 'JPEG', quality=85, optimize=True)
+                
+                from database import update_driver_photo
+                update_driver_photo(driver_id, filename)
+                
+            except Exception as e:
+                print(f"[PHOTO] Error guardando foto base64: {e}")
+        
+        return jsonify({
+            'success': True, 
+            'driver_id': driver_id,
+            'message': 'Piloto creado correctamente'
+        })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -353,11 +717,62 @@ def create_driver():
 def update_driver_api(driver_id):
     try:
         data = request.get_json()
+        
+        name = data.get('name')
+        if not name:
+            return jsonify({'success': False, 'error': 'Nombre es obligatorio'}), 400
+
+        from database import update_driver
         update_driver(
-            driver_id, data.get('transponder_id') or None, data['name'], data.get('lastname', ''),
-            data.get('email', ''), data.get('carnet', ''), data.get('phone', ''),
-            data.get('photo')
+            driver_id,
+            data.get('transponder_id') or None,
+            name,
+            data.get('lastname', ''),
+            data.get('email', ''),
+            data.get('carnet', ''),
+            data.get('phone', '')
         )
+        
+        photo_data = data.get('photo')
+        if photo_data and photo_data.startswith('data:image'):
+            try:
+                import base64
+                import io
+                
+                if ',' in photo_data:
+                    photo_data = photo_data.split(',')[1]
+                image_bytes = base64.b64decode(photo_data)
+                
+                extension = 'jpg'
+                unique_id = str(uuid.uuid4())[:8]
+                filename = f"driver_{driver_id}_{unique_id}.{extension}"
+                
+                upload_dir = get_upload_folder()
+                filepath = os.path.join(upload_dir, filename)
+                with open(filepath, 'wb') as f:
+                    f.write(image_bytes)
+                
+                thumb_dir = get_thumbnails_folder()
+                thumb_filename = f"thumb_{filename}"
+                thumb_path = os.path.join(thumb_dir, thumb_filename)
+                
+                from PIL import Image
+                with Image.open(io.BytesIO(image_bytes)) as img:
+                    if img.mode in ('RGBA', 'P'):
+                        img = img.convert('RGB')
+                    img.thumbnail((80, 80), Image.Resampling.LANCZOS)
+                    img.save(thumb_path, 'JPEG', quality=85, optimize=True)
+                
+                from database import get_driver_by_id, update_driver_photo
+                driver = get_driver_by_id(driver_id)
+                if driver and driver.get('photo') and driver['photo'] != 'default-avatar.png':
+                    delete_driver_photo_files(driver_id, driver['photo'])
+                
+                update_driver_photo(driver_id, filename)
+                
+            except Exception as e:
+                print(f"[PHOTO] Error guardando foto base64: {e}")
+
         return jsonify({'success': True})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -374,7 +789,10 @@ def delete_driver_by_id(driver_id):
 def clear_transponders_api():
     try:
         clear_all_driver_transponders()
-        return jsonify({'success': True, 'message': 'Transponders eliminados de todos los pilotos'})
+        return jsonify({
+            'success': True, 
+            'message': 'Transponders eliminados de todos los pilotos'
+        })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -389,8 +807,9 @@ def unenroll_all_drivers():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# ==================== TRANSPONDERS ====================
-
+# ============================================
+# ENDPOINTS - TRANSPONDERS
+# ============================================
 @app.route('/api/transponders/all')
 def get_all_transponders_api():
     return jsonify(get_all_transponders())
@@ -403,7 +822,10 @@ def get_unassigned_transponders_api():
 def delete_transponder_api(t_id):
     try:
         success = delete_transponder(t_id)
-        return jsonify({'success': success, 'error': None if success else 'No se puede eliminar un transponder asignado a un piloto'})
+        return jsonify({
+            'success': success,
+            'error': None if success else 'No se puede eliminar un transponder asignado a un piloto'
+        })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -415,7 +837,10 @@ def update_transponder_api(old_id):
         if not new_id:
             return jsonify({'success': False, 'error': 'Nuevo ID requerido'}), 400
         success = update_transponder_id(old_id, new_id)
-        return jsonify({'success': success, 'error': None if success else 'No se puede editar: el ID ya existe o está asignado a un piloto'})
+        return jsonify({
+            'success': success,
+            'error': None if success else 'No se puede editar: el ID ya existe o está asignado a un piloto'
+        })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -427,7 +852,7 @@ def add_transponder_manual_api():
         return jsonify({'success': success})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
-        
+
 @app.route('/api/transponders/manual/extended', methods=['POST'])
 def add_transponder_manual_extended_api():
     try:
@@ -441,10 +866,8 @@ def add_transponder_manual_extended_api():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-
 @app.route('/api/transponders/<int:transponder_id>/details', methods=['PUT'])
 def update_transponder_details(transponder_id):
-    """Actualiza los detalles de un transponder (kart_id, description)"""
     try:
         data = request.get_json()
         kart_id = data.get('kart_id', '')
@@ -468,17 +891,26 @@ def transponder_health_api():
 def reset_transponder_health_api(t_id):
     try:
         success = reset_transponder_health(t_id)
-        return jsonify({'success': success, 'error': None if success else 'Transponder no encontrado'})
+        return jsonify({
+            'success': success,
+            'error': None if success else 'Transponder no encontrado'
+        })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# ==================== INSCRIPCIONES ====================
-
+# ============================================
+# ENDPOINTS - INSCRIPCIONES
+# ============================================
 @app.route('/api/race/add', methods=['POST'])
 def add_to_race():
     try:
         data = request.get_json()
-        add_driver_to_race(data['session_id'], data['driver_id'], data['transponder_id'], data.get('start_position'))
+        add_driver_to_race(
+            data['session_id'], 
+            data['driver_id'], 
+            data['transponder_id'], 
+            data.get('start_position')
+        )
         return jsonify({'success': True})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -501,8 +933,9 @@ def get_driver_individual_times(session_id):
     from database import get_driver_individual_times
     return jsonify(get_driver_individual_times(session_id))
 
-# ==================== REINICIAR SERVIDOR ====================
-
+# ============================================
+# ENDPOINTS - REINICIAR SERVIDOR
+# ============================================
 @app.route('/api/restart', methods=['POST'])
 def restart_server():
     try:
@@ -532,8 +965,9 @@ def restart_server():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# ==================== USB ====================
-
+# ============================================
+# ENDPOINTS - USB
+# ============================================
 @app.route('/api/usb/status')
 def usb_status():
     try:
@@ -552,8 +986,9 @@ def reset_usb():
         f.write('shutdown')
     return jsonify({'success': True, 'message': 'Apagando sistema de forma segura...'})
 
-# ==================== RESPALDOS Y MANTENIMIENTO ====================
-
+# ============================================
+# ENDPOINTS - RESPALDOS Y MANTENIMIENTO
+# ============================================
 @app.route('/api/db/stats', methods=['GET'])
 def get_db_stats_api():
     from database import get_db_stats
@@ -564,7 +999,11 @@ def create_backup_api():
     from database import create_backup
     backup_file = create_backup()
     if backup_file:
-        return jsonify({'success': True, 'backup_file': backup_file, 'message': 'Respaldo creado correctamente'})
+        return jsonify({
+            'success': True, 
+            'backup_file': backup_file, 
+            'message': 'Respaldo creado correctamente'
+        })
     else:
         return jsonify({'success': False, 'message': 'Error al crear respaldo'}), 500
 
@@ -578,7 +1017,10 @@ def restore_backup_api(backup_filename):
     from database import restore_backup
     try:
         restore_backup(backup_filename)
-        return jsonify({'success': True, 'message': f'Base de datos restaurada desde {backup_filename}'})
+        return jsonify({
+            'success': True, 
+            'message': f'Base de datos restaurada desde {backup_filename}'
+        })
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
@@ -586,16 +1028,25 @@ def restore_backup_api(backup_filename):
 def soft_reset_api():
     from database import soft_reset_race_data
     result = soft_reset_race_data()
-    return jsonify({'success': True, 'message': 'Limpieza segura completada', 'details': result})
+    return jsonify({
+        'success': True, 
+        'message': 'Limpieza segura completada', 
+        'details': result
+    })
 
 @app.route('/api/db/safe-hard-reset', methods=['POST'])
 def safe_hard_reset_api():
     from database import safe_hard_reset
     backup_file = safe_hard_reset()
-    return jsonify({'success': True, 'message': 'Reinicio total completado', 'backup_file': backup_file})
+    return jsonify({
+        'success': True, 
+        'message': 'Reinicio total completado', 
+        'backup_file': backup_file
+    })
 
-# ==================== CONFIGURACIÓN ====================
-
+# ============================================
+# ENDPOINTS - CONFIGURACIÓN
+# ============================================
 @app.route('/api/config/antenna', methods=['GET'])
 def get_antenna_config_api():
     from database import get_antenna_config
@@ -652,8 +1103,9 @@ def update_timing_config_api():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# ==================== AUTENTICACIÓN ====================
-
+# ============================================
+# ENDPOINTS - AUTENTICACIÓN
+# ============================================
 @app.route('/api/auth/login', methods=['POST'])
 def login_api():
     data = request.get_json()
@@ -726,8 +1178,9 @@ def verify_session_api():
     else:
         return jsonify({'success': False, 'message': 'Sesión inválida o expirada'}), 401
 
-# ==================== MODO SIMULACIÓN ====================
-
+# ============================================
+# ENDPOINTS - MODO SIMULACIÓN
+# ============================================
 @app.route('/api/simulation/mode', methods=['POST'])
 def set_simulation_mode():
     try:
@@ -736,12 +1189,9 @@ def set_simulation_mode():
         print(f"[SIMULACIÓN] Datos recibidos: {data}")
         enabled = data.get('enabled', False)
         print(f"[SIMULACIÓN] enabled = {enabled}")
-        
-        # Verificar que la ruta existe
         print(f"[SIMULACIÓN] SIMULATION_MODE_FILE = {SIMULATION_MODE_FILE}")
         
         if enabled:
-            # Asegurar que el directorio existe
             os.makedirs(os.path.dirname(SIMULATION_MODE_FILE), exist_ok=True)
             with open(SIMULATION_MODE_FILE, 'w') as f:
                 f.write('simulation')
@@ -759,8 +1209,6 @@ def set_simulation_mode():
         import traceback
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
-
-SIMULATION_SPEED_FILE = os.path.join(BASE_DATA_DIR, 'simulation_speed.txt')
 
 @app.route('/api/simulation/speed', methods=['GET'])
 def get_simulation_speed():
@@ -786,8 +1234,16 @@ def set_simulation_speed():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# ==================== SISTEMA ====================
+@app.route('/api/simulation/generate-lap', methods=['POST'])
+def generate_simulation_lap():
+    try:
+        return jsonify({'success': True, 'message': 'Vuelta generada (simulación)'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
+# ============================================
+# ENDPOINTS - SISTEMA
+# ============================================
 @app.route('/api/system/ip', methods=['GET'])
 def get_local_ip():
     import socket
@@ -849,7 +1305,10 @@ def set_decoder_mode_api():
         
         valid_modes = ['chronit', 'a120', 'a20', 'fr01']
         if mode not in valid_modes:
-            return jsonify({'success': False, 'error': f'Modo inválido. Opciones: {valid_modes}'}), 400
+            return jsonify({
+                'success': False, 
+                'error': f'Modo inválido. Opciones: {valid_modes}'
+            }), 400
         
         update_decoder_mode(mode)
         set_mode(mode)
@@ -858,8 +1317,9 @@ def set_decoder_mode_api():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# ==================== LOGS ====================
-
+# ============================================
+# ENDPOINTS - LOGS
+# ============================================
 def get_logs_from_file(limit=200):
     try:
         if not os.path.exists(LOG_BUFFER_FILE):
@@ -911,13 +1371,19 @@ def clear_realtime_logs():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# ==================== DASHBOARD COMPLETO ====================
-
+# ============================================
+# ENDPOINTS - DASHBOARD COMPLETO
+# ============================================
 @app.route('/api/dashboard/full-data')
 def get_full_dashboard_data():
     session_info = get_current_session() or get_latest_session()
     if not session_info:
-        return jsonify({'active': False, 'leaderboard': [], 'lap_details': {}, 'speeds': {}})
+        return jsonify({
+            'active': False, 
+            'leaderboard': [], 
+            'lap_details': {}, 
+            'speeds': {}
+        })
     
     session_id = session_info['id']
     session_info['race_elapsed_seconds'] = get_session_elapsed_seconds(session_info)
@@ -983,8 +1449,9 @@ def get_full_dashboard_data():
         'timestamp': time.time()
     })
 
-# ==================== HISTORIAL Y RESPALDOS DE PILOTOS ====================
-
+# ============================================
+# ENDPOINTS - HISTORIAL Y RESPALDOS DE PILOTOS
+# ============================================
 @app.route('/api/race/history/<int:session_id>', methods=['GET'])
 def get_race_detail(session_id):
     try:
@@ -995,7 +1462,6 @@ def get_race_detail(session_id):
         leaderboard = get_leaderboard_with_details(session_id)
         session_info['race_elapsed_seconds'] = get_session_elapsed_seconds(session_info)
         
-        # Obtener vueltas agrupadas por piloto
         laps_by_driver = {}
         with get_db() as conn:
             lap_rows = conn.execute('''
@@ -1037,7 +1503,10 @@ def delete_race_history(session_id):
             user_role = user['role']
     
     if user_role != 'developer':
-        return jsonify({'success': False, 'error': 'Acceso denegado. Solo desarrolladores pueden eliminar carreras'}), 403
+        return jsonify({
+            'success': False, 
+            'error': 'Acceso denegado. Solo desarrolladores pueden eliminar carreras'
+        }), 403
     
     try:
         with get_db() as conn:
@@ -1052,104 +1521,45 @@ def delete_race_history(session_id):
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-
-def start_api_server():
-    init_db()
-    init_users_db()
-    app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False, threaded=True)
-
-@app.route('/api/race/time-remaining', methods=['GET'])
-def get_time_remaining():
-    try:
-        session_info = get_current_session()
-        if not session_info:
-            return jsonify({'success': False, 'error': 'No hay carrera activa'}), 404
-        
-        race_mode = session_info.get('race_mode', 'position')
-        # ✅ CORREGIDO: Aceptar 'classification' y 'endurance'
-        if race_mode not in ('classification', 'endurance'):
-            return jsonify({'success': False, 'error': 'La carrera actual no tiene tiempo límite'}), 400
-        
-        time_limit_file = os.path.join(BASE_DATA_DIR, 'time_limit_info.json')
-        if os.path.exists(time_limit_file):
-            with open(time_limit_file, 'r') as f:
-                data = json.load(f)
-                time_limit_end = data.get('time_limit_end', 0)
-                time_limit_active = data.get('time_limit_active', False)
-                
-                if time_limit_active and time_limit_end > 0:
-                    remaining = max(0, time_limit_end - time.time())
-                    return jsonify({
-                        'success': True,
-                        'remaining_seconds': remaining,
-                        'remaining_formatted': format_race_clock(remaining),
-                        'is_active': True
-                    })
-        
-        return jsonify({
-            'success': True,
-            'remaining_seconds': 0,
-            'remaining_formatted': '00:00',
-            'is_active': False
-        })
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-def format_race_clock(totalSeconds):
-    """Formatea tiempo para cuenta regresiva"""
-    if totalSeconds is None or totalSeconds < 0:
-        totalSeconds = 0
-    minutes = int(totalSeconds // 60)
-    seconds = int(totalSeconds % 60)
-    millis = int((totalSeconds % 1) * 1000)
-    return f"{minutes:02d}:{seconds:02d}.{millis:03d}"
-
-@app.route('/api/race/time-limit-status', methods=['POST'])
-def update_time_limit_status():
-    """Actualiza el estado del tiempo límite desde main.py"""
-    try:
-        data = request.get_json()
-        time_limit_file = os.path.join(BASE_DATA_DIR, 'time_limit_info.json')
-        with open(time_limit_file, 'w') as f:
-            json.dump(data, f)
-        return jsonify({'success': True})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
+# ============================================
+# ENDPOINTS - BACKUP DE PILOTOS
+# ============================================
 @app.route('/api/backup/pilotos/list', methods=['GET'])
 def get_pilotos_backups_list():
-    """Lista todos los respaldos de pilotos disponibles"""
     try:
         from database import get_pilotos_backups_list
         backups = get_pilotos_backups_list()
-        # ✅ Devolver SOLO el array (como espera el frontend)
         return jsonify(backups)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/backup/pilotos', methods=['POST'])
 def backup_pilotos():
-    """Crea un respaldo de pilotos y transponders"""
     try:
         from database import backup_drivers_and_transponders
         backup_file = backup_drivers_and_transponders()
-        return jsonify({'success': True, 'message': 'Respaldo creado', 'backup_file': backup_file})
+        return jsonify({
+            'success': True, 
+            'message': 'Respaldo creado', 
+            'backup_file': backup_file
+        })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/backup/pilotos/restore/<filename>', methods=['POST'])
 def restore_pilotos_backup(filename):
-    """Restaura pilotos y transponders desde un respaldo"""
     try:
         from database import restore_drivers_and_transponders_from_backup
         result = restore_drivers_and_transponders_from_backup(filename)
-        return jsonify({'success': True, 'message': f'Restaurados {result["drivers"]} pilotos y {result["transponders"]} transponders'})
+        return jsonify({
+            'success': True, 
+            'message': f'Restaurados {result["drivers"]} pilotos y {result["transponders"]} transponders'
+        })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/backup/pilotos/delete/<filename>', methods=['POST'])
 def delete_pilotos_backup(filename):
-    """Elimina un respaldo de pilotos"""
     try:
         import os
         from database import get_backup_dir
@@ -1164,41 +1574,11 @@ def delete_pilotos_backup(filename):
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# ==================== VELOCIDAD POR VUELTA ====================
-
-@app.route('/api/laps/speed/<int:session_id>/<int:driver_id>', methods=['GET'])
-def get_laps_speed(session_id, driver_id):
-    """Obtiene las vueltas con velocidad para un piloto específico"""
-    try:
-        from database import get_db
-        with get_db() as conn:
-            laps = conn.execute('''
-                SELECT lap_number, lap_seconds, avg_speed_kmh
-                FROM laps
-                WHERE session_id = ? AND driver_id = ? AND lap_number > 0
-                ORDER BY lap_number ASC
-            ''', (session_id, driver_id)).fetchall()
-            return jsonify([dict(lap) for lap in laps])
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-# ==================== MODO SIMULACIÓN ====================
-
-@app.route('/api/simulation/generate-lap', methods=['POST'])
-def generate_simulation_lap():
-    """Genera una vuelta de prueba en modo simulación"""
-    try:
-        # Esta función debe ser implementada en main.py
-        # Por ahora, retornamos éxito para no romper el frontend
-        return jsonify({'success': True, 'message': 'Vuelta generada (simulación)'})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-# ==================== GESTIÓN DE RESPALDOS ====================
-
+# ============================================
+# ENDPOINTS - GESTIÓN DE RESPALDOS
+# ============================================
 @app.route('/api/backup/delete/<filename>', methods=['POST'])
 def delete_backup_file(filename):
-    """Elimina un respaldo de base de datos"""
     try:
         import os
         from database import get_backup_dir
@@ -1215,7 +1595,6 @@ def delete_backup_file(filename):
 
 @app.route('/api/backup/delete-old', methods=['POST'])
 def delete_old_backups():
-    """Elimina respaldos más antiguos de X días"""
     try:
         import os
         from datetime import datetime, timedelta
@@ -1234,13 +1613,15 @@ def delete_old_backups():
                     os.remove(filepath)
                     deleted += 1
         
-        return jsonify({'success': True, 'message': f'Eliminados {deleted} respaldos antiguos'})
+        return jsonify({
+            'success': True, 
+            'message': f'Eliminados {deleted} respaldos antiguos'
+        })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/backup/view/<filename>', methods=['GET'])
 def view_backup(filename):
-    """Prepara un respaldo para visualización en sqlite-web"""
     try:
         import shutil
         from database import get_backup_dir
@@ -1251,15 +1632,52 @@ def view_backup(filename):
         if not os.path.exists(source):
             return jsonify({'success': False, 'error': 'Archivo no encontrado'}), 404
         
-        # Crear copia temporal para sqlite-web
         temp_view = os.path.join(backup_dir, '_temp_view.db')
         shutil.copy2(source, temp_view)
         
-        return jsonify({'success': True, 'message': f'Respaldo {filename} listo para visualizar'})
+        return jsonify({
+            'success': True, 
+            'message': f'Respaldo {filename} listo para visualizar'
+        })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+# ============================================
+# ENDPOINTS - VELOCIDAD POR VUELTA
+# ============================================
+@app.route('/api/laps/speed/<int:session_id>/<int:driver_id>', methods=['GET'])
+def get_laps_speed(session_id, driver_id):
+    try:
+        from database import get_db
+        with get_db() as conn:
+            laps = conn.execute('''
+                SELECT lap_number, lap_seconds, avg_speed_kmh
+                FROM laps
+                WHERE session_id = ? AND driver_id = ? AND lap_number > 0
+                ORDER BY lap_number ASC
+            ''', (session_id, driver_id)).fetchall()
+            return jsonify([dict(lap) for lap in laps])
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
+# ============================================
+# FUNCIONES DE UTILIDAD
+# ============================================
+def format_race_clock(totalSeconds):
+    if totalSeconds is None or totalSeconds < 0:
+        totalSeconds = 0
+    minutes = int(totalSeconds // 60)
+    seconds = int(totalSeconds % 60)
+    millis = int((totalSeconds % 1) * 1000)
+    return f"{minutes:02d}:{seconds:02d}.{millis:03d}"
+
+# ============================================
+# PUNTO DE ENTRADA PRINCIPAL
+# ============================================
+def start_api_server():
+    init_db()
+    init_users_db()
+    app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False, threaded=True)
 
 if __name__ == "__main__":
     start_api_server()

@@ -546,6 +546,7 @@ document.querySelectorAll('.nav-links a').forEach(link => {
 
         if (panelId === 'drivers') {
             loadDrivers();
+            loadTranspondersIntoSelect();
         }
         if (panelId === 'transponders') {
             loadTransponders();
@@ -588,9 +589,7 @@ document.querySelectorAll('.nav-links a').forEach(link => {
 async function loadLiveData() {
     try {
         const fullData = await apiCall('/api/dashboard/full-data');
-        console.log('[DEBUG] fullData recibido:', fullData);
-        console.log('[DEBUG] leaderboard:', fullData?.leaderboard);
-        console.log('[DEBUG] leaderboard length:', fullData?.leaderboard?.length);
+
         if (!fullData || !fullData.active) {
             applyRaceTimerState(null);
             updateRaceControls(null);
@@ -727,7 +726,7 @@ async function loadLiveData() {
             const podium = podiumRes?.podium || [];
             const podiumRaceMode = normalizeRaceMode(podiumRes?.race_mode || 'position');
             currentRaceMode = podiumRaceMode;
-            
+
             if (podiumRaceMode === 'classification') {
                 const groups = podiumRes?.classification_groups;
                 if (groups && (groups.q1?.length || groups.q2?.length || groups.q3?.length || groups.dnq?.length)) {
@@ -1179,11 +1178,11 @@ async function loadTableroPublicoFromData(session, leaderboard, speedsMap = {}) 
         let tiempoSecundario = '--';
 
         if (raceMode === 'time_attack') {
-            const driverTotal = (driver.race_total_time != null && driver.race_total_time > 0) 
-                ? formatRaceClock(driver.race_total_time) 
+            const driverTotal = (driver.race_total_time != null && driver.race_total_time > 0)
+                ? formatRaceClock(driver.race_total_time)
                 : '--';
             tiempoPrincipal = driverTotal;
-            
+
             let tiempoTranscurrido = '--';
             if (driver.first_detection) {
                 const now = Date.now();
@@ -1198,17 +1197,17 @@ async function loadTableroPublicoFromData(session, leaderboard, speedsMap = {}) 
                 }
             }
             tiempoSecundario = tiempoTranscurrido;
-            
+
         } else if (raceMode === 'classification') {
             const bestLap = driver.best_lap ? formatRaceClock(driver.best_lap) : '--';
             tiempoPrincipal = bestLap;
             tiempoSecundario = `${driver.total_laps || 0} v`;
-            
+
         } else if (raceMode === 'endurance') {
             const bestLap = driver.best_lap ? formatRaceClock(driver.best_lap) : '--';
             tiempoPrincipal = `${driver.total_laps || 0} v`;
             tiempoSecundario = bestLap;
-            
+
         } else {
             tiempoPrincipal = individualTime;
             tiempoSecundario = totalTime;
@@ -1221,8 +1220,8 @@ async function loadTableroPublicoFromData(session, leaderboard, speedsMap = {}) 
         const progressLineClass = idx === 0 ? 'line-gold' : 'line-blue';
         const kartLabel = driver.kart_id ? driver.kart_id : driver.transponder_id || '--';
 
-        const photoUrl = driver.photo && driver.photo.startsWith('/static/') 
-            ? driver.photo 
+        const photoUrl = driver.photo && driver.photo !== 'default-avatar.png'
+            ? `/static/uploads/drivers/${driver.photo}`
             : DEFAULT_PHOTO;
 
         let cupIcon = '';
@@ -1818,7 +1817,6 @@ async function renderTvLapRotator() {
             const config = await apiCall('/api/circuit/config');
             if (config && config.track_length_km) {
                 trackLength = config.track_length_km;
-                console.log("[DEBUG] trackLength obtenido de API:", trackLength);
             }
         } catch (e) {
             console.warn("[DEBUG] Error obteniendo trackLength:", e);
@@ -2042,12 +2040,12 @@ async function loadDrivers(searchTerm) {
     try {
         const drivers = await apiCall('/api/drivers');
         allDriversData = drivers || [];
-        
+
         // Ordenar por más reciente primero (id DESC)
         allDriversData.sort((a, b) => b.id - a.id);
-        
+
         renderDriversTable(searchTerm || '');
-        
+
         // También actualizar los checkboxes de inscripción
         loadEnrollmentCheckboxes(searchTerm || '');
     } catch (e) {
@@ -2113,12 +2111,16 @@ function renderDriversTable(searchTerm) {
     
     if (filtered.length > 0) {
         tbody.innerHTML = filtered.map(d => {
-            const photo = d.photo || '/static/pilotcircle1.png';
+            // ✅ CORREGIDO: URL CORRECTA PARA LA FOTO
+            const photo = d.photo && d.photo !== 'default-avatar.png' 
+                ? `/static/uploads/drivers/${d.photo}` 
+                : '/static/default-avatar.png';
+            
             const kart = d.transponder_kart_id || '--';
             return `<tr data-driver-id="${d.id}">
                 <td>${d.id}</td>
                 <td style="text-align:center;cursor:pointer;" class="driver-edit-trigger">
-                    <img src="${photo}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;" onerror="this.src='/static/pilotcircle1.png'">
+                    <img src="${photo}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;" onerror="this.src='/static/default-avatar.png'">
                 </td>
                 <td style="cursor:pointer;" class="driver-edit-trigger">
                     <span id="name-${d.id}">${d.name} ${d.lastname || ''}</span>
@@ -2139,11 +2141,19 @@ function renderDriversTable(searchTerm) {
     }
 }
 
+let persistentCheckedIds = new Set();
+
 async function loadEnrollmentCheckboxes(searchTerm) {
     const container = document.getElementById('enrollmentCheckboxList');
     if (!container) return;
     
-    // Obtener inscritos actuales
+    // PASO 1: Sincronizar el Set persistente con el DOM actual
+    container.querySelectorAll('.enrollment-checkbox').forEach(cb => {
+        if (cb.checked) persistentCheckedIds.add(cb.value);
+        else persistentCheckedIds.delete(cb.value);
+    });
+    
+    // ✅ PASO 2: OBTENER DATOS ACTUALES
     const session = await apiCall('/api/session/current');
     let inscritosIds = [];
     if (session?.active && session?.session?.id) {
@@ -2151,10 +2161,10 @@ async function loadEnrollmentCheckboxes(searchTerm) {
         inscritosIds = raceDrivers ? raceDrivers.map(d => d.driver_id) : [];
     }
     
-    // Filtrar por búsqueda
+    // ✅ PASO 3: FILTRAR POR BÚSQUEDA
     let filtered = allDriversData;
-    if (searchTerm) {
-        const term = searchTerm.toLowerCase();
+    if (searchTerm && searchTerm.trim() !== '') {
+        const term = searchTerm.toLowerCase().trim();
         filtered = allDriversData.filter(d => 
             (d.name || '').toLowerCase().includes(term) ||
             (d.lastname || '').toLowerCase().includes(term) ||
@@ -2165,28 +2175,42 @@ async function loadEnrollmentCheckboxes(searchTerm) {
         );
     }
     
-    // Solo mostrar no inscritos
+    // Limpiar del Set persistente pilotos que ya fueron inscritos
+    for (const id of persistentCheckedIds) {
+        if (inscritosIds.includes(parseInt(id))) persistentCheckedIds.delete(id);
+    }
+
+    // PASO 4: Solo mostrar no inscritos
     const disponibles = filtered.filter(d => !inscritosIds.includes(d.id));
-    
-    // Guardar IDs de checkboxes ya seleccionados
-    const checkedIds = new Set();
-    container.querySelectorAll('.enrollment-checkbox:checked').forEach(cb => checkedIds.add(cb.value));
     
     if (disponibles.length === 0) {
         container.innerHTML = '<span style="font-size:0.7rem;color:#888;">No hay pilotos disponibles</span>';
         return;
     }
     
+    // ✅ PASO 5: RECONSTRUIR CHECKBOXES CON ESTADO PRESERVADO
     container.innerHTML = disponibles.map(d => {
-        const photo = d.photo || '/static/pilotcircle1.png';
-        const checked = checkedIds.has(String(d.id)) ? ' checked' : '';
+        // ✅ URL CORRECTA PARA LA FOTO
+        const photo = d.photo && d.photo !== 'default-avatar.png' 
+            ? `/static/uploads/drivers/${d.photo}` 
+            : '/static/pilotcircle1.png';
+        
+        // ✅ VERIFICAR SI ESTE CHECKBOX DEBERÍA ESTAR MARCADO
+        const wasChecked = persistentCheckedIds.has(String(d.id));
+        const checked = wasChecked ? ' checked' : '';
+        
         const kart = d.transponder_kart_id || '';
-        return `<label style="display:flex;align-items:center;gap:0.35rem;padding:0.25rem 0.3rem;cursor:pointer;font-size:0.72rem;border-bottom:1px solid #1a1e26;">
-            <input type="checkbox" value="${d.id}" class="enrollment-checkbox" data-transponder="${d.transponder_id||d.id}" ${checked} style="width:14px;height:14px;flex-shrink:0;">
+        const hasTransponder = d.transponder_id && d.transponder_id > 0;
+        const disabled = hasTransponder ? '' : 'disabled';
+        const tStyle = hasTransponder ? 'color:#ffd700;' : 'color:#e5484d;';
+        const tText = hasTransponder ? d.transponder_id : 'SIN TRANSPONDER ⛔';
+        
+        return `<label style="display:flex;align-items:center;gap:0.35rem;padding:0.25rem 0.3rem;cursor:pointer;font-size:0.72rem;border-bottom:1px solid #1a1e26;${hasTransponder ? '' : 'opacity:0.5;'}">
+            <input type="checkbox" value="${d.id}" class="enrollment-checkbox" data-transponder="${d.transponder_id||d.id}" ${checked} ${disabled} style="width:14px;height:14px;flex-shrink:0;">
             <img src="${photo}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.src='/static/pilotcircle1.png'">
             <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.name} ${d.lastname || ''}</span>
             ${kart ? `<span style="color:#00AAE4;font-size:0.6rem;flex-shrink:0;font-weight:bold;">${kart}</span>` : ''}
-            <span style="color:#ffd700;font-size:0.62rem;flex-shrink:0;font-weight:bold;">${d.transponder_id||'--'}</span>
+            <span style="${tStyle}font-size:0.62rem;flex-shrink:0;font-weight:bold;">${tText}</span>
         </label>`;
     }).join('');
 }
@@ -2218,7 +2242,7 @@ window.editDriver = (id, name, lastname, transponder) => {
     editDriverMinimal(id, name, lastname, transponder, '', '', '');
 };
 
-// ⭐ MODAL DE EDICIÓN COMPLETO (con foto y todos los campos)
+
 window.openDriverEditModal = async (driver) => {
     const id = driver.id;
     const name = driver.name || '';
@@ -2229,10 +2253,14 @@ window.openDriverEditModal = async (driver) => {
     const phone = driver.phone || '';
     const photo = driver.photo || '';
     const age = driver.age || '';
-    const photoSrc = photo || '/static/pilotcircle1.png';
-    
+
+    // ✅ CORREGIDO: URL correcta para la foto
+    const photoSrc = photo && photo !== 'default-avatar.png'
+        ? `/static/uploads/drivers/${photo}`
+        : '/static/default-avatar.png';
+
     const inp = 'padding:0.55rem;background:#0f1117;border:1px solid #2a2f3a;border-radius:8px;color:white;font-size:0.82rem;width:100%;box-sizing:border-box;';
-    
+
     const modalHTML = `<div style="text-align:center;margin-bottom:1.2rem;padding-top:0.3rem;">
             <img id="_mp" src="${photoSrc}" 
                  style="width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid #ffd700;cursor:pointer;display:block;margin:0 auto;"
@@ -2243,15 +2271,15 @@ window.openDriverEditModal = async (driver) => {
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem 0.8rem;">
             <div style="grid-column:1/-1;">
                 <label style="font-size:0.7rem;color:#a4adbc;">Nombre <span style="color:#e5484d;">*</span></label>
-                <input id="_mn" value="${name.replace(/"/g,'&quot;')}" style="${inp}">
+                <input id="_mn" value="${name.replace(/"/g, '&quot;')}" style="${inp}">
             </div>
             <div>
                 <label style="font-size:0.7rem;color:#a4adbc;">Apellido</label>
-                <input id="_mln" value="${lastname.replace(/"/g,'&quot;')}" style="${inp}">
+                <input id="_mln" value="${lastname.replace(/"/g, '&quot;')}" style="${inp}">
             </div>
             <div>
                 <label style="font-size:0.7rem;color:#a4adbc;">Carnet <span style="color:#e5484d;">*</span></label>
-                <input id="_mc" value="${carnet.replace(/"/g,'&quot;')}" style="${inp}">
+                <input id="_mc" value="${carnet.replace(/"/g, '&quot;')}" style="${inp}">
             </div>
             <div>
                 <label style="font-size:0.7rem;color:#a4adbc;">Transponder</label>
@@ -2265,21 +2293,20 @@ window.openDriverEditModal = async (driver) => {
             </div>
             <div>
                 <label style="font-size:0.7rem;color:#a4adbc;">Email</label>
-                <input id="_me" type="email" value="${email.replace(/"/g,'&quot;')}" style="${inp}">
+                <input id="_me" type="email" value="${email.replace(/"/g, '&quot;')}" style="${inp}">
             </div>
             <div>
                 <label style="font-size:0.7rem;color:#a4adbc;">Teléfono</label>
-                <input id="_mph" value="${phone.replace(/"/g,'&quot;')}" style="${inp}">
+                <input id="_mph" value="${phone.replace(/"/g, '&quot;')}" style="${inp}">
             </div>
         </div>`;
-        
-    
+
     // Poner el HTML en el modal
     document.getElementById('modalMessage').innerHTML = modalHTML;
     document.getElementById('modalTitle').innerText = 'Editar Piloto';
     document.getElementById('modalConfirm').innerText = 'Guardar Cambios';
     document.getElementById('modal').style.display = 'flex';
-    
+
     // Guardar callback para el botón confirmar
     window._pendingEditSave = async () => {
         const photoFile = document.getElementById('_mf')?.files?.[0];
@@ -2306,20 +2333,40 @@ window.openDriverEditModal = async (driver) => {
         if (res?.success) {
             showToast('✅', 'Piloto actualizado', 'success');
             loadDrivers();
+            loadTranspondersIntoSelect();
+            // ✅ Recargar la foto en la vista
+            if (photoFile) {
+                await uploadDriverPhoto(id, photoFile);
+            }
+        } else {
+            showToast('❌', res?.error || 'Error al actualizar piloto', 'error');
         }
     };
     pendingAction = window._pendingEditSave;
-    
+
     // Cargar transponders en el select del modal
     setTimeout(async () => {
-        const transponders = await apiCall('/api/transponders/all');
+        const allTransponders = await apiCall('/api/transponders/all');
+        const drivers = allDriversData.length ? allDriversData : (await apiCall('/api/drivers'));
+        const assignedMap = {};
+        drivers.forEach(d => {
+            if (d.transponder_id && d.transponder_id != transponder) {
+                assignedMap[d.transponder_id] = d;
+            }
+        });
         const sel = document.getElementById('_mt');
-        if (sel && transponders) {
-            for (const t of transponders) {
+        if (sel && allTransponders) {
+            sel.innerHTML = '<option value="">-- Sin Transponder --</option>';
+            for (const t of allTransponders) {
+                const assigned = assignedMap[t.id];
                 const opt = document.createElement('option');
                 opt.value = t.id;
-                opt.textContent = `${t.id}${t.kart_id ? ' - '+t.kart_id : ''}`;
+                opt.textContent = `${t.id}${t.kart_id ? ' - ' + t.kart_id : ''}`;
                 if (String(t.id) === String(transponder)) opt.selected = true;
+                if (assigned) {
+                    opt.style.color = '#e5484d';
+                    opt.textContent += ` 🔒 ${assigned.name}`;
+                }
                 sel.appendChild(opt);
             }
         }
@@ -2411,17 +2458,10 @@ const createDriverHandler = async () => {
     if (!name) { showToast('⚠️', 'El nombre es obligatorio', 'warning'); return; }
     if (!carnet) { showToast('⚠️', 'El carnet es obligatorio', 'warning'); return; }
 
-    const photoFile = document.getElementById('driverPhotoFile')?.files?.[0];
-    let photoData = null;
-    if (photoFile) {
-        photoData = await new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.readAsDataURL(photoFile);
-        });
-    }
     const transponderSel = document.getElementById('driverTransponder');
     const transponderVal = transponderSel?.value || '';
+
+    // Datos del piloto (sin foto)
     const data = {
         transponder_id: transponderVal ? parseInt(transponderVal) : null,
         name: name,
@@ -2429,8 +2469,7 @@ const createDriverHandler = async () => {
         email: document.getElementById('driverEmail')?.value || '',
         carnet: carnet,
         phone: document.getElementById('driverPhone')?.value || '',
-        age: document.getElementById('driverAge')?.value || null,
-        photo: photoData
+        age: document.getElementById('driverAge')?.value || null
     };
 
     showLoader('Guardando piloto...');
@@ -2438,6 +2477,15 @@ const createDriverHandler = async () => {
     hideLoader();
 
     if (res?.success) {
+        const driverId = res.driver_id;
+
+        // ✅ SUBIR FOTO SI EXISTE (usando multipart/form-data)
+        const photoFile = document.getElementById('driverPhotoFile')?.files?.[0];
+        if (photoFile) {
+            await uploadDriverPhoto(driverId, photoFile);
+        }
+
+        // Limpiar formulario
         if (transponderSel) transponderSel.value = '';
         document.getElementById('driverName').value = '';
         document.getElementById('driverLastname').value = '';
@@ -2449,16 +2497,84 @@ const createDriverHandler = async () => {
         document.getElementById('driverPhotoPreview').src = '/static/pilotcircle1.png';
         document.getElementById('extraDriverFields').style.display = 'none';
         document.getElementById('toggleExtraFieldsBtn').innerHTML = '▼ Más campos';
+
         loadDrivers();
         loadTransponders();
         loadTranspondersIntoSelect();
+        showToast('✅', 'Piloto registrado correctamente', 'success');
     }
 };
+
+// ✅ NUEVA FUNCIÓN: Subir foto de piloto (multipart/form-data)
+async function uploadDriverPhoto(driverId, file) {
+    const formData = new FormData();
+    formData.append('photo', file);
+
+    try {
+        showLoader('Subiendo foto...');
+        const token = sessionToken || localStorage.getItem('chronit_session_token');
+        const response = await fetch(`/api/drivers/${driverId}/photo`, {
+            method: 'POST',
+            headers: {
+                'X-Session-Token': token || ''
+            },
+            body: formData  // ← multipart/form-data
+        });
+
+        const result = await response.json();
+        hideLoader();
+
+        if (result.success) {
+            console.log('✅ Foto subida:', result.photo_url);
+            showToast('✅', 'Foto subida correctamente', 'success');
+            return true;
+        } else {
+            showToast('❌', result.error || 'Error al subir foto', 'error');
+            return false;
+        }
+    } catch (e) {
+        hideLoader();
+        console.error('Error subiendo foto:', e);
+        showToast('❌', 'Error al subir la foto', 'error');
+        return false;
+    }
+}
+
+// ✅ NUEVA FUNCIÓN: Eliminar foto de piloto
+async function deleteDriverPhoto(driverId) {
+    try {
+        showLoader('Eliminando foto...');
+        const token = sessionToken || localStorage.getItem('chronit_session_token');
+        const response = await fetch(`/api/drivers/${driverId}/photo`, {
+            method: 'DELETE',
+            headers: {
+                'X-Session-Token': token || ''
+            }
+        });
+
+        const result = await response.json();
+        hideLoader();
+
+        if (result.success) {
+            showToast('✅', 'Foto eliminada', 'success');
+            loadDrivers();
+            return true;
+        } else {
+            showToast('❌', result.error || 'Error al eliminar foto', 'error');
+            return false;
+        }
+    } catch (e) {
+        hideLoader();
+        console.error('Error eliminando foto:', e);
+        showToast('❌', 'Error al eliminar la foto', 'error');
+        return false;
+    }
+}
 
 document.getElementById('saveDriverBtn').onclick = createDriverHandler;
 
 // Photo preview
-document.getElementById('driverPhotoFile')?.addEventListener('change', function() {
+document.getElementById('driverPhotoFile')?.addEventListener('change', function () {
     const file = this.files?.[0];
     if (file) {
         const reader = new FileReader();
@@ -2516,6 +2632,7 @@ document.getElementById('addDriverToRaceBtn').onclick = async () => {
     }
     hideLoader();
     showToast('✅', `${inscritos} piloto(s) inscrito(s)`, 'success');
+    persistentCheckedIds.clear();
     loadDrivers();
     loadLiveData();
 };
@@ -3247,7 +3364,7 @@ function showClassificationModal(q1, q2, q3, dnq) {
         const name = (d.full_name || (d.name || '') + ' ' + (d.lastname || '')).trim();
         const best = d.best_lap ? (d.best_lap.toFixed(3) + 's') : '--';
         return `<div style="display:flex;align-items:center;gap:0.4rem;padding:0.2rem 0;font-size:0.78rem;border-bottom:1px solid #1a1e26;">
-            <span style="color:#ffd700;font-weight:bold;min-width:22px;">${idx+1}.</span>
+            <span style="color:#ffd700;font-weight:bold;min-width:22px;">${idx + 1}.</span>
             <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${name}</span>
             <span style="color:#ffd700;font-family:monospace;">${best}</span>
         </div>`;
@@ -3261,7 +3378,7 @@ function showClassificationModal(q1, q2, q3, dnq) {
 
     let html = '<div style="text-align:center;margin-bottom:1rem;"><h2 style="color:#ffd700;margin:0;">🏁 CLASIFICACIÓN</h2></div>';
     html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;max-height:50vh;overflow-y:auto;">';
-    
+
     for (const g of groups) {
         html += `<div style="background:#0f1117;border:1px solid ${g.color};border-radius:10px;padding:0.5rem;">
             <div style="text-align:center;font-weight:bold;font-size:0.85rem;color:${g.color};margin-bottom:0.4rem;">${g.title}</div>`;
@@ -3279,7 +3396,7 @@ function showClassificationModal(q1, q2, q3, dnq) {
         html += '<div style="text-align:center;font-weight:bold;font-size:0.85rem;color:#e5484d;margin-bottom:0.3rem;">❌ DNQ (Sin vuelta válida)</div>';
         html += dnq.map((d, i) => `<div style="display:flex;align-items:center;gap:0.4rem;padding:0.15rem 0;font-size:0.72rem;border-bottom:1px solid #2a0a0a;">
             <span style="color:#e5484d;">•</span>
-            <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${(d.full_name || (d.name||'') + ' ' + (d.lastname||'')).trim()}</span>
+            <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${(d.full_name || (d.name || '') + ' ' + (d.lastname || '')).trim()}</span>
             <span style="color:#888;font-size:0.65rem;">${d.total_laps || 0} v</span>
         </div>`).join('');
         html += '</div>';
@@ -4018,9 +4135,7 @@ function saveLoginBeforeReload() {
 }
 
 async function restoreLoginAfterReload() {
-    console.log("[DEBUG] restoreLoginAfterReload() llamada");
     const token = localStorage.getItem('chronit_session_token');
-    console.log("[DEBUG] Token encontrado:", token ? "Sí" : "No");
     if (token && !isAuthenticated) {
         try {
             const res = await fetch('/api/auth/verify-session', {
@@ -4533,20 +4648,33 @@ loadTranspondersIntoSelect();
 async function loadTranspondersIntoSelect() {
     const sel = document.getElementById('driverTransponder');
     if (!sel) return;
-    const transponders = await apiCall('/api/transponders/all');
+    const allTransponders = await apiCall('/api/transponders/all');
+    const drivers = allDriversData.length ? allDriversData : (await apiCall('/api/drivers'));
+
+    // Mapa: transponder_id → driver info
+    const assignedMap = {};
+    drivers.forEach(d => {
+        if (d.transponder_id) assignedMap[d.transponder_id] = d;
+    });
+
     sel.innerHTML = '<option value="">-- Sin Transponder --</option>';
-    if (transponders && transponders.length) {
-        for (const t of transponders) {
+    if (allTransponders && allTransponders.length) {
+        for (const t of allTransponders) {
+            const assigned = assignedMap[t.id];
             const opt = document.createElement('option');
             opt.value = t.id;
-            opt.textContent = `${t.id}${t.kart_id ? ' - ' + t.kart_id : ''}${t.description ? ' - ' + t.description : ''}`;
+            opt.textContent = `${t.id}${t.kart_id ? ' - ' + t.kart_id : ''}${assigned ? ' 🔒 ' + assigned.name : ''}${t.description ? ' - ' + t.description : ''}`;
+            if (assigned) {
+                opt.style.color = '#e5484d';
+                opt.textContent += ' (EN USO)';
+            }
             sel.appendChild(opt);
         }
     }
 }
 
 // Event delegation: click en cualquier parte de la fila abre modal de edición
-document.getElementById('driversList')?.addEventListener('click', function(e) {
+document.getElementById('driversList')?.addEventListener('click', function (e) {
     const trigger = e.target.closest('.driver-edit-trigger');
     if (!trigger) return;
     const row = trigger.closest('tr');
@@ -4560,17 +4688,22 @@ document.getElementById('driversList')?.addEventListener('click', function(e) {
 });
 
 // Search drivers - INDEPENDIENTE: solo filtra lista de registro
-document.getElementById('driverSearchInput')?.addEventListener('input', function() {
+document.getElementById('driverSearchInput')?.addEventListener('input', function () {
     renderDriversTable(this.value);
 });
 
 // Enrollment search - INDEPENDIENTE: solo filtra checkboxes de inscripción
+let enrollmentSearchTimer = null;
 document.getElementById('enrollmentSearch')?.addEventListener('input', function() {
-    loadEnrollmentCheckboxes(this.value);
+    clearTimeout(enrollmentSearchTimer);
+    const term = this.value;
+    enrollmentSearchTimer = setTimeout(() => {
+        loadEnrollmentCheckboxes(term);
+    }, 150);
 });
 
 // Clear transponders button
-document.getElementById('clearTranspondersBtn')?.addEventListener('click', function() {
+document.getElementById('clearTranspondersBtn')?.addEventListener('click', function () {
     showModal('Borrar Transponders', '¿Quitar el código de transponder de TODOS los pilotos?', async () => {
         showLoader('Borrando transponders...');
         const res = await apiCall('/api/drivers/clear-transponders', { method: 'POST' });
@@ -4585,13 +4718,14 @@ document.getElementById('clearTranspondersBtn')?.addEventListener('click', funct
 });
 
 // Unenroll all button
-document.getElementById('unenrollAllBtn')?.addEventListener('click', function() {
+document.getElementById('unenrollAllBtn')?.addEventListener('click', function () {
     showModal('Desinscribir Todos', '¿Desinscribir a todos los pilotos de la carrera?', async () => {
         showLoader('Desinscribiendo pilotos...');
         const res = await apiCall('/api/race/unenroll-all', { method: 'POST' });
         hideLoader();
         if (res?.success) {
             showToast('✅', 'Todos los pilotos desinscritos', 'success');
+            persistentCheckedIds.clear();
             loadDrivers();
             loadLiveData();
         } else {
@@ -4753,11 +4887,11 @@ function renderLiveLeaderboardPublicStyle(leaderboard, session, speedsMap = {}, 
         let tiempoSecundario = '--';
 
         if (raceMode === 'time_attack') {
-            const driverTotal = (driver.race_total_time != null && driver.race_total_time > 0) 
-                ? formatRaceClock(driver.race_total_time) 
+            const driverTotal = (driver.race_total_time != null && driver.race_total_time > 0)
+                ? formatRaceClock(driver.race_total_time)
                 : '--';
             tiempoPrincipal = driverTotal;
-            
+
             let tiempoTranscurrido = '--';
             if (driver.first_detection) {
                 const now = Date.now();
@@ -4772,17 +4906,17 @@ function renderLiveLeaderboardPublicStyle(leaderboard, session, speedsMap = {}, 
                 }
             }
             tiempoSecundario = tiempoTranscurrido;
-            
+
         } else if (raceMode === 'classification') {
             const bestLap = driver.best_lap ? formatRaceClock(driver.best_lap) : '--';
             tiempoPrincipal = bestLap;
             tiempoSecundario = `${driver.total_laps || 0} v`;
-            
+
         } else if (raceMode === 'endurance') {
             const bestLap = driver.best_lap ? formatRaceClock(driver.best_lap) : '--';
             tiempoPrincipal = `${driver.total_laps || 0} v`;
             tiempoSecundario = bestLap;
-            
+
         } else {
             tiempoPrincipal = individualTime;
             tiempoSecundario = totalTime;
@@ -4794,8 +4928,8 @@ function renderLiveLeaderboardPublicStyle(leaderboard, session, speedsMap = {}, 
         const kartLabel = driver.kart_id ? driver.kart_id : driver.transponder_id || '--';
 
         // ✅ FOTO DEL PILOTO
-        const photoUrl = driver.photo && driver.photo.startsWith('/static/') 
-            ? driver.photo 
+        const photoUrl = driver.photo && driver.photo !== 'default-avatar.png'
+            ? `/static/uploads/drivers/${driver.photo}`
             : DEFAULT_PHOTO;
 
         const progressLineClass = idx === 0 ? 'line-gold' : 'line-blue';
@@ -5554,7 +5688,6 @@ async function loadRealtimeLogs() {
         // Auto-scroll al final
         container.scrollTop = container.scrollHeight;
 
-        console.log("✅ Logs renderizados:", data.logs.length);
 
     } catch (e) {
         console.error("❌ Error cargando logs:", e);
@@ -5769,6 +5902,8 @@ function updateDecoderModeHint(mode) {
     };
     if (hint) hint.innerText = hints[mode] || '';
 }
+
+
 
 function setupDecoderModeControls() {
     const saveBtn = document.getElementById('saveDecoderModeBtn');
@@ -6296,6 +6431,15 @@ function closeDeleteModal() {
 }
 
 
+
+
+
+
+
+
+
+
+
 restoreLoginAfterReload().then(() => {
     checkAuth();
 });
@@ -6330,3 +6474,70 @@ async function showWinnerForAllModes() {
 // Reemplazar el onclick del botón
 document.getElementById('showWinnerBtn').onclick = showWinnerForAllModes;
 document.getElementById('showClassificationBtn').onclick = showWinnerForAllModes;
+
+
+// ✅ MODIFICAR window.editDriverMinimal para soportar foto
+window.editDriverMinimal = (id, name, lastname, transponder, email, carnet, phone, photo) => {
+    const modal = document.getElementById('editDriverMinimalModal');
+    if (!modal) return;
+
+    document.getElementById('editDriverNameInput').value = name;
+    document.getElementById('editDriverLastnameInput').value = lastname;
+    document.getElementById('editDriverTransponderInput').value = transponder || '';
+
+    // Guardar datos para la confirmación
+    window._editingDriverId = id;
+    window._editingDriverData = { name, lastname, transponder, email, carnet, phone, photo };
+
+    // Mostrar foto actual
+    const photoPreview = document.getElementById('editDriverPhotoPreview');
+    if (photoPreview) {
+        const photoUrl = photo && photo !== 'default-avatar.png'
+            ? `/static/uploads/drivers/${photo}`
+            : '/static/default-avatar.png';
+        photoPreview.src = photoUrl;
+    }
+
+    modal.style.display = 'flex';
+};
+
+// ✅ MODIFICAR confirmación del modal de piloto
+document.getElementById('editDriverMinimalConfirm').onclick = async () => {
+    const id = window._editingDriverId;
+    if (!id) return;
+
+    const newName = document.getElementById('editDriverNameInput').value.trim();
+    const newLastname = document.getElementById('editDriverLastnameInput').value.trim();
+    const newTransponder = parseInt(document.getElementById('editDriverTransponderInput').value);
+
+    if (!newName) {
+        showToast('❌', 'El nombre es obligatorio', 'error');
+        return;
+    }
+
+    showLoader('Actualizando piloto...');
+
+    // Actualizar datos básicos
+    const res = await apiCall(`/api/drivers/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+            name: newName,
+            lastname: newLastname,
+            transponder_id: isNaN(newTransponder) ? null : newTransponder,
+            email: window._editingDriverData?.email || '',
+            carnet: window._editingDriverData?.carnet || '',
+            phone: window._editingDriverData?.phone || ''
+        })
+    });
+
+    hideLoader();
+
+    if (res?.success) {
+        showToast('✅', 'Piloto actualizado', 'success');
+        loadDrivers();
+        loadTransponders();
+        document.getElementById('editDriverMinimalModal').style.display = 'none';
+    } else {
+        showToast('❌', res?.error || 'Error al actualizar', 'error');
+    }
+};

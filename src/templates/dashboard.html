@@ -119,14 +119,12 @@
 
                     <div class="k-header">
                         <div class="k-col-pos">Pos</div>
-                        <div class="k-col-name">Nombre <img src="{{ url_for('static', filename='favicon.svg') }}"
-                                alt="Casco Karting"
-                                style="width: 18px; height: 18px; margin-right: 5px; vertical-align: middle;"></div>
+                        <div class="k-col-name">Nombre </div>
                         <div class="k-col-vueltas">Vueltas</div>
                         <div class="k-col-dif">Dif.</div>
                         <div class="k-col-mejor">Mejor</div>
                         <div class="k-col-tiempo">Tiempo</div>
-                        <div class="k-col-tiempo-individual">T.Indiv</div>
+                        <div class="k-col-tiempo-individual">T.Total</div>
                         <div class="k-col-velocidad">Vel.</div>
                         <div class="k-col-kart">Kart</div>
                     </div>
@@ -199,7 +197,7 @@
                                     <div class="k-col-dif">Dif.</div>
                                     <div class="k-col-mejor">Mejor</div>
                                     <div class="k-col-tiempo">Tiempo</div>
-                                    <div class="k-col-tiempo-individual">T.Indiv</div>
+                                    <div class="k-col-tiempo-individual">T.Total</div>
                                     <div class="k-col-velocidad">Vel.</div>
                                     <div class="k-col-kart">Kart</div>
                                 </div>
@@ -517,7 +515,7 @@
 
                     <div class="universal-box" style="margin-top: 1.5rem; max-height: 350px; overflow: auto;">
                         <div class="card-header universal-header"
-                            style="display: flex;  justify-content: space-between; align-items: center;max-width: 40%;">
+                            style="display: flex;  justify-content: space-between; align-items: center;max-width: 100%;">
                             <span>🏁 PILOTOS INSCRITOS <span id="inscritosCount"
                                     style=" padding: 0.2rem 0.8rem; border-radius: 20px; font-size: 1.2rem; color: #ffd700;">0</span></span>
 
@@ -537,13 +535,11 @@
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
                             
-                            <button id="refreshAllPilotsBtn2" class="btn "
+                            <button id="refreshAllPilotsBtn2" class="btninscripcion"
                                 style="background: #2196f3; display: flex; align-items: flex-end; gap: 8px;">
-                                <img src="{{ url_for('static', filename='refresh2.svg') }}" alt="Refrescar"
-                                    style="width: 16px; height: 16px;">
                                 Refrescar Listas
                             </button>
-                            <button id="unenrollAllBtn" class="btn"
+                            <button id="unenrollAllBtn" class="btninscripcion"
                                 style="background:#e5484d;">Des-inscribir Todos</button>
                         </div>
                     </div>

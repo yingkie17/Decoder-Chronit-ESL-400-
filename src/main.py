@@ -1140,6 +1140,9 @@ def listen_chronit():
     ultima_vez_deteccion = 0
     reconectar = False
     ultima_actualizacion_modo = time.time()
+    
+    # ✅ AGREGADO: Variable para controlar el bucle de hardware
+    primera_vez_hardware = True
 
     # ✅ BUCLE PRINCIPAL QUE MONITOREA EL MODO DE SIMULACIÓN
     while True:
@@ -1164,26 +1167,25 @@ def listen_chronit():
             print(
                 "🎮 [SIMULACIÓN] Modo simulación DESACTIVADO - Cambiando a modo hardware"
             )
-            # Continuamos al bucle de hardware (no hacemos return)
+            # ✅ REINICIAR EL BUCLE DE HARDWARE
+            primera_vez_hardware = True
+            continue  # ← IMPORTANTE: Vuelve al inicio del while True
 
         # ===== MODO HARDWARE REAL =====
-        # Este bloque se ejecuta cuando NO está en modo simulación
-        # (ya sea porque se desactivó o porque nunca se activó)
-
-        # Limpiar banderas de simulación por si acaso
-        # Pero no salimos del bucle principal
-
-        # Ejecutar modo hardware
-        print("🔧 [HARDWARE] Modo hardware real ACTIVADO")
-        print("   Esperando conexión del decoder ESL-400...")
+        # ✅ SOLO MOSTRAR MENSAJE LA PRIMERA VEZ
+        if primera_vez_hardware:
+            print("🔧 [HARDWARE] Modo hardware real ACTIVADO")
+            print("   Esperando conexión del decoder ESL-400...")
+            primera_vez_hardware = False
 
         contador_busqueda = 0
         while not is_simulation_mode():
+            # ✅ VERIFICAR SI EL PUERTO EXISTE
             if not os.path.exists(PORT):
                 contador_busqueda += 1
                 if contador_busqueda == 1:
                     print(f"🔍 Hardware no encontrado en {PORT} - esperando...")
-                elif contador_busqueda % 12 == 0:
+                elif contador_busqueda % 12 == 0:  # Cada ~60 segundos
                     print(f"🔍 Aún esperando hardware en {PORT}...")
                 time.sleep(5)
                 continue
@@ -1315,7 +1317,12 @@ def listen_chronit():
                 if is_simulation_mode():
                     break
 
-        time.sleep(0.5)
+        # ✅ SALIR DEL BUCLE INTERNO Y REINICIAR EL PRINCIPAL
+        if not is_simulation_mode():
+            # Si no hay simulación, esperar y reintentar el hardware
+            time.sleep(2)
+            # ✅ FORZAR REVERIFICACIÓN DEL PUERTO
+            continue
 
 
 def start_api():

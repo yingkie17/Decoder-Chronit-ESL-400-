@@ -12,9 +12,12 @@ services:
     volumes:
       - ../data:/app/data
       - ../src:/app/src
+      - ../src/static/uploads:/app/static/uploads
+      - ../src/static:/app/static
     environment:
       - SERIAL_PORT=${SERIAL_PORT:-/dev/ttyUSB0}
       - PYTHONUNBUFFERED=1
+      - DATABASE_PATH=/app/data/chronit.db
     devices:
       - "${SERIAL_PORT:-/dev/ttyUSB0}:${SERIAL_PORT:-/dev/ttyUSB0}"
     networks:

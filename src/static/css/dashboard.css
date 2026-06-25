@@ -101,6 +101,17 @@
        margin-bottom: 1.2rem;
        box-shadow: var(--shadow);
    }
+   .btninscripcion{
+    margin: 0.5rem 0.5rem 0.5rem 0.5rem;
+    padding: 5px 20px 5px 20px !important;
+    font-size: 0.8rem;
+    font-weight: 500;
+    word-break: break-word;
+    background: transparent;
+    color: #fff;
+    border-radius: 10px;
+    border: none;
+   }
 
    .btn-success {
        background: rgba(99, 210, 151, 0.14);
@@ -799,7 +810,7 @@
    }
 
    .time-medium {
-       color: #ffaa00;
+       color: #ffee00;
        font-weight: 600;
    }
 
@@ -838,7 +849,7 @@
    .race-timer {
        display: inline-block;
        position: relative;
-       background: #00c853;
+       background: #5eb443;
        width: fit-content;
        color: black;
        padding: 5px 20px;
@@ -846,12 +857,13 @@
        font-size: 1.1rem;
        font-weight: 900;
        font-family: monospace;
+
    }
 
    /* ===== CRONÓMETRO GENERAL DE CARRERA (VERDE) ===== */
    .race-timer {
        display: inline-block;
-       background: #00c853;
+       background: #5eb443;
        color: black;
        padding: 5px 20px;
        border-radius: 5px;
@@ -859,22 +871,24 @@
        font-weight: 900;
        font-family: monospace;
        width: fit-content;
+
    }
 
    /* ===== BOX DE TIEMPO RESTANTE (AMARILLO) - SOLO PARA TIME LIMIT Y ENDURANCE ===== */
    .race-timer-box {
-       display: inline-block;
-       padding: 4px 16px;
+
+       display: inline-flex;
+       align-items: center;
+       justify-content: center;
+       padding: 5px 15px 5px 15px;
        border-radius: 6px;
        background-color: #5eb443;
        color: #050505;
        font-family: 'Courier New', monospace;
-       font-size: 1rem;
-       min-width: 110px;
-       margin: 0.2rem 0.2rem 0.2rem 0.2rem;
-       text-align: center;
+       font-size: 1.1rem;
        font-weight: bolder;
-
+       min-width: 100px;
+       width: fit-content;
    }
 
    /* Estado PENDIENTE - OCULTO */
@@ -887,6 +901,7 @@
        background-color: #ffc107;
        color: #000000;
        border-color: #e0a800;
+
    }
 
    /* Estado ADVERTENCIA - ROJO FIJO (sin animación) */
@@ -911,7 +926,7 @@
 
 
    .karting-leaderboard {
-       padding: 20px 40px;
+       padding: 20px 15px;
        overflow-x: auto;
    }
 
@@ -943,8 +958,8 @@
    /* --- COLUMNAS (Anchos iguales a la imagen) --- */
    .k-col-pos {
        width: 50px;
-       font-size: 1.4rem;
-       font-weight: 1000;
+       font-size: 1.1rem;
+       font-weight: 900;
        text-align: center;
        flex-shrink: 0;
    }
@@ -952,16 +967,15 @@
    .k-col-name {
        flex: 2;
        display: flex;
-       align-items: center;
        position: relative;
        padding-left: 5px;
-       min-width: 0;
+       min-width: 60px;
        /* ¡Crítico en Flexbox! */
 
        /* Propiedades para el truncado */
        white-space: nowrap;
        overflow: visible;
-       text-overflow: ellipsis;
+       text-overflow: break-word;
        /* Añade los puntos suspensivos (...) */
    }
 
@@ -971,25 +985,38 @@
    .k-col-tiempo-individual,
    .k-col-dif {
        width: 100px;
-       text-align: center;
        flex-shrink: 0;
+
+   }
+
+   .k-col-vueltas,
+   .k-col-mejor,
+   .k-col-tiempo,
+   .k-col-tiempo-individual,
+   .k-col-dif,
+   .k-col-velocidad,
+   .k-col-kart {
+       display: flex;
+       align-items: center !important;
+       justify-content: center !important;
    }
 
    .k-col-velocidad {
        width: fit-content;
        min-width: 100px;
-       text-align: center;
        flex-shrink: 0;
 
    }
 
    .k-col-kart {
        width: 60px;
-       text-align: center;
        flex-shrink: 0;
    }
 
    .k-col-vueltas {
+       display: flex;
+       align-items: center !important;
+       justify-content: center !important;
        font-weight: 800;
    }
 
@@ -1005,7 +1032,7 @@
        width: 32px;
        height: 32px;
        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-       border: 1px solid rgba(255, 215, 0, 0.5);
+       border: 1px solid #ffd900c5;
    }
 
    .winner-cup img {
@@ -1023,7 +1050,6 @@
        border-radius: 50%;
        border: 2px solid white;
        overflow: hidden;
-       margin-right: 15px;
        background: #444;
        flex-shrink: 0;
    }
@@ -1200,7 +1226,7 @@
        height: 28px;
        padding: 3px;
        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-       border: 1px solid rgba(255, 215, 0, 0.5);
+       border: 1px solid #ffd900c5;
    }
 
    .winner-cup img {
@@ -1333,6 +1359,12 @@
    /* Móviles grandes (720px) */
    @media (max-width: 720px) {
 
+       .karting-leaderboard {
+           padding: 20px 15px;
+           overflow-x: auto;
+       }
+
+
        .race-timer-box {
            font-size: 0.9rem;
            padding: 3px 12px;
@@ -1365,9 +1397,17 @@
            padding: 4px 10px;
        }
 
+
+       /*   .k-row {
+           flex-wrap: nowrap !important;
+           overflow-x: auto !important;
+           padding: 4px 0 !important;
+       } */
+
        .k-col-tiempo,
        .k-header .k-col-tiempo {
            display: none !important;
+
        }
 
        .k-col-tiempo-individual,
@@ -1438,11 +1478,7 @@
            height: 2px;
        }
 
-       .k-row {
-           flex-wrap: nowrap !important;
-           overflow-x: auto !important;
-           padding: 4px 0 !important;
-       }
+
 
        .karting-leaderboard {
            padding: 10px 8px !important;
@@ -1464,6 +1500,7 @@
 
    /* Móviles pequeños (550px) */
    @media (max-width: 550px) {
+
        .countdown-number {
            font-size: 3.5rem;
        }
@@ -1476,19 +1513,58 @@
            font-size: 0.8rem;
        }
 
-       .k-col-vueltas,
-       .k-header .k-col-vueltas {
-           display: none !important;
+       .k-header {
+           min-width: 390px;
+           display: flex;
+           font-weight: bold;
+           text-transform: uppercase;
+           color: #ddd;
+           padding: 10px 0;
+           font-size: 0.8rem;
+           text-align: center;
        }
 
+       /* --- FILAS --- */
+       .k-row {
+           min-width: 390px;
+           display: flex;
+           align-items: center;
+           background: rgba(255, 255, 255, 0.08);
+           margin-bottom: 4px;
+           padding: 8px 0;
+           border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+       }
+
+
+       .karting-leaderboard {
+           padding: 10px 5px;
+           overflow-x: auto;
+
+       }
+
+       .k-col-tiempo-individual,
+       .k-header .k-col-tiempo-individual {
+           display: block !important;
+           width: 60px;
+           font-size: 0.7rem;
+       }
+
+       /* .k-row {
+           flex-wrap: nowrap !important;
+           overflow-x: auto !important;
+           padding: 3px 0 !important;
+       } */
+
+
        .k-col-pos {
-           width: 28px;
+           width: 25px;
            font-size: 0.8rem;
        }
 
        .k-col-name {
            flex: 1.5;
            min-width: 60px;
+
        }
 
        .k-col-mejor {
@@ -1505,8 +1581,8 @@
        }
 
        .k-col-velocidad {
-           width: fit-content;
-           min-width: 40px;
+
+           width: 60px;
            font-size: 0.45rem;
        }
 
@@ -1524,8 +1600,15 @@
            font-size: 0.5rem;
        }
 
+       .k-col-vueltas {
+           width: 35px;
+           font-size: 0.7rem;
+           overflow-wrap: break-word !important;
+       }
+
        .time-box {
            font-size: 0.55rem;
+
            padding: 1px 3px;
            min-width: 35px;
        }
@@ -1541,12 +1624,6 @@
            left: 25px;
            width: calc(100% - 35px);
            height: 2px;
-       }
-
-       .k-row {
-           flex-wrap: nowrap !important;
-           overflow-x: auto !important;
-           padding: 3px 0 !important;
        }
 
        .winner-cup {
