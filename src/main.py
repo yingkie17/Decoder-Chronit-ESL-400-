@@ -137,6 +137,7 @@ RACE_ACTIVE = False
 RACE_PAUSED = False
 TIME_LIMIT_ACTIVE = False
 TIME_LIMIT_END = 0.0
+TIME_LIMIT_REMAINING = 0.0
 VUELTAS_CARRERA = {}
 PRIMERA_VEZ = {}
 VUELTA_SALIDA = {}
@@ -356,6 +357,7 @@ def check_race_commands():
         LAPS_LIMIT, \
         TIME_LIMIT_ACTIVE, \
         TIME_LIMIT_END
+    global TIME_LIMIT_REMAINING
 
     if os.path.exists(RACE_COMMAND_FILE):
         with open(RACE_COMMAND_FILE, "r") as f:
@@ -501,23 +503,28 @@ def check_race_commands():
                             tls = int(session_info.get("time_limit_seconds", 0) or 0)
                             if tls > 0:
                                 TIME_LIMIT_ACTIVE = True
-                                TIME_LIMIT_END = time.time() + tls
-                                print(f"⏱️ {race_mode.upper()} activo: {tls}s restantes")
+                                # ✅ CORREGIDO: Usar TIME_LIMIT_REMAINING si existe
+                                if TIME_LIMIT_REMAINING > 0:
+                                    TIME_LIMIT_END = time.time() + TIME_LIMIT_REMAINING
+                                    TIME_LIMIT_REMAINING = 0
+                                    print(f"⏱️ {race_mode.upper()} reanudado: {TIME_LIMIT_END - time.time():.0f}s restantes")
+                                else:
+                                    TIME_LIMIT_END = time.time() + tls
+                                    print(f"⏱️ {race_mode.upper()} activo: {tls}s restantes")
                                 add_log(f"⏱️ {race_mode.upper()} activada: {tls}s")
                                 try:
                                     time_limit_info = {
                                         "time_limit_active": True,
                                         "time_limit_end": TIME_LIMIT_END,
                                         "time_limit_seconds": tls,
+                                        "remaining_on_pause": 0
                                     }
                                     time_limit_file = os.path.join(
                                         BASE_DATA_DIR, "time_limit_info.json"
                                     )
                                     with open(time_limit_file, "w") as f:
                                         json.dump(time_limit_info, f)
-                                    print(
-                                        f"[TIME LIMIT] Estado guardado en {time_limit_file}"
-                                    )
+                                    print(f"[TIME LIMIT] Estado guardado en {time_limit_file}")
                                 except Exception as e:
                                     print(f"[TIME LIMIT] Error guardando estado: {e}")
 
@@ -574,6 +581,26 @@ def check_race_commands():
                 RACE_PAUSED = True
                 print("\n⏸️ CARRERA PAUSADA\n")
                 add_log("⏸️ CARRERA PAUSADA")
+                
+                # ✅ GUARDAR TIEMPO RESTANTE CUANDO SE PAUSA
+                if TIME_LIMIT_ACTIVE and TIME_LIMIT_END > 0:
+                    TIME_LIMIT_REMAINING = max(0, TIME_LIMIT_END - time.time())
+                    print(f"⏱️ Tiempo restante guardado: {TIME_LIMIT_REMAINING:.0f}s")
+                    add_log(f"⏱️ Tiempo restante guardado: {TIME_LIMIT_REMAINING:.0f}s")
+                    # Guardar en archivo
+                    try:
+                        time_limit_info = {
+                            "time_limit_active": True,
+                            "time_limit_end": TIME_LIMIT_END,
+                            "time_limit_seconds": TIME_LIMIT_REMAINING,
+                            "remaining_on_pause": TIME_LIMIT_REMAINING
+                        }
+                        time_limit_file = os.path.join(BASE_DATA_DIR, "time_limit_info.json")
+                        with open(time_limit_file, "w") as f:
+                            json.dump(time_limit_info, f)
+                    except Exception as e:
+                        print(f"[TIME LIMIT] Error guardando estado en pausa: {e}")
+                
                 if SESSION_ID:
                     update_race_status(SESSION_ID, "paused")
 
@@ -582,6 +609,30 @@ def check_race_commands():
                 RACE_PAUSED = False
                 print("\n▶️ CARRERA REANUDADA\n")
                 add_log("▶️ CARRERA REANUDADA")
+                
+                # ✅ RESTAURAR TIEMPO RESTANTE CUANDO SE REANULA
+                if TIME_LIMIT_ACTIVE and TIME_LIMIT_REMAINING > 0:
+                    TIME_LIMIT_END = time.time() + TIME_LIMIT_REMAINING
+                    print(f"⏱️ Tiempo restante restaurado: {TIME_LIMIT_REMAINING:.0f}s")
+                    add_log(f"⏱️ Tiempo restante restaurado: {TIME_LIMIT_REMAINING:.0f}s")
+                    try:
+                        time_limit_info = {
+                            "time_limit_active": True,
+                            "time_limit_end": TIME_LIMIT_END,
+                            "time_limit_seconds": TIME_LIMIT_REMAINING,
+                            "remaining_on_pause": 0
+                        }
+                        time_limit_file = os.path.join(BASE_DATA_DIR, "time_limit_info.json")
+                        with open(time_limit_file, "w") as f:
+                            json.dump(time_limit_info, f)
+                    except Exception as e:
+                        print(f"[TIME LIMIT] Error actualizando estado al reanudar: {e}")
+                    TIME_LIMIT_REMAINING = 0
+                elif TIME_LIMIT_ACTIVE and TIME_LIMIT_END > 0:
+                    # Si no hay remaining, recalcular
+                    TIME_LIMIT_REMAINING = max(0, TIME_LIMIT_END - time.time())
+                    TIME_LIMIT_END = time.time() + TIME_LIMIT_REMAINING
+                
                 if SESSION_ID:
                     update_race_status(SESSION_ID, "active")
 
@@ -634,20 +685,24 @@ def check_race_commands():
 
 
 def check_time_limit():
-    global TIME_LIMIT_ACTIVE, RACE_ACTIVE, SESSION_ID, TIME_LIMIT_END
-    if TIME_LIMIT_ACTIVE and RACE_ACTIVE and time.time() >= TIME_LIMIT_END:
+    global TIME_LIMIT_ACTIVE, RACE_ACTIVE, RACE_PAUSED, SESSION_ID, TIME_LIMIT_END, TIME_LIMIT_REMAINING
+    
+    # ✅ CORREGIDO: Verificar que NO esté pausada
+    if TIME_LIMIT_ACTIVE and RACE_ACTIVE and not RACE_PAUSED and time.time() >= TIME_LIMIT_END:
         print(f"\n⏰ ¡TIEMPO LÍMITE ALCANZADO!\n")
         add_log("⏰ TIEMPO LÍMITE ALCANZADO - Finalizando carrera")
         RACE_ACTIVE = False
         RACE_PAUSED = False
         TIME_LIMIT_ACTIVE = False
+        TIME_LIMIT_REMAINING = 0
 
         try:
             time_limit_info = {
                 'time_limit_active': False,
                 'time_limit_end': 0,
                 'time_limit_seconds': 0,
-                'completed': True
+                'completed': True,
+                'remaining_on_pause': 0
             }
             time_limit_file = os.path.join(BASE_DATA_DIR, 'time_limit_info.json')
             with open(time_limit_file, 'w') as f:
@@ -660,7 +715,6 @@ def check_time_limit():
             from database import get_leaderboard_with_details
             final_leaderboard = get_leaderboard_with_details(SESSION_ID)
             if final_leaderboard and len(final_leaderboard) > 0:
-                # ✅ CORREGIDO: Eliminada variable race_mode no usada
                 true_winner = final_leaderboard[0]
                 winner_id = true_winner["driver_id"]
                 winner_time = true_winner.get("race_total_time")

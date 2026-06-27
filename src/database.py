@@ -274,6 +274,7 @@ def init_db():
             print("[SISTEMA] Base de datos inicializada")
 
     # ===== IMPORTANTE: FUERA del with =====
+    init_user_preferences_table()
     init_timing_config()
 
 
@@ -1070,7 +1071,6 @@ def get_leaderboard_with_details(session_id):
         if race_mode in ('classification', 'endurance'):
             effective_laps_limit = 999999
 
-        # ✅ CONSULTA CORREGIDA: Agregar SUM(lap_seconds) como sum_lap_times
         results = conn.execute(
             """
     SELECT 
@@ -1350,14 +1350,14 @@ def get_podium(session_id):
         if race_mode in ('classification', 'endurance'):
             effective_laps_limit = 999999
 
-        rows = conn.execute(
-            """
+        rows = conn.execute("""
             SELECT
                 d.id AS driver_id,
                 d.name,
                 d.lastname,
                 d.transponder_id,
                 t.kart_id AS kart_id,
+                d.photo,  -- ✅ AGREGAR ESTA LÍNEA
                 COUNT(CASE WHEN l.lap_number > 0 AND l.lap_number <= ? THEN 1 END) AS total_laps,
                 SUM(CASE WHEN l.lap_number > 0 AND l.lap_number <= ? AND l.lap_seconds IS NOT NULL THEN l.lap_seconds ELSE 0 END) AS total_time,
                 MIN(CASE WHEN l.lap_number > 0 AND l.lap_number <= ? AND l.lap_seconds IS NOT NULL THEN l.lap_seconds END) AS best_lap,
@@ -1371,9 +1371,10 @@ def get_podium(session_id):
             LEFT JOIN laps l ON l.session_id = rd.session_id AND l.driver_id = d.id
             WHERE rd.session_id = ?
             GROUP BY rd.id, d.id, d.name, d.lastname, d.transponder_id, t.kart_id, d.photo
-        """,
-            (effective_laps_limit, effective_laps_limit, effective_laps_limit, effective_laps_limit, effective_laps_limit, s_id),
-        ).fetchall()
+        """, (
+            effective_laps_limit, effective_laps_limit, effective_laps_limit,
+            effective_laps_limit, effective_laps_limit, s_id
+        )).fetchall()
 
         podium = []
         for r in rows:
@@ -2103,3 +2104,52 @@ def get_thumbnails_path():
     if not os.path.exists(thumb_dir):
         os.makedirs(thumb_dir)
     return thumb_dir
+
+# ==================== CONFIGURACIÓN DE USUARIO ====================
+
+def init_user_preferences_table():
+    """Crea la tabla de preferencias de usuario si no existe"""
+    with get_db() as conn:
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS user_preferences (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                pref_key TEXT NOT NULL,
+                pref_value TEXT NOT NULL,
+                updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(user_id, pref_key)
+            )
+        """)
+        print("[USER_PREFS] Tabla user_preferences inicializada")
+
+def get_user_preference(user_id, pref_key, default_value=None):
+    """Obtiene una preferencia de usuario"""
+    with get_db() as conn:
+        result = conn.execute(
+            "SELECT pref_value FROM user_preferences WHERE user_id = ? AND pref_key = ?",
+            (user_id, pref_key)
+        ).fetchone()
+        if result:
+            return result["pref_value"]
+        return default_value
+
+def set_user_preference(user_id, pref_key, pref_value):
+    """Guarda una preferencia de usuario"""
+    with get_db() as conn:
+        conn.execute("""
+            INSERT OR REPLACE INTO user_preferences (user_id, pref_key, pref_value, updated_at)
+            VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+        """, (user_id, pref_key, pref_value))
+        return True
+
+def get_user_preferences(user_id):
+    """Obtiene todas las preferencias de un usuario"""
+    with get_db() as conn:
+        results = conn.execute(
+            "SELECT pref_key, pref_value FROM user_preferences WHERE user_id = ?",
+            (user_id,)
+        ).fetchall()
+        prefs = {}
+        for row in results:
+            prefs[row["pref_key"]] = row["pref_value"]
+        return prefs    

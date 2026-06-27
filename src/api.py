@@ -1241,45 +1241,82 @@ def generate_simulation_lap():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# ============================================
-# ENDPOINTS - SISTEMA
-# ============================================
+
 @app.route('/api/system/ip', methods=['GET'])
 def get_local_ip():
     import socket
+    import os
+    import subprocess
+    import re
     
     ips = []
     
+    # ============================================================
+    # MÉTODO 1: Usar variable de entorno HOST_IP
+    # ============================================================
+    host_ip = os.environ.get('HOST_IP')
+    if host_ip:
+        ips.append(host_ip)
+        return jsonify({
+            'success': True,
+            'ips': ips,
+            'main_ip': ips[0],
+            'port': 5000,
+            'urls': [f'http://{ip}:5000' for ip in ips]
+        })
+    
+    # ============================================================
+    # MÉTODO 2: Detectar IPs (todas, sin filtrar agresivamente)
+    # ============================================================
     try:
         hostname = socket.gethostname()
         for ip in socket.gethostbyname_ex(hostname)[2]:
-            if not ip.startswith('127.') and not ip.startswith('172.'):
+            if ip not in ips:
                 ips.append(ip)
     except:
         pass
     
+    # ============================================================
+    # MÉTODO 3: Usar hostname -I (Linux)
+    # ============================================================
     if not ips:
         try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            s.connect(("8.8.8.8", 80))
-            ip = s.getsockname()[0]
-            if not ip.startswith('127.') and not ip.startswith('172.'):
-                ips.append(ip)
-            s.close()
+            result = subprocess.run(
+                ["hostname", "-I"],
+                capture_output=True,
+                text=True
+            )
+            if result.stdout:
+                for ip in result.stdout.strip().split():
+                    if ip not in ips:
+                        ips.append(ip)
         except:
             pass
     
-    if not ips:
-        ips = ['192.168.1.100']
+    # ============================================================
+    # MÉTODO 4: Si hay IPs, devolverlas (incluyendo 172.x.x.x)
+    # ============================================================
+    if ips:
+        return jsonify({
+            'success': True,
+            'ips': ips,
+            'main_ip': ips[0],
+            'port': 5000,
+            'urls': [f'http://{ip}:5000' for ip in ips]
+        })
     
+    # ============================================================
+    # MÉTODO 5: Fallback - localhost
+    # ============================================================
     return jsonify({
         'success': True,
-        'ips': ips,
-        'main_ip': ips[0],
+        'ips': ['localhost'],
+        'main_ip': 'localhost',
         'port': 5000,
-        'urls': [f'http://{ip}:5000' for ip in ips]
+        'urls': ['http://localhost:5000']
     })
 
+    
 @app.route('/api/decoder/status', methods=['GET'])
 def decoder_status():
     try:
@@ -1678,6 +1715,69 @@ def start_api_server():
     init_db()
     init_users_db()
     app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False, threaded=True)
+
+# ============================================
+# ENDPOINTS - PREFERENCIAS DE USUARIO
+# ============================================
+
+@app.route('/api/user/preferences', methods=['GET'])
+def get_user_preferences_api():
+    """Obtiene todas las preferencias del usuario actual"""
+    token = request.headers.get('X-Session-Token')
+    if not token:
+        return jsonify({'success': False, 'error': 'No autenticado'}), 401
+    
+    from users_db import verify_session
+    user = verify_session(token)
+    if not user:
+        return jsonify({'success': False, 'error': 'Sesión inválida'}), 401
+    
+    from database import get_user_preferences
+    prefs = get_user_preferences(user['id'])
+    return jsonify({'success': True, 'preferences': prefs})
+
+@app.route('/api/user/preferences', methods=['POST'])
+def set_user_preferences_api():
+    """Guarda las preferencias del usuario actual"""
+    token = request.headers.get('X-Session-Token')
+    if not token:
+        return jsonify({'success': False, 'error': 'No autenticado'}), 401
+    
+    from users_db import verify_session
+    user = verify_session(token)
+    if not user:
+        return jsonify({'success': False, 'error': 'Sesión inválida'}), 401
+    
+    data = request.get_json()
+    if not data:
+        return jsonify({'success': False, 'error': 'Datos inválidos'}), 400
+    
+    from database import set_user_preference
+    
+    # Guardar cada preferencia
+    for key, value in data.items():
+        set_user_preference(user['id'], key, str(value))
+    
+    return jsonify({'success': True, 'message': 'Preferencias guardadas'})
+
+@app.route('/api/user/preferences/<key>', methods=['DELETE'])
+def delete_user_preference_api(key):
+    """Elimina una preferencia de usuario"""
+    token = request.headers.get('X-Session-Token')
+    if not token:
+        return jsonify({'success': False, 'error': 'No autenticado'}), 401
+    
+    from users_db import verify_session
+    user = verify_session(token)
+    if not user:
+        return jsonify({'success': False, 'error': 'Sesión inválida'}), 401
+    
+    from database import set_user_preference
+    set_user_preference(user['id'], key, None)  # Eliminar (guardar null)
+    
+    return jsonify({'success': True, 'message': 'Preferencia eliminada'})
+
+
 
 if __name__ == "__main__":
     start_api_server()

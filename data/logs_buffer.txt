@@ -1,2947 +1,700 @@
-[00:37:23] [DECODER] Comando START enviado - Transmisión activada
-[01:39:58] [DECODER] Comando START enviado - Transmisión activada
-[02:19:40] [DECODER] Comando START enviado - Transmisión activada
-[02:25:09] [DECODER] Comando START enviado - Transmisión activada
-[02:54:15] [DECODER] Comando START enviado - Transmisión activada
-[03:05:03] [DECODER] Comando START enviado - Transmisión activada
-[03:29:31] [DECODER] Comando START enviado - Transmisión activada
-[03:34:23] ⏱️ ENDURANCE activada: 60s
-[03:34:23] 🏁 CARRERA INICIADA
-[03:34:23] 🎮 [SIMULACIÓN] Primera detección para Max Verstappen
-[03:34:23] 🎮 [SIMULACIÓN] Primera detección para Valentino Rossi
-[03:34:23] 🎮 [SIMULACIÓN] Primera detección para Charles Leclerc
-[03:34:23] 🎮 [SIMULACIÓN] Primera detección para Erick Pearson
-[03:34:23] 🎮 [SIMULACIÓN] Primera detección para Michael Schumacher
-[03:34:24] 🎮 [SIMULACIÓN] Primera detección para Niki Lauda
-[03:34:24] 🎮 [SIMULACIÓN] Vuelta generada para Niki Lauda
-[03:34:24]    🏎️  Transponder: 24424
-[03:34:24]    ⏱️  Tiempo vuelta 1: 66.268s
-[03:34:24]    📊 Tiempo total: 0.205s
-[03:34:24]    🏁 Velocidad: 16 km/h
-[03:34:24] --------------------------------------------------
-[03:34:24] 🎮 [SIMULACIÓN] Primera detección para Alain  Prost
-[03:34:24] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
-[03:34:24]    🏎️  Transponder: 24413
-[03:34:24]    ⏱️  Tiempo vuelta 1: 78.616s
-[03:34:24]    📊 Tiempo total: 1.587s
-[03:34:24]    🏁 Velocidad: 14 km/h
-[03:34:25] --------------------------------------------------
-[03:34:25] 🎮 [SIMULACIÓN] Primera detección para Mika Häkkinen
-[03:34:25] 🎮 [SIMULACIÓN] Primera detección para Lando Norris
-[03:34:25] 🎮 [SIMULACIÓN] Primera detección para Fernando Alonso
-[03:34:25] 🎮 [SIMULACIÓN] Vuelta generada para Erick Pearson
-[03:34:25]    🏎️  Transponder: 6250753
-[03:34:25]    ⏱️  Tiempo vuelta 1: 83.618s
-[03:34:25]    📊 Tiempo total: 2.110s
-[03:34:25]    🏁 Velocidad: 13 km/h
-[03:34:25] --------------------------------------------------
-[03:34:26] 🎮 [SIMULACIÓN] Primera detección para Herbert Ying Kie Lee Covarrubias
-[03:34:26] 🎮 [SIMULACIÓN] Primera detección para Lewis Hamilton
-[03:34:26] 🎮 [SIMULACIÓN] Primera detección para Andrés Suárez Encinas
-[03:34:26] 🎮 [SIMULACIÓN] Primera detección para Colin McRae
-[03:34:27] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[03:34:27]    🏎️  Transponder: 6251777
-[03:34:27]    ⏱️  Tiempo vuelta 1: 45.060s
-[03:34:27]    📊 Tiempo total: 1.523s
-[03:34:27]    🏁 Velocidad: 24 km/h
-[03:34:27] --------------------------------------------------
-[03:34:27] 🎮 [SIMULACIÓN] Vuelta generada para Colin McRae
-[03:34:27]    🏎️  Transponder: 24414
-[03:34:27]    ⏱️  Tiempo vuelta 1: 39.207s
-[03:34:27]    📊 Tiempo total: 0.682s
-[03:34:27]    🏁 Velocidad: 28 km/h
-[03:34:27] --------------------------------------------------
-[03:34:27] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
-[03:34:27]    🏎️  Transponder: 24413
-[03:34:27]    ⏱️  Tiempo vuelta 2: 73.902s
-[03:34:27]    📊 Tiempo total: 4.605s
-[03:34:27]    🏁 Velocidad: 15 km/h
-[03:34:28] --------------------------------------------------
-[03:34:28] 🎮 [SIMULACIÓN] Primera detección para Travis Taylor
-[03:34:28] 🎮 [SIMULACIÓN] Primera detección para Dale Earnhardt
-[03:34:28] 🎮 [SIMULACIÓN] Primera detección para Juan Manuel Fangio
-[03:34:29] 🎮 [SIMULACIÓN] Primera detección para Jesús Gandarillas
-[03:34:29] 🎮 [SIMULACIÓN] Vuelta generada para Michael Schumacher
-[03:34:29]    🏎️  Transponder: 24431
-[03:34:29]    ⏱️  Tiempo vuelta 1: 83.736s
-[03:34:29]    📊 Tiempo total: 5.292s
-[03:34:29]    🏁 Velocidad: 13 km/h
-[03:34:29] --------------------------------------------------
-[03:34:29] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
-[03:34:29]    🏎️  Transponder: 24413
-[03:34:29]    ⏱️  Tiempo vuelta 3: 30.894s
-[03:34:29]    📊 Tiempo total: 6.374s
-[03:34:29]    🏁 Velocidad: 35 km/h
-[03:34:30] --------------------------------------------------
-[03:34:30] 🎮 [SIMULACIÓN] Vuelta generada para Colin McRae
-[03:34:30]    🏎️  Transponder: 24414
-[03:34:30]    ⏱️  Tiempo vuelta 2: 52.745s
-[03:34:30]    📊 Tiempo total: 3.661s
-[03:34:30]    🏁 Velocidad: 20 km/h
-[03:34:31] --------------------------------------------------
-[03:34:31] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[03:34:31]    🏎️  Transponder: 6251777
-[03:34:31]    ⏱️  Tiempo vuelta 2: 76.989s
-[03:34:31]    📊 Tiempo total: 5.813s
-[03:34:31]    🏁 Velocidad: 14 km/h
-[03:34:31] --------------------------------------------------
-[03:34:31] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[03:34:31]    🏎️  Transponder: 24418
-[03:34:31]    ⏱️  Tiempo vuelta 1: 55.333s
-[03:34:31]    📊 Tiempo total: 8.338s
-[03:34:31]    🏁 Velocidad: 20 km/h
-[03:34:32] --------------------------------------------------
-[03:34:32] 🎮 [SIMULACIÓN] Primera detección para Jim Clark
-[03:34:32] 🎮 [SIMULACIÓN] Primera detección para Sébastien Loeb
-[03:34:32] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
-[03:34:32]    🏎️  Transponder: 24415
-[03:34:32]    ⏱️  Tiempo vuelta 1: 64.459s
-[03:34:32]    📊 Tiempo total: 4.319s
-[03:34:32]    🏁 Velocidad: 17 km/h
-[03:34:33] --------------------------------------------------
-[03:34:33] 🎮 [SIMULACIÓN] Vuelta generada para Sébastien Loeb
-[03:34:33]    🏎️  Transponder: 24412
-[03:34:33]    ⏱️  Tiempo vuelta 1: 41.284s
-[03:34:33]    📊 Tiempo total: 0.844s
-[03:34:33]    🏁 Velocidad: 26 km/h
-[03:34:34] --------------------------------------------------
-[03:34:34] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[03:34:34]    🏎️  Transponder: 24433
-[03:34:34]    ⏱️  Tiempo vuelta 1: 41.784s
-[03:34:34]    📊 Tiempo total: 5.736s
-[03:34:34]    🏁 Velocidad: 26 km/h
-[03:34:34] --------------------------------------------------
-[03:34:34] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
-[03:34:34]    🏎️  Transponder: 24410
-[03:34:34]    ⏱️  Tiempo vuelta 1: 82.699s
-[03:34:34]    📊 Tiempo total: 8.214s
-[03:34:34]    🏁 Velocidad: 13 km/h
-[03:34:35] --------------------------------------------------
-[03:34:35] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
-[03:34:35]    🏎️  Transponder: 24413
-[03:34:35]    ⏱️  Tiempo vuelta 4: 77.367s
-[03:34:35]    📊 Tiempo total: 11.850s
-[03:34:35]    🏁 Velocidad: 14 km/h
-[03:34:35] --------------------------------------------------
-[03:34:35] 🎮 [SIMULACIÓN] Vuelta generada para Jim Clark
-[03:34:35]    🏎️  Transponder: 24422
-[03:34:35]    ⏱️  Tiempo vuelta 1: 77.299s
-[03:34:35]    📊 Tiempo total: 2.992s
-[03:34:35]    🏁 Velocidad: 14 km/h
-[03:34:35] --------------------------------------------------
-[03:34:36] 🎮 [SIMULACIÓN] Vuelta generada para Sébastien Loeb
-[03:34:36]    🏎️  Transponder: 24412
-[03:34:36]    ⏱️  Tiempo vuelta 2: 39.279s
-[03:34:36]    📊 Tiempo total: 3.218s
-[03:34:36]    🏁 Velocidad: 27 km/h
-[03:34:36] --------------------------------------------------
-[03:34:36] 🎮 [SIMULACIÓN] Primera detección para Lando Norris
-[03:34:36] 🎮 [SIMULACIÓN] Vuelta generada para Alain  Prost
-[03:34:36]    🏎️  Transponder: 24426
-[03:34:36]    ⏱️  Tiempo vuelta 1: 42.574s
-[03:34:36]    📊 Tiempo total: 11.918s
-[03:34:36]    🏁 Velocidad: 25 km/h
-[03:34:36] --------------------------------------------------
-[03:34:37] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[03:34:37]    🏎️  Transponder: 24417
-[03:34:37]    ⏱️  Tiempo vuelta 1: 47.465s
-[03:34:37]    📊 Tiempo total: 10.921s
-[03:34:37]    🏁 Velocidad: 23 km/h
-[03:34:37] --------------------------------------------------
-[03:34:37] 🎮 [SIMULACIÓN] Primera detección para Jose Torres Ortiz
-[03:34:37] 🎮 [SIMULACIÓN] Vuelta generada para Jose Torres Ortiz
-[03:34:37]    🏎️  Transponder: 24430
-[03:34:37]    ⏱️  Tiempo vuelta 1: 56.714s
-[03:34:37]    📊 Tiempo total: 0.204s
-[03:34:37]    🏁 Velocidad: 19 km/h
-[03:34:37] --------------------------------------------------
-[03:34:38] 🎮 [SIMULACIÓN] Primera detección para Mario Andretti
-[03:34:38] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
-[03:34:38]    🏎️  Transponder: 24410
-[03:34:38]    ⏱️  Tiempo vuelta 2: 83.446s
-[03:34:38]    📊 Tiempo total: 11.608s
-[03:34:38]    🏁 Velocidad: 13 km/h
-[03:34:38] --------------------------------------------------
-[03:34:38] 🎮 [SIMULACIÓN] Vuelta generada para Erick Pearson
-[03:34:38]    🏎️  Transponder: 6250753
-[03:34:38]    ⏱️  Tiempo vuelta 2: 62.990s
-[03:34:38]    📊 Tiempo total: 14.800s
-[03:34:38]    🏁 Velocidad: 17 km/h
-[03:34:38] --------------------------------------------------
-[03:34:38] 🎮 [SIMULACIÓN] Vuelta generada para Colin McRae
-[03:34:38]    🏎️  Transponder: 24414
-[03:34:38]    ⏱️  Tiempo vuelta 3: 33.542s
-[03:34:38]    📊 Tiempo total: 12.125s
-[03:34:38]    🏁 Velocidad: 32 km/h
-[03:34:39] --------------------------------------------------
-[03:34:39] 🎮 [SIMULACIÓN] Vuelta generada para Alain  Prost
-[03:34:39]    🏎️  Transponder: 24426
-[03:34:39]    ⏱️  Tiempo vuelta 2: 79.907s
-[03:34:39]    📊 Tiempo total: 14.567s
-[03:34:39]    🏁 Velocidad: 14 km/h
-[03:34:39] --------------------------------------------------
-[03:34:39] 🎮 [SIMULACIÓN] Vuelta generada para Fernando Alonso
-[03:34:39]    🏎️  Transponder: 24427
-[03:34:39]    ⏱️  Tiempo vuelta 1: 32.927s
-[03:34:39]    📊 Tiempo total: 13.961s
-[03:34:39]    🏁 Velocidad: 33 km/h
-[03:34:39] --------------------------------------------------
-[03:34:39] 🎮 [SIMULACIÓN] Vuelta generada para Michael Schumacher
-[03:34:39]    🏎️  Transponder: 24431
-[03:34:39]    ⏱️  Tiempo vuelta 2: 64.296s
-[03:34:39]    📊 Tiempo total: 16.000s
-[03:34:39]    🏁 Velocidad: 17 km/h
-[03:34:40] --------------------------------------------------
-[03:34:40] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
-[03:34:40]    🏎️  Transponder: 24410
-[03:34:40]    ⏱️  Tiempo vuelta 3: 36.292s
-[03:34:40]    📊 Tiempo total: 13.702s
-[03:34:40]    🏁 Velocidad: 30 km/h
-[03:34:40] --------------------------------------------------
-[03:34:40] 🎮 [SIMULACIÓN] Vuelta generada para Michael Schumacher
-[03:34:40]    🏎️  Transponder: 24431
-[03:34:40]    ⏱️  Tiempo vuelta 3: 81.727s
-[03:34:40]    📊 Tiempo total: 16.611s
-[03:34:40]    🏁 Velocidad: 13 km/h
-[03:34:40] --------------------------------------------------
-[03:34:40] 🎮 [SIMULACIÓN] Primera detección para Jimmie Johnson
-[03:34:41] 🎮 [SIMULACIÓN] Vuelta generada para Colin McRae
-[03:34:41]    🏎️  Transponder: 24414
-[03:34:41]    ⏱️  Tiempo vuelta 4: 72.210s
-[03:34:41]    📊 Tiempo total: 14.324s
-[03:34:41]    🏁 Velocidad: 15 km/h
-[03:34:41] --------------------------------------------------
-[03:34:41] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[03:34:41]    🏎️  Transponder: 6251777
-[03:34:41]    ⏱️  Tiempo vuelta 3: 79.788s
-[03:34:41]    📊 Tiempo total: 15.942s
-[03:34:41]    🏁 Velocidad: 14 km/h
-[03:34:41] --------------------------------------------------
-[03:34:41] 🎮 [SIMULACIÓN] Primera detección para Ayrton Senna
-[03:34:41] 🎮 [SIMULACIÓN] Vuelta generada para Michael Schumacher
-[03:34:41]    🏎️  Transponder: 24431
-[03:34:41]    ⏱️  Tiempo vuelta 4: 81.551s
-[03:34:41]    📊 Tiempo total: 17.952s
-[03:34:41]    🏁 Velocidad: 13 km/h
-[03:34:42] --------------------------------------------------
-[03:34:42] 🎮 [SIMULACIÓN] Vuelta generada para Jim Clark
-[03:34:42]    🏎️  Transponder: 24422
-[03:34:42]    ⏱️  Tiempo vuelta 2: 81.492s
-[03:34:42]    📊 Tiempo total: 9.714s
-[03:34:42]    🏁 Velocidad: 13 km/h
-[03:34:42] --------------------------------------------------
-[03:34:42] 🎮 [SIMULACIÓN] Vuelta generada para Jose Torres Ortiz
-[03:34:42]    🏎️  Transponder: 24430
-[03:34:42]    ⏱️  Tiempo vuelta 2: 46.870s
-[03:34:42]    📊 Tiempo total: 5.162s
-[03:34:42]    🏁 Velocidad: 23 km/h
-[03:34:42] --------------------------------------------------
-[03:34:42] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[03:34:42]    🏎️  Transponder: 24417
-[03:34:42]    ⏱️  Tiempo vuelta 2: 60.207s
-[03:34:42]    📊 Tiempo total: 16.790s
-[03:34:42]    🏁 Velocidad: 18 km/h
-[03:34:43] --------------------------------------------------
-[03:34:43] 🎮 [SIMULACIÓN] Vuelta generada para Michael Schumacher
-[03:34:43]    🏎️  Transponder: 24431
-[03:34:43]    ⏱️  Tiempo vuelta 5: 62.519s
-[03:34:43]    📊 Tiempo total: 19.284s
-[03:34:43]    🏁 Velocidad: 17 km/h
-[03:34:43] --------------------------------------------------
-[03:34:43] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
-[03:34:43]    🏎️  Transponder: 24413
-[03:34:43]    ⏱️  Tiempo vuelta 5: 76.977s
-[03:34:43]    📊 Tiempo total: 20.205s
-[03:34:43]    🏁 Velocidad: 14 km/h
-[03:34:43] --------------------------------------------------
-[03:34:43] 🎮 [SIMULACIÓN] Vuelta generada para Jimmie Johnson
-[03:34:43]    🏎️  Transponder: 24411
-[03:34:43]    ⏱️  Tiempo vuelta 1: 62.601s
-[03:34:43]    📊 Tiempo total: 2.966s
-[03:34:43]    🏁 Velocidad: 17 km/h
-[03:34:44] --------------------------------------------------
-[03:34:44] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
-[03:34:44]    🏎️  Transponder: 24415
-[03:34:44]    ⏱️  Tiempo vuelta 2: 59.084s
-[03:34:44]    📊 Tiempo total: 15.531s
-[03:34:44]    🏁 Velocidad: 18 km/h
-[03:34:44] --------------------------------------------------
-[03:34:44] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
-[03:34:44]    🏎️  Transponder: 24410
-[03:34:44]    ⏱️  Tiempo vuelta 4: 39.116s
-[03:34:44]    📊 Tiempo total: 17.916s
-[03:34:44]    🏁 Velocidad: 28 km/h
-[03:34:44] --------------------------------------------------
-[03:34:44] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
-[03:34:44]    🏎️  Transponder: 24415
-[03:34:44]    ⏱️  Tiempo vuelta 3: 87.002s
-[03:34:44]    📊 Tiempo total: 16.174s
-[03:34:44]    🏁 Velocidad: 12 km/h
-[03:34:44] --------------------------------------------------
-[03:34:45] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[03:34:45]    🏎️  Transponder: 24418
-[03:34:45]    ⏱️  Tiempo vuelta 2: 70.709s
-[03:34:45]    📊 Tiempo total: 21.584s
-[03:34:45]    🏁 Velocidad: 15 km/h
-[03:34:45] --------------------------------------------------
-[03:34:45] 🎮 [SIMULACIÓN] Vuelta generada para Juan Manuel Fangio
-[03:34:45]    🏎️  Transponder: 24423
-[03:34:45]    ⏱️  Tiempo vuelta 1: 79.191s
-[03:34:45]    📊 Tiempo total: 16.682s
-[03:34:45]    🏁 Velocidad: 14 km/h
-[03:34:45] --------------------------------------------------
-[03:34:45] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[03:34:45]    🏎️  Transponder: 24433
-[03:34:45]    ⏱️  Tiempo vuelta 2: 89.660s
-[03:34:45]    📊 Tiempo total: 17.389s
-[03:34:45]    🏁 Velocidad: 12 km/h
-[03:34:45] --------------------------------------------------
-[03:34:46] 🎮 [SIMULACIÓN] Vuelta generada para Sébastien Loeb
-[03:34:46]    🏎️  Transponder: 24412
-[03:34:46]    ⏱️  Tiempo vuelta 3: 84.379s
-[03:34:46]    📊 Tiempo total: 13.352s
-[03:34:46]    🏁 Velocidad: 13 km/h
-[03:34:46] --------------------------------------------------
-[03:34:46] 🎮 [SIMULACIÓN] Vuelta generada para Jimmie Johnson
-[03:34:46]    🏎️  Transponder: 24411
-[03:34:46]    ⏱️  Tiempo vuelta 2: 30.211s
-[03:34:46]    📊 Tiempo total: 5.518s
-[03:34:46]    🏁 Velocidad: 36 km/h
-[03:34:46] --------------------------------------------------
-[03:34:46] 🎮 [SIMULACIÓN] Vuelta generada para Erick Pearson
-[03:34:46]    🏎️  Transponder: 6250753
-[03:34:46]    ⏱️  Tiempo vuelta 3: 51.549s
-[03:34:46]    📊 Tiempo total: 22.996s
-[03:34:46]    🏁 Velocidad: 21 km/h
-[03:34:46] --------------------------------------------------
-[03:34:47] 🎮 [SIMULACIÓN] Vuelta generada para Michael Schumacher
-[03:34:47]    🏎️  Transponder: 24431
-[03:34:47]    ⏱️  Tiempo vuelta 6: 60.527s
-[03:34:47]    📊 Tiempo total: 23.100s
-[03:34:47]    🏁 Velocidad: 18 km/h
-[03:34:47] --------------------------------------------------
-[03:34:47] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
-[03:34:47]    🏎️  Transponder: 24415
-[03:34:47]    ⏱️  Tiempo vuelta 4: 59.495s
-[03:34:47]    📊 Tiempo total: 18.722s
-[03:34:47]    🏁 Velocidad: 18 km/h
-[03:34:47] --------------------------------------------------
-[03:34:48] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[03:34:48]    🏎️  Transponder: 24418
-[03:34:48]    ⏱️  Tiempo vuelta 3: 55.149s
-[03:34:48]    📊 Tiempo total: 24.603s
-[03:34:48]    🏁 Velocidad: 20 km/h
-[03:34:48] --------------------------------------------------
-[03:34:48] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[03:34:48]    🏎️  Transponder: 24418
-[03:34:48]    ⏱️  Tiempo vuelta 4: 50.796s
-[03:34:48]    📊 Tiempo total: 24.940s
-[03:34:48]    🏁 Velocidad: 21 km/h
-[03:34:48] --------------------------------------------------
-[03:34:48] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[03:34:48]    🏎️  Transponder: 6251777
-[03:34:48]    ⏱️  Tiempo vuelta 4: 61.016s
-[03:34:48]    📊 Tiempo total: 23.359s
-[03:34:48]    🏁 Velocidad: 18 km/h
-[03:34:48] --------------------------------------------------
-[03:34:49] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[03:34:49]    🏎️  Transponder: 24433
-[03:34:49]    ⏱️  Tiempo vuelta 3: 36.365s
-[03:34:49]    📊 Tiempo total: 20.706s
-[03:34:49]    🏁 Velocidad: 30 km/h
-[03:34:49] --------------------------------------------------
-[03:34:49] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
-[03:34:49]    🏎️  Transponder: 24410
-[03:34:49]    ⏱️  Tiempo vuelta 5: 82.505s
-[03:34:49]    📊 Tiempo total: 22.878s
-[03:34:49]    🏁 Velocidad: 13 km/h
-[03:34:49] --------------------------------------------------
-[03:34:49] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[03:34:49]    🏎️  Transponder: 6251777
-[03:34:49]    ⏱️  Tiempo vuelta 5: 31.891s
-[03:34:49]    📊 Tiempo total: 24.323s
-[03:34:49]    🏁 Velocidad: 34 km/h
-[03:34:49] --------------------------------------------------
-[03:34:50] 🎮 [SIMULACIÓN] Vuelta generada para Niki Lauda
-[03:34:50]    🏎️  Transponder: 24424
-[03:34:50]    ⏱️  Tiempo vuelta 2: 70.507s
-[03:34:50]    📊 Tiempo total: 25.907s
-[03:34:50]    🏁 Velocidad: 15 km/h
-[03:34:50] --------------------------------------------------
-[03:34:50] 🎮 [SIMULACIÓN] Vuelta generada para Jose Torres Ortiz
-[03:34:50]    🏎️  Transponder: 24430
-[03:34:50]    ⏱️  Tiempo vuelta 3: 55.658s
-[03:34:50]    📊 Tiempo total: 12.967s
-[03:34:50]    🏁 Velocidad: 19 km/h
-[03:34:50] --------------------------------------------------
-[03:34:50] 🎮 [SIMULACIÓN] Vuelta generada para Mika Häkkinen
-[03:34:50]    🏎️  Transponder: 2425
-[03:34:50]    ⏱️  Tiempo vuelta 1: 70.694s
-[03:34:50]    📊 Tiempo total: 25.476s
-[03:34:50]    🏁 Velocidad: 15 km/h
-[03:34:50] --------------------------------------------------
-[03:34:51] 🎮 [SIMULACIÓN] Vuelta generada para Sébastien Loeb
-[03:34:51]    🏎️  Transponder: 24412
-[03:34:51]    ⏱️  Tiempo vuelta 4: 38.481s
-[03:34:51]    📊 Tiempo total: 18.294s
-[03:34:51]    🏁 Velocidad: 28 km/h
-[03:34:51] --------------------------------------------------
-[03:34:51] 🎮 [SIMULACIÓN] Vuelta generada para Fernando Alonso
-[03:34:51]    🏎️  Transponder: 24427
-[03:34:51]    ⏱️  Tiempo vuelta 2: 70.773s
-[03:34:51]    📊 Tiempo total: 25.717s
-[03:34:51]    🏁 Velocidad: 15 km/h
-[03:34:51] --------------------------------------------------
-[03:34:51] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[03:34:51]    🏎️  Transponder: 24417
-[03:34:51]    ⏱️  Tiempo vuelta 3: 72.888s
-[03:34:51]    📊 Tiempo total: 25.568s
-[03:34:51]    🏁 Velocidad: 15 km/h
-[03:34:51] --------------------------------------------------
-[03:34:52] 🎮 [SIMULACIÓN] Vuelta generada para Lewis Hamilton
-[03:34:52]    🏎️  Transponder: 24429
-[03:34:52]    ⏱️  Tiempo vuelta 1: 37.568s
-[03:34:52]    📊 Tiempo total: 25.738s
-[03:34:52]    🏁 Velocidad: 29 km/h
-[03:34:52] --------------------------------------------------
-[03:34:52] 🎮 [SIMULACIÓN] Vuelta generada para Jose Torres Ortiz
-[03:34:52]    🏎️  Transponder: 24430
-[03:34:52]    ⏱️  Tiempo vuelta 4: 69.976s
-[03:34:52]    📊 Tiempo total: 14.975s
-[03:34:52]    🏁 Velocidad: 15 km/h
-[03:34:52] --------------------------------------------------
-[03:34:52] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[03:34:52]    🏎️  Transponder: 24421
-[03:34:52]    ⏱️  Tiempo vuelta 1: 82.938s
-[03:34:52]    📊 Tiempo total: 23.674s
-[03:34:52]    🏁 Velocidad: 13 km/h
-[03:34:52] --------------------------------------------------
-[03:34:53] 🎮 [SIMULACIÓN] Vuelta generada para Mika Häkkinen
-[03:34:53]    🏎️  Transponder: 2425
-[03:34:53]    ⏱️  Tiempo vuelta 2: 80.710s
-[03:34:53]    📊 Tiempo total: 27.817s
-[03:34:53]    🏁 Velocidad: 13 km/h
-[03:34:53] --------------------------------------------------
-[03:34:53] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
-[03:34:53]    🏎️  Transponder: 24415
-[03:34:53]    ⏱️  Tiempo vuelta 5: 81.654s
-[03:34:53]    📊 Tiempo total: 24.706s
-[03:34:53]    🏁 Velocidad: 13 km/h
-[03:34:53] --------------------------------------------------
-[03:34:53] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[03:34:53]    🏎️  Transponder: 24433
-[03:34:53]    ⏱️  Tiempo vuelta 4: 36.061s
-[03:34:53]    📊 Tiempo total: 25.255s
-[03:34:53]    🏁 Velocidad: 30 km/h
-[03:34:53] --------------------------------------------------
-[03:34:54] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
-[03:34:54]    🏎️  Transponder: 24415
-[03:34:54]    ⏱️  Tiempo vuelta 6: 37.088s
-[03:34:54]    📊 Tiempo total: 25.382s
-[03:34:54]    🏁 Velocidad: 29 km/h
-[03:34:54] --------------------------------------------------
-[03:34:54] 🎮 [SIMULACIÓN] Vuelta generada para Mario Andretti
-[03:34:54]    🏎️  Transponder: 24419
-[03:34:54]    ⏱️  Tiempo vuelta 1: 68.827s
-[03:34:54]    📊 Tiempo total: 16.408s
-[03:34:54]    🏁 Velocidad: 16 km/h
-[03:34:54] --------------------------------------------------
-[03:34:54] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[03:34:54]    🏎️  Transponder: 24417
-[03:34:54]    ⏱️  Tiempo vuelta 4: 47.306s
-[03:34:54]    📊 Tiempo total: 28.563s
-[03:34:54]    🏁 Velocidad: 23 km/h
-[03:34:54] --------------------------------------------------
-[03:34:55] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[03:34:55]    🏎️  Transponder: 24421
-[03:34:55]    ⏱️  Tiempo vuelta 2: 33.232s
-[03:34:55]    📊 Tiempo total: 25.999s
-[03:34:55]    🏁 Velocidad: 32 km/h
-[03:34:55] --------------------------------------------------
-[03:34:55] 🎮 [SIMULACIÓN] Vuelta generada para Colin McRae
-[03:34:55]    🏎️  Transponder: 24414
-[03:34:55]    ⏱️  Tiempo vuelta 5: 37.914s
-[03:34:55]    📊 Tiempo total: 28.582s
-[03:34:55]    🏁 Velocidad: 28 km/h
-[03:34:55] --------------------------------------------------
-[03:34:55] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[03:34:55]    🏎️  Transponder: 24433
-[03:34:55]    ⏱️  Tiempo vuelta 5: 81.979s
-[03:34:55]    📊 Tiempo total: 27.241s
-[03:34:55]    🏁 Velocidad: 13 km/h
-[03:34:55] --------------------------------------------------
-[03:34:56] 🎮 [SIMULACIÓN] Vuelta generada para Colin McRae
-[03:34:56]    🏎️  Transponder: 24414
-[03:34:56]    ⏱️  Tiempo vuelta 6: 78.579s
-[03:34:56]    📊 Tiempo total: 29.236s
-[03:34:56]    🏁 Velocidad: 14 km/h
-[03:34:56] --------------------------------------------------
-[03:34:56] 🎮 [SIMULACIÓN] Vuelta generada para Alain  Prost
-[03:34:56]    🏎️  Transponder: 24426
-[03:34:56]    ⏱️  Tiempo vuelta 3: 85.186s
-[03:34:56]    📊 Tiempo total: 31.589s
-[03:34:56]    🏁 Velocidad: 13 km/h
-[03:34:56] --------------------------------------------------
-[03:34:56] 🎮 [SIMULACIÓN] Vuelta generada para Mario Andretti
-[03:34:56]    🏎️  Transponder: 24419
-[03:34:56]    ⏱️  Tiempo vuelta 2: 88.365s
-[03:34:56]    📊 Tiempo total: 18.662s
-[03:34:56]    🏁 Velocidad: 12 km/h
-[03:34:56] --------------------------------------------------
-[03:34:56] 🎮 [SIMULACIÓN] Vuelta generada para Jimmie Johnson
-[03:34:56]    🏎️  Transponder: 24411
-[03:34:56]    ⏱️  Tiempo vuelta 3: 77.528s
-[03:34:56]    📊 Tiempo total: 16.070s
-[03:34:57]    🏁 Velocidad: 14 km/h
-[03:34:57] --------------------------------------------------
-[03:34:57] 🎮 [SIMULACIÓN] Vuelta generada para Mario Andretti
-[03:34:57]    🏎️  Transponder: 24419
-[03:34:57]    ⏱️  Tiempo vuelta 3: 61.723s
-[03:34:57]    📊 Tiempo total: 19.291s
-[03:34:57]    🏁 Velocidad: 17 km/h
-[03:34:57] --------------------------------------------------
-[03:34:57] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[03:34:57]    🏎️  Transponder: 6251777
-[03:34:57]    ⏱️  Tiempo vuelta 6: 68.101s
-[03:34:57]    📊 Tiempo total: 32.111s
-[03:34:57]    🏁 Velocidad: 16 km/h
-[03:34:57] --------------------------------------------------
-[03:34:57] 🎮 [SIMULACIÓN] Vuelta generada para Lewis Hamilton
-[03:34:57]    🏎️  Transponder: 24429
-[03:34:57]    ⏱️  Tiempo vuelta 2: 76.506s
-[03:34:57]    📊 Tiempo total: 31.540s
-[03:34:57]    🏁 Velocidad: 14 km/h
-[03:34:58] --------------------------------------------------
-[03:34:58] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[03:34:58]    🏎️  Transponder: 24421
-[03:34:58]    ⏱️  Tiempo vuelta 3: 85.061s
-[03:34:58]    📊 Tiempo total: 29.148s
-[03:34:58]    🏁 Velocidad: 13 km/h
-[03:34:58] --------------------------------------------------
-[03:34:58] 🎮 [SIMULACIÓN] Vuelta generada para Jimmie Johnson
-[03:34:58]    🏎️  Transponder: 24411
-[03:34:58]    ⏱️  Tiempo vuelta 4: 56.476s
-[03:34:58]    📊 Tiempo total: 17.600s
-[03:34:58]    🏁 Velocidad: 19 km/h
-[03:34:58] --------------------------------------------------
-[03:34:58] 🎮 [SIMULACIÓN] Vuelta generada para Mario Andretti
-[03:34:58]    🏎️  Transponder: 24419
-[03:34:58]    ⏱️  Tiempo vuelta 4: 64.683s
-[03:34:58]    📊 Tiempo total: 20.855s
-[03:34:58]    🏁 Velocidad: 17 km/h
-[03:34:58] --------------------------------------------------
-[03:34:59] 🎮 [SIMULACIÓN] Vuelta generada para Mario Andretti
-[03:34:59]    🏎️  Transponder: 24419
-[03:34:59]    ⏱️  Tiempo vuelta 5: 41.492s
-[03:34:59]    📊 Tiempo total: 21.177s
-[03:34:59]    🏁 Velocidad: 26 km/h
-[03:34:59] --------------------------------------------------
-[03:34:59] 🎮 [SIMULACIÓN] Vuelta generada para Sébastien Loeb
-[03:34:59]    🏎️  Transponder: 24412
-[03:34:59]    ⏱️  Tiempo vuelta 5: 88.757s
-[03:34:59]    📊 Tiempo total: 26.692s
-[03:34:59]    🏁 Velocidad: 12 km/h
-[03:34:59] --------------------------------------------------
-[03:34:59] 🎮 [SIMULACIÓN] Vuelta generada para Mika Häkkinen
-[03:34:59]    🏎️  Transponder: 2425
-[03:34:59]    ⏱️  Tiempo vuelta 3: 87.532s
-[03:34:59]    📊 Tiempo total: 34.564s
-[03:34:59]    🏁 Velocidad: 12 km/h
-[03:34:59] --------------------------------------------------
-[03:35:00] 🎮 [SIMULACIÓN] Vuelta generada para Max Verstappen
-[03:35:00]    🏎️  Transponder: 24428
-[03:35:00]    ⏱️  Tiempo vuelta 1: 45.199s
-[03:35:00]    📊 Tiempo total: 37.014s
-[03:35:00]    🏁 Velocidad: 24 km/h
-[03:35:00] --------------------------------------------------
-[03:35:00] 🎮 [SIMULACIÓN] Vuelta generada para Colin McRae
-[03:35:00]    🏎️  Transponder: 24414
-[03:35:00]    ⏱️  Tiempo vuelta 7: 70.844s
-[03:35:00]    📊 Tiempo total: 33.732s
-[03:35:00]    🏁 Velocidad: 15 km/h
-[03:35:00] --------------------------------------------------
-[03:35:00] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
-[03:35:00]    🏎️  Transponder: 24413
-[03:35:00]    ⏱️  Tiempo vuelta 6: 58.055s
-[03:35:00]    📊 Tiempo total: 37.522s
-[03:35:00]    🏁 Velocidad: 19 km/h
-[03:35:01] --------------------------------------------------
-[03:35:01] 🎮 [SIMULACIÓN] Vuelta generada para Jim Clark
-[03:35:01]    🏎️  Transponder: 24422
-[03:35:01]    ⏱️  Tiempo vuelta 3: 66.950s
-[03:35:01]    📊 Tiempo total: 28.662s
-[03:35:01]    🏁 Velocidad: 16 km/h
-[03:35:01] --------------------------------------------------
-[03:35:01] 🎮 [SIMULACIÓN] Vuelta generada para Jim Clark
-[03:35:01]    🏎️  Transponder: 24422
-[03:35:01]    ⏱️  Tiempo vuelta 4: 54.434s
-[03:35:01]    📊 Tiempo total: 28.998s
-[03:35:01]    🏁 Velocidad: 20 km/h
-[03:35:01] --------------------------------------------------
-[03:35:01] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[03:35:01]    🏎️  Transponder: 24417
-[03:35:01]    ⏱️  Tiempo vuelta 5: 64.366s
-[03:35:01]    📊 Tiempo total: 35.733s
-[03:35:01]    🏁 Velocidad: 17 km/h
-[03:35:01] --------------------------------------------------
-[03:35:02] 🎮 [SIMULACIÓN] Vuelta generada para Michael Schumacher
-[03:35:02]    🏎️  Transponder: 24431
-[03:35:02]    ⏱️  Tiempo vuelta 7: 63.020s
-[03:35:02]    📊 Tiempo total: 38.209s
-[03:35:02]    🏁 Velocidad: 17 km/h
-[03:35:02] --------------------------------------------------
-[03:35:02] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
-[03:35:02]    🏎️  Transponder: 24410
-[03:35:02]    ⏱️  Tiempo vuelta 6: 33.988s
-[03:35:02]    📊 Tiempo total: 35.916s
-[03:35:02]    🏁 Velocidad: 32 km/h
-[03:35:02] --------------------------------------------------
-[03:35:02] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
-[03:35:02]    🏎️  Transponder: 24415
-[03:35:02]    ⏱️  Tiempo vuelta 7: 83.745s
-[03:35:02]    📊 Tiempo total: 34.191s
-[03:35:02]    🏁 Velocidad: 13 km/h
-[03:35:02] --------------------------------------------------
-[03:35:03] 🎮 [SIMULACIÓN] Vuelta generada para Erick Pearson
-[03:35:03]    🏎️  Transponder: 6250753
-[03:35:03]    ⏱️  Tiempo vuelta 4: 30.944s
-[03:35:03]    📊 Tiempo total: 39.402s
-[03:35:03]    🏁 Velocidad: 35 km/h
-[03:35:03] --------------------------------------------------
-[03:35:03] 🎮 [SIMULACIÓN] Vuelta generada para Sébastien Loeb
-[03:35:03]    🏎️  Transponder: 24412
-[03:35:03]    ⏱️  Tiempo vuelta 6: 44.111s
-[03:35:03]    📊 Tiempo total: 30.699s
-[03:35:03]    🏁 Velocidad: 24 km/h
-[03:35:03] --------------------------------------------------
-[03:35:03] 🎮 [SIMULACIÓN] Vuelta generada para Lewis Hamilton
-[03:35:03]    🏎️  Transponder: 24429
-[03:35:03]    ⏱️  Tiempo vuelta 3: 63.024s
-[03:35:03]    📊 Tiempo total: 37.456s
-[03:35:03]    🏁 Velocidad: 17 km/h
-[03:35:03] --------------------------------------------------
-[03:35:04] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[03:35:04]    🏎️  Transponder: 24418
-[03:35:04]    ⏱️  Tiempo vuelta 5: 32.595s
-[03:35:04]    📊 Tiempo total: 40.565s
-[03:35:04]    🏁 Velocidad: 33 km/h
-[03:35:04] --------------------------------------------------
-[03:35:04] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[03:35:04]    🏎️  Transponder: 6251777
-[03:35:04]    ⏱️  Tiempo vuelta 7: 85.039s
-[03:35:04]    📊 Tiempo total: 38.973s
-[03:35:04]    🏁 Velocidad: 13 km/h
-[03:35:04] --------------------------------------------------
-[03:35:04] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[03:35:04]    🏎️  Transponder: 6251777
-[03:35:04]    ⏱️  Tiempo vuelta 8: 77.964s
-[03:35:04]    📊 Tiempo total: 39.302s
-[03:35:04]    🏁 Velocidad: 14 km/h
-[03:35:04] --------------------------------------------------
-[03:35:05] 🎮 [SIMULACIÓN] Vuelta generada para Mario Andretti
-[03:35:05]    🏎️  Transponder: 24419
-[03:35:05]    ⏱️  Tiempo vuelta 6: 86.919s
-[03:35:05]    📊 Tiempo total: 27.147s
-[03:35:05]    🏁 Velocidad: 12 km/h
-[03:35:05] --------------------------------------------------
-[03:35:05] 🎮 [SIMULACIÓN] Vuelta generada para Fernando Alonso
-[03:35:05]    🏎️  Transponder: 24427
-[03:35:05]    ⏱️  Tiempo vuelta 3: 54.431s
-[03:35:05]    📊 Tiempo total: 39.852s
-[03:35:05]    🏁 Velocidad: 20 km/h
-[03:35:05] --------------------------------------------------
-[03:35:05] 🎮 [SIMULACIÓN] Vuelta generada para Jose Torres Ortiz
-[03:35:05]    🏎️  Transponder: 24430
-[03:35:05]    ⏱️  Tiempo vuelta 5: 69.395s
-[03:35:05]    📊 Tiempo total: 28.416s
-[03:35:05]    🏁 Velocidad: 16 km/h
-[03:35:05] --------------------------------------------------
-[03:35:06] 🎮 [SIMULACIÓN] Vuelta generada para Lewis Hamilton
-[03:35:06]    🏎️  Transponder: 24429
-[03:35:06]    ⏱️  Tiempo vuelta 4: 30.161s
-[03:35:06]    📊 Tiempo total: 39.794s
-[03:35:06]    🏁 Velocidad: 36 km/h
-[03:35:06] --------------------------------------------------
-[03:35:06] 🎮 [SIMULACIÓN] Vuelta generada para Fernando Alonso
-[03:35:06]    🏎️  Transponder: 24427
-[03:35:06]    ⏱️  Tiempo vuelta 4: 68.307s
-[03:35:06]    📊 Tiempo total: 40.793s
-[03:35:06]    🏁 Velocidad: 16 km/h
-[03:35:06] --------------------------------------------------
-[03:35:06] 🎮 [SIMULACIÓN] Primera detección para Thomas Winkerton
-[03:35:07] 🎮 [SIMULACIÓN] Vuelta generada para Michael Schumacher
-[03:35:07]    🏎️  Transponder: 24431
-[03:35:07]    ⏱️  Tiempo vuelta 8: 85.577s
-[03:35:07]    📊 Tiempo total: 43.118s
-[03:35:07]    🏁 Velocidad: 13 km/h
-[03:35:07] --------------------------------------------------
-[03:35:07] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[03:35:07]    🏎️  Transponder: 6251777
-[03:35:07]    ⏱️  Tiempo vuelta 9: 46.957s
-[03:35:07]    📊 Tiempo total: 41.947s
-[03:35:07]    🏁 Velocidad: 23 km/h
-[03:35:07] --------------------------------------------------
-[03:35:07] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[03:35:07]    🏎️  Transponder: 24433
-[03:35:07]    ⏱️  Tiempo vuelta 6: 62.584s
-[03:35:07]    📊 Tiempo total: 39.290s
-[03:35:07]    🏁 Velocidad: 17 km/h
-[03:35:07] --------------------------------------------------
-[03:35:08] 🎮 [SIMULACIÓN] Vuelta generada para Colin McRae
-[03:35:08]    🏎️  Transponder: 24414
-[03:35:08]    ⏱️  Tiempo vuelta 8: 80.988s
-[03:35:08]    📊 Tiempo total: 41.279s
-[03:35:08]    🏁 Velocidad: 13 km/h
-[03:35:08] --------------------------------------------------
-[03:35:08] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
-[03:35:08]    🏎️  Transponder: 24410
-[03:35:08]    ⏱️  Tiempo vuelta 7: 83.578s
-[03:35:08]    📊 Tiempo total: 41.821s
-[03:35:08]    🏁 Velocidad: 13 km/h
-[03:35:08] --------------------------------------------------
-[03:35:08] 🎮 [SIMULACIÓN] Vuelta generada para Niki Lauda
-[03:35:08]    🏎️  Transponder: 24424
-[03:35:08]    ⏱️  Tiempo vuelta 3: 86.844s
-[03:35:08]    📊 Tiempo total: 44.551s
-[03:35:08]    🏁 Velocidad: 12 km/h
-[03:35:08] --------------------------------------------------
-[03:35:09] 🎮 [SIMULACIÓN] Vuelta generada para Erick Pearson
-[03:35:09]    🏎️  Transponder: 6250753
-[03:35:09]    ⏱️  Tiempo vuelta 5: 34.858s
-[03:35:09]    📊 Tiempo total: 45.271s
-[03:35:09]    🏁 Velocidad: 31 km/h
-[03:35:09] --------------------------------------------------
-[03:35:09] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
-[03:35:09]    🏎️  Transponder: 24434
-[03:35:09]    ⏱️  Tiempo vuelta 1: 61.929s
-[03:35:09]    📊 Tiempo total: 2.452s
-[03:35:09]    🏁 Velocidad: 17 km/h
-[03:35:09] --------------------------------------------------
-[03:35:09] 🎮 [SIMULACIÓN] Vuelta generada para Juan Manuel Fangio
-[03:35:09]    🏎️  Transponder: 24423
-[03:35:09]    ⏱️  Tiempo vuelta 2: 32.485s
-[03:35:09]    📊 Tiempo total: 40.827s
-[03:35:09]    🏁 Velocidad: 33 km/h
-[03:35:09] --------------------------------------------------
-[03:35:10] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
-[03:35:10]    🏎️  Transponder: 24415
-[03:35:10]    ⏱️  Tiempo vuelta 8: 50.322s
-[03:35:10]    📊 Tiempo total: 41.380s
-[03:35:10]    🏁 Velocidad: 21 km/h
-[03:35:10] --------------------------------------------------
-[03:35:10] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
-[03:35:10]    🏎️  Transponder: 24434
-[03:35:10]    ⏱️  Tiempo vuelta 2: 85.592s
-[03:35:10]    📊 Tiempo total: 3.482s
-[03:35:10]    🏁 Velocidad: 13 km/h
-[03:35:10] --------------------------------------------------
-[03:35:10] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[03:35:10]    🏎️  Transponder: 24421
-[03:35:10]    ⏱️  Tiempo vuelta 4: 82.720s
-[03:35:10]    📊 Tiempo total: 41.631s
-[03:35:10]    🏁 Velocidad: 13 km/h
-[03:35:10] --------------------------------------------------
-[03:35:11] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[03:35:11]    🏎️  Transponder: 24433
-[03:35:11]    ⏱️  Tiempo vuelta 7: 34.879s
-[03:35:11]    📊 Tiempo total: 42.571s
-[03:35:11]    🏁 Velocidad: 31 km/h
-[03:35:11] --------------------------------------------------
-[03:35:11] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[03:35:11]    🏎️  Transponder: 24418
-[03:35:11]    ⏱️  Tiempo vuelta 6: 44.688s
-[03:35:11]    📊 Tiempo total: 47.771s
-[03:35:11]    🏁 Velocidad: 24 km/h
-[03:35:11] --------------------------------------------------
-[03:35:11] 🎮 [SIMULACIÓN] Vuelta generada para Sébastien Loeb
-[03:35:11]    🏎️  Transponder: 24412
-[03:35:11]    ⏱️  Tiempo vuelta 7: 86.431s
-[03:35:11]    📊 Tiempo total: 38.876s
-[03:35:11]    🏁 Velocidad: 12 km/h
-[03:35:11] --------------------------------------------------
-[03:35:11] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[03:35:11]    🏎️  Transponder: 24418
-[03:35:11]    ⏱️  Tiempo vuelta 7: 49.952s
-[03:35:11]    📊 Tiempo total: 48.403s
-[03:35:11]    🏁 Velocidad: 22 km/h
-[03:35:12] --------------------------------------------------
-[03:35:12] 🎮 [SIMULACIÓN] Primera detección para Jackie Stewart
-[03:35:12] 🎮 [SIMULACIÓN] Vuelta generada para Jose Torres Ortiz
-[03:35:12]    🏎️  Transponder: 24430
-[03:35:12]    ⏱️  Tiempo vuelta 6: 86.540s
-[03:35:12]    📊 Tiempo total: 35.048s
-[03:35:12]    🏁 Velocidad: 12 km/h
-[03:35:12] --------------------------------------------------
-[03:35:12] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[03:35:12]    🏎️  Transponder: 24418
-[03:35:12]    ⏱️  Tiempo vuelta 8: 85.648s
-[03:35:12]    📊 Tiempo total: 49.254s
-[03:35:12]    🏁 Velocidad: 13 km/h
-[03:35:12] --------------------------------------------------
-[03:35:13] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
-[03:35:13]    🏎️  Transponder: 24413
-[03:35:13]    ⏱️  Tiempo vuelta 7: 88.206s
-[03:35:13]    📊 Tiempo total: 49.791s
-[03:35:13]    🏁 Velocidad: 12 km/h
-[03:35:13] --------------------------------------------------
-[03:35:13] 🎮 [SIMULACIÓN] Vuelta generada para Lewis Hamilton
-[03:35:13]    🏎️  Transponder: 24429
-[03:35:13]    ⏱️  Tiempo vuelta 5: 45.858s
-[03:35:13]    📊 Tiempo total: 47.072s
-[03:35:13]    🏁 Velocidad: 24 km/h
-[03:35:13] --------------------------------------------------
-[03:35:13] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
-[03:35:13]    🏎️  Transponder: 24410
-[03:35:13]    ⏱️  Tiempo vuelta 8: 66.671s
-[03:35:13]    📊 Tiempo total: 47.180s
-[03:35:13]    🏁 Velocidad: 16 km/h
-[03:35:13] --------------------------------------------------
-[03:35:14] 🎮 [SIMULACIÓN] Vuelta generada para Jackie Stewart
-[03:35:14]    🏎️  Transponder: 24420
-[03:35:14]    ⏱️  Tiempo vuelta 1: 86.855s
-[03:35:14]    📊 Tiempo total: 1.791s
-[03:35:14]    🏁 Velocidad: 12 km/h
-[03:35:14] --------------------------------------------------
-[03:35:14] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
-[03:35:14]    🏎️  Transponder: 24410
-[03:35:14]    ⏱️  Tiempo vuelta 9: 70.806s
-[03:35:14]    📊 Tiempo total: 47.763s
-[03:35:14]    🏁 Velocidad: 15 km/h
-[03:35:14] --------------------------------------------------
-[03:35:14] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[03:35:14]    🏎️  Transponder: 24417
-[03:35:14]    ⏱️  Tiempo vuelta 6: 57.778s
-[03:35:14]    📊 Tiempo total: 48.497s
-[03:35:14]    🏁 Velocidad: 19 km/h
-[03:35:14] --------------------------------------------------
-[03:35:15] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[03:35:15]    🏎️  Transponder: 24421
-[03:35:15]    ⏱️  Tiempo vuelta 5: 33.675s
-[03:35:15]    📊 Tiempo total: 45.977s
-[03:35:15]    🏁 Velocidad: 32 km/h
-[03:35:15] --------------------------------------------------
-[03:35:15] 🎮 [SIMULACIÓN] Vuelta generada para Lewis Hamilton
-[03:35:15]    🏎️  Transponder: 24429
-[03:35:15]    ⏱️  Tiempo vuelta 6: 87.450s
-[03:35:15]    📊 Tiempo total: 49.002s
-[03:35:15]    🏁 Velocidad: 12 km/h
-[03:35:15] --------------------------------------------------
-[03:35:15] 🎮 [SIMULACIÓN] Vuelta generada para Erick Pearson
-[03:35:15]    🏎️  Transponder: 6250753
-[03:35:15]    ⏱️  Tiempo vuelta 6: 49.578s
-[03:35:15]    📊 Tiempo total: 51.975s
-[03:35:15]    🏁 Velocidad: 22 km/h
-[03:35:15] --------------------------------------------------
-[03:35:16] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[03:35:16]    🏎️  Transponder: 24417
-[03:35:16]    ⏱️  Tiempo vuelta 7: 64.045s
-[03:35:16]    📊 Tiempo total: 49.882s
-[03:35:16]    🏁 Velocidad: 17 km/h
-[03:35:16] --------------------------------------------------
-[03:35:16] 🎮 [SIMULACIÓN] Vuelta generada para Juan Manuel Fangio
-[03:35:16]    🏎️  Transponder: 24423
-[03:35:16]    ⏱️  Tiempo vuelta 3: 67.517s
-[03:35:16]    📊 Tiempo total: 47.490s
-[03:35:16]    🏁 Velocidad: 16 km/h
-[03:35:16] --------------------------------------------------
-[03:35:16] 🎮 [SIMULACIÓN] Vuelta generada para Juan Manuel Fangio
-[03:35:16]    🏎️  Transponder: 24423
-[03:35:16]    ⏱️  Tiempo vuelta 4: 38.001s
-[03:35:16]    📊 Tiempo total: 47.813s
-[03:35:16]    🏁 Velocidad: 28 km/h
-[03:35:16] --------------------------------------------------
-[03:35:16] 🎮 [SIMULACIÓN] Vuelta generada para Jim Clark
-[03:35:16]    🏎️  Transponder: 24422
-[03:35:16]    ⏱️  Tiempo vuelta 5: 72.541s
-[03:35:16]    📊 Tiempo total: 44.410s
-[03:35:16]    🏁 Velocidad: 15 km/h
-[03:35:17] --------------------------------------------------
-[03:35:17] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[03:35:17]    🏎️  Transponder: 6251777
-[03:35:17]    ⏱️  Tiempo vuelta 10: 86.703s
-[03:35:17]    📊 Tiempo total: 51.796s
-[03:35:17]    🏁 Velocidad: 12 km/h
-[03:35:17] --------------------------------------------------
-[03:35:17] 🎮 [SIMULACIÓN] Vuelta generada para Jose Torres Ortiz
-[03:35:17]    🏎️  Transponder: 24430
-[03:35:17]    ⏱️  Tiempo vuelta 7: 77.900s
-[03:35:17]    📊 Tiempo total: 40.131s
-[03:35:17]    🏁 Velocidad: 14 km/h
-[03:35:17] --------------------------------------------------
-[03:35:17] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[03:35:17]    🏎️  Transponder: 24433
-[03:35:17]    ⏱️  Tiempo vuelta 8: 83.693s
-[03:35:17]    📊 Tiempo total: 49.455s
-[03:35:17]    🏁 Velocidad: 13 km/h
-[03:35:18] --------------------------------------------------
-[03:35:18] 🎮 [SIMULACIÓN] Vuelta generada para Lewis Hamilton
-[03:35:18]    🏎️  Transponder: 24429
-[03:35:18]    ⏱️  Tiempo vuelta 7: 48.477s
-[03:35:18]    📊 Tiempo total: 51.848s
-[03:35:18]    🏁 Velocidad: 22 km/h
-[03:35:18] --------------------------------------------------
-[03:35:18] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
-[03:35:18]    🏎️  Transponder: 24413
-[03:35:18]    ⏱️  Tiempo vuelta 8: 65.031s
-[03:35:18]    📊 Tiempo total: 55.181s
-[03:35:18]    🏁 Velocidad: 17 km/h
-[03:35:18] --------------------------------------------------
-[03:35:18] 🎮 [SIMULACIÓN] Vuelta generada para Mario Andretti
-[03:35:18]    🏎️  Transponder: 24419
-[03:35:18]    ⏱️  Tiempo vuelta 7: 63.224s
-[03:35:18]    📊 Tiempo total: 40.864s
-[03:35:18]    🏁 Velocidad: 17 km/h
-[03:35:19] --------------------------------------------------
-[03:35:19] 🎮 [SIMULACIÓN] Vuelta generada para Juan Manuel Fangio
-[03:35:19]    🏎️  Transponder: 24423
-[03:35:19]    ⏱️  Tiempo vuelta 5: 50.487s
-[03:35:19]    📊 Tiempo total: 50.390s
-[03:35:19]    🏁 Velocidad: 21 km/h
-[03:35:19] --------------------------------------------------
-[03:35:19] 🎮 [SIMULACIÓN] Vuelta generada para Juan Manuel Fangio
-[03:35:19]    🏎️  Transponder: 24423
-[03:35:19]    ⏱️  Tiempo vuelta 6: 80.535s
-[03:35:19]    📊 Tiempo total: 50.689s
-[03:35:19]    🏁 Velocidad: 13 km/h
-[03:35:19] --------------------------------------------------
-[03:35:19] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[03:35:19]    🏎️  Transponder: 24418
-[03:35:19]    ⏱️  Tiempo vuelta 9: 40.169s
-[03:35:19]    📊 Tiempo total: 56.306s
-[03:35:19]    🏁 Velocidad: 27 km/h
-[03:35:19] --------------------------------------------------
-[03:35:20] 🎮 [SIMULACIÓN] Vuelta generada para Sébastien Loeb
-[03:35:20]    🏎️  Transponder: 24412
-[03:35:20]    ⏱️  Tiempo vuelta 8: 63.592s
-[03:35:20]    📊 Tiempo total: 47.398s
-[03:35:20]    🏁 Velocidad: 17 km/h
-[03:35:20] --------------------------------------------------
-[03:35:20] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[03:35:20]    🏎️  Transponder: 6251777
-[03:35:20]    ⏱️  Tiempo vuelta 11: 57.470s
-[03:35:20]    📊 Tiempo total: 54.991s
-[03:35:20]    🏁 Velocidad: 19 km/h
-[03:35:20] --------------------------------------------------
-[03:35:20] 🎮 [SIMULACIÓN] Vuelta generada para Fernando Alonso
-[03:35:20]    🏎️  Transponder: 24427
-[03:35:20]    ⏱️  Tiempo vuelta 5: 83.447s
-[03:35:20]    📊 Tiempo total: 55.116s
-[03:35:20]    🏁 Velocidad: 13 km/h
-[03:35:20] --------------------------------------------------
-[03:35:21] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[03:35:21]    🏎️  Transponder: 24417
-[03:35:21]    ⏱️  Tiempo vuelta 8: 66.499s
-[03:35:21]    📊 Tiempo total: 54.946s
-[03:35:21]    🏁 Velocidad: 16 km/h
-[03:35:21] --------------------------------------------------
-[03:35:21] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[03:35:21]    🏎️  Transponder: 24421
-[03:35:21]    ⏱️  Tiempo vuelta 6: 80.370s
-[03:35:21]    📊 Tiempo total: 52.363s
-[03:35:21]    🏁 Velocidad: 13 km/h
-[03:35:21] --------------------------------------------------
-[03:35:21] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[03:35:21]    🏎️  Transponder: 6251777
-[03:35:21]    ⏱️  Tiempo vuelta 12: 34.512s
-[03:35:21]    📊 Tiempo total: 56.280s
-[03:35:21]    🏁 Velocidad: 31 km/h
-[03:35:21] --------------------------------------------------
-[03:35:22] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
-[03:35:22]    🏎️  Transponder: 24434
-[03:35:22]    ⏱️  Tiempo vuelta 3: 54.602s
-[03:35:22]    📊 Tiempo total: 15.215s
-[03:35:22]    🏁 Velocidad: 20 km/h
-[03:35:22] --------------------------------------------------
-[03:35:22] 🎮 [SIMULACIÓN] Vuelta generada para Mika Häkkinen
-[03:35:22]    🏎️  Transponder: 2425
-[03:35:22]    ⏱️  Tiempo vuelta 4: 69.951s
-[03:35:22]    📊 Tiempo total: 57.143s
-[03:35:22]    🏁 Velocidad: 15 km/h
-[03:35:22] --------------------------------------------------
-[03:35:22] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[03:35:22]    🏎️  Transponder: 6251777
-[03:35:22]    ⏱️  Tiempo vuelta 13: 51.600s
-[03:35:22]    📊 Tiempo total: 57.277s
-[03:35:22]    🏁 Velocidad: 21 km/h
-[03:35:22] --------------------------------------------------
-[03:35:23] ⏰ TIEMPO LÍMITE ALCANZADO - Finalizando carrera
-[03:35:23] 👑 GANADOR OFICIAL: Lando Norris
-[03:35:58] ⏱️ ENDURANCE activada: 60s
-[03:35:58] 🏁 CARRERA INICIADA
-[03:36:58] ⏰ TIEMPO LÍMITE ALCANZADO - Finalizando carrera
-[03:36:58] 👑 GANADOR OFICIAL: Jesús Gandarillas
-[03:45:46] ⏸️ CARRERA PAUSADA
-[03:55:18] [DECODER] Comando START enviado - Transmisión activada
-[03:55:48] 🏆 CARRERA FINALIZADA
-[03:56:34] ⏱️ ENDURANCE activada: 60s
-[03:56:34] 🏁 CARRERA INICIADA
-[03:57:34] ⏰ TIEMPO LÍMITE ALCANZADO - Finalizando carrera
-[03:57:34] 👑 GANADOR OFICIAL: Herbert Ying Kie Lee Covarrubias
-[04:06:43] 🏁 CARRERA INICIADA
-[04:09:04] 🏆 Jesús Gandarillas (24421) COMPLETÓ LA CARRERA!
-[04:09:05] 🏆 Herbert Ying Kie Lee Covarrubias (24417) COMPLETÓ LA CARRERA!
-[04:09:05] 👑 GANADOR OFICIAL: Jesús Gandarillas
-[04:09:38] 🏁 CARRERA INICIADA
-[04:09:38] 🎮 [SIMULACIÓN] Primera detección para Herbert Ying Kie Lee Covarrubias
-[04:09:38] 🎮 [SIMULACIÓN] Primera detección para Jesús Gandarillas
-[04:09:39] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[04:09:39]    🏎️  Transponder: 24417
-[04:09:39]    ⏱️  Tiempo vuelta 1: 46.207s
-[04:09:39]    📊 Tiempo total: 0.476s
-[04:09:39]    🏁 Velocidad: 23 km/h
-[04:09:39] --------------------------------------------------
-[04:09:39] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:09:39]    🏎️  Transponder: 24421
-[04:09:39]    ⏱️  Tiempo vuelta 1: 43.577s
-[04:09:39]    📊 Tiempo total: 0.526s
-[04:09:39]    🏁 Velocidad: 25 km/h
-[04:09:39] --------------------------------------------------
-[04:09:39] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:09:39]    🏎️  Transponder: 24421
-[04:09:39]    ⏱️  Tiempo vuelta 2: 87.918s
-[04:09:39]    📊 Tiempo total: 0.860s
-[04:09:39]    🏁 Velocidad: 12 km/h
-[04:09:39] --------------------------------------------------
-[04:09:40] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:09:40]    🏎️  Transponder: 24421
-[04:09:40]    ⏱️  Tiempo vuelta 3: 78.576s
-[04:09:40]    📊 Tiempo total: 1.190s
-[04:09:40]    🏁 Velocidad: 14 km/h
-[04:09:40] --------------------------------------------------
-[04:09:40] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[04:09:40]    🏎️  Transponder: 24417
-[04:09:40]    ⏱️  Tiempo vuelta 2: 36.830s
-[04:09:40]    📊 Tiempo total: 1.773s
-[04:09:40]    🏁 Velocidad: 29 km/h
-[04:09:40] --------------------------------------------------
-[04:09:40] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[04:09:40]    🏎️  Transponder: 24417
-[04:09:40]    ⏱️  Tiempo vuelta 3: 52.082s
-[04:09:40]    📊 Tiempo total: 2.096s
-[04:09:40]    🏁 Velocidad: 21 km/h
-[04:09:40] --------------------------------------------------
-[04:09:41] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:09:41]    🏎️  Transponder: 24421
-[04:09:41]    ⏱️  Tiempo vuelta 4: 30.032s
-[04:09:41]    📊 Tiempo total: 2.124s
-[04:09:41]    🏁 Velocidad: 36 km/h
-[04:09:41] --------------------------------------------------
-[04:09:41] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[04:09:41]    🏎️  Transponder: 24417
-[04:09:41]    ⏱️  Tiempo vuelta 4: 61.395s
-[04:09:41]    📊 Tiempo total: 2.713s
-[04:09:41]    🏁 Velocidad: 18 km/h
-[04:09:41] --------------------------------------------------
-[04:09:41] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:09:41]    🏎️  Transponder: 24421
-[04:09:41]    ⏱️  Tiempo vuelta 5: 66.899s
-[04:09:41]    📊 Tiempo total: 2.784s
-[04:09:41]    🏁 Velocidad: 16 km/h
-[04:09:41] --------------------------------------------------
-[04:09:42] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[04:09:42]    🏎️  Transponder: 24417
-[04:09:42]    ⏱️  Tiempo vuelta 5: 52.382s
-[04:09:42]    📊 Tiempo total: 3.361s
-[04:09:42]    🏁 Velocidad: 21 km/h
-[04:09:42] --------------------------------------------------
-[04:09:42] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:09:42]    🏎️  Transponder: 24421
-[04:09:42]    ⏱️  Tiempo vuelta 6: 35.540s
-[04:09:42]    📊 Tiempo total: 3.390s
-[04:09:42]    🏁 Velocidad: 30 km/h
-[04:09:42] --------------------------------------------------
-[04:09:42] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[04:09:42]    🏎️  Transponder: 24417
-[04:09:42]    ⏱️  Tiempo vuelta 6: 62.966s
-[04:09:42]    📊 Tiempo total: 3.982s
-[04:09:42]    🏁 Velocidad: 17 km/h
-[04:09:42] --------------------------------------------------
-[04:09:42] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[04:09:42]    🏎️  Transponder: 24417
-[04:09:42]    ⏱️  Tiempo vuelta 7: 34.217s
-[04:09:42]    📊 Tiempo total: 4.322s
-[04:09:42]    🏁 Velocidad: 32 km/h
-[04:09:43]    🏆 ¡Herbert Ying Kie Lee Covarrubias COMPLETÓ LA CARRERA!
-[04:09:43] --------------------------------------------------
-[04:09:43] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:09:43]    🏎️  Transponder: 24421
-[04:09:43]    ⏱️  Tiempo vuelta 7: 86.996s
-[04:09:43]    📊 Tiempo total: 4.438s
-[04:09:43]    🏁 Velocidad: 12 km/h
-[04:09:43]    🏆 ¡Jesús Gandarillas COMPLETÓ LA CARRERA!
-[04:09:43] 👑 GANADOR OFICIAL: Herbert Ying Kie Lee Covarrubias
-[04:09:43] --------------------------------------------------
-[04:34:03] 🏁 CARRERA INICIADA
-[04:34:03] 🎮 [SIMULACIÓN] Primera detección para Sergio Pice
-[04:34:04] 🎮 [SIMULACIÓN] Primera detección para Lando Norris
-[04:34:04] 🎮 [SIMULACIÓN] Primera detección para Michael Schumacher
-[04:34:04] 🎮 [SIMULACIÓN] Primera detección para Jesús Gandarillas
-[04:34:04] 🎮 [SIMULACIÓN] Primera detección para Max Verstappen
-[04:34:04] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:34:04]    🏎️  Transponder: 24415
-[04:34:04]    ⏱️  Tiempo vuelta 1: 65.591s
-[04:34:04]    📊 Tiempo total: 0.412s
-[04:34:04]    🏁 Velocidad: 16 km/h
-[04:34:05] --------------------------------------------------
-[04:34:05] 🎮 [SIMULACIÓN] Primera detección para Thomas Winkerton
-[04:34:05] 🎮 [SIMULACIÓN] Primera detección para Jim Clark
-[04:34:05] 🎮 [SIMULACIÓN] Primera detección para Jose Torres Ortiz
-[04:34:05] 🎮 [SIMULACIÓN] Primera detección para Fernando Alonso
-[04:34:06] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:34:06]    🏎️  Transponder: 24415
-[04:34:06]    ⏱️  Tiempo vuelta 2: 78.552s
-[04:34:06]    📊 Tiempo total: 1.587s
-[04:34:06]    🏁 Velocidad: 14 km/h
-[04:34:06] --------------------------------------------------
-[04:34:06] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:34:06]    🏎️  Transponder: 24415
-[04:34:06]    ⏱️  Tiempo vuelta 3: 86.258s
-[04:34:06]    📊 Tiempo total: 1.973s
-[04:34:06]    🏁 Velocidad: 13 km/h
-[04:34:06] --------------------------------------------------
-[04:34:06] 🎮 [SIMULACIÓN] Primera detección para Mika Häkkinen
-[04:34:07] 🎮 [SIMULACIÓN] Primera detección para Lewis Hamilton
-[04:34:07] 🎮 [SIMULACIÓN] Primera detección para Jimmie Johnson
-[04:34:07] 🎮 [SIMULACIÓN] Primera detección para Mario Andretti
-[04:34:07] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:34:07]    🏎️  Transponder: 24415
-[04:34:07]    ⏱️  Tiempo vuelta 4: 85.840s
-[04:34:07]    📊 Tiempo total: 3.083s
-[04:34:07]    🏁 Velocidad: 13 km/h
-[04:34:07] --------------------------------------------------
-[04:34:07] 🎮 [SIMULACIÓN] Primera detección para Charles Leclerc
-[04:34:08] 🎮 [SIMULACIÓN] Vuelta generada para Jimmie Johnson
-[04:34:08]    🏎️  Transponder: 24419
-[04:34:08]    ⏱️  Tiempo vuelta 1: 83.166s
-[04:34:08]    📊 Tiempo total: 0.940s
-[04:34:08]    🏁 Velocidad: 13 km/h
-[04:34:08] --------------------------------------------------
-[04:34:08] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:34:08]    🏎️  Transponder: 24415
-[04:34:08]    ⏱️  Tiempo vuelta 5: 42.393s
-[04:34:08]    📊 Tiempo total: 4.021s
-[04:34:08]    🏁 Velocidad: 25 km/h
-[04:34:08] --------------------------------------------------
-[04:34:08] 🎮 [SIMULACIÓN] Primera detección para Herbert Ying Kie Lee Covarrubias
-[04:34:09] 🎮 [SIMULACIÓN] Vuelta generada para Mika Häkkinen
-[04:34:09]    🏎️  Transponder: 24418
-[04:34:09]    ⏱️  Tiempo vuelta 1: 44.283s
-[04:34:09]    📊 Tiempo total: 2.275s
-[04:34:09]    🏁 Velocidad: 24 km/h
+[04:34:09] 🏁 CARRERA INICIADA
+[04:34:09] 🎮 [SIMULACIÓN] Primera detección para Andrés Suárez Encinas
+[04:34:09] 🎮 [SIMULACIÓN] Primera detección para Dale Earnhardt
+[04:34:09] 🎮 [SIMULACIÓN] Primera detección para Herbert Ying Kie Lee Covarrubias
+[04:34:09] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
+[04:34:09]    🏎️  Transponder: 24416
+[04:34:09]    ⏱️  Tiempo vuelta 1: 75.437s
+[04:34:09]    📊 Tiempo total: 0.629s
+[04:34:09]    🏁 Velocidad: 14 km/h
 [04:34:09] --------------------------------------------------
-[04:34:09] 🎮 [SIMULACIÓN] Vuelta generada para Sergio Pice
-[04:34:09]    🏎️  Transponder: 2425
-[04:34:09]    ⏱️  Tiempo vuelta 1: 35.278s
-[04:34:09]    📊 Tiempo total: 5.525s
-[04:34:09]    🏁 Velocidad: 31 km/h
-[04:34:09] --------------------------------------------------
-[04:34:09] 🎮 [SIMULACIÓN] Primera detección para Travis Taylor
-[04:34:10] 🎮 [SIMULACIÓN] Primera detección para Niki Lauda
-[04:34:10] 🎮 [SIMULACIÓN] Vuelta generada para Niki Lauda
-[04:34:10]    🏎️  Transponder: 24431
-[04:34:10]    ⏱️  Tiempo vuelta 1: 67.549s
-[04:34:10]    📊 Tiempo total: 0.206s
-[04:34:10]    🏁 Velocidad: 16 km/h
+[04:34:10] 🎮 [SIMULACIÓN] Primera detección para Lando Norris
+[04:34:10] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
+[04:34:10]    🏎️  Transponder: 24417
+[04:34:10]    ⏱️  Tiempo vuelta 1: 48.082s
+[04:34:10]    📊 Tiempo total: 0.781s
+[04:34:10]    🏁 Velocidad: 22 km/h
 [04:34:10] --------------------------------------------------
-[04:34:10] 🎮 [SIMULACIÓN] Vuelta generada para Sergio Pice
-[04:34:10]    🏎️  Transponder: 2425
-[04:34:10]    ⏱️  Tiempo vuelta 2: 44.940s
-[04:34:10]    📊 Tiempo total: 6.735s
-[04:34:10]    🏁 Velocidad: 24 km/h
-[04:34:10] --------------------------------------------------
-[04:34:11] 🎮 [SIMULACIÓN] Vuelta generada para Lewis Hamilton
-[04:34:11]    🏎️  Transponder: 6250753
-[04:34:11]    ⏱️  Tiempo vuelta 1: 52.353s
-[04:34:11]    📊 Tiempo total: 3.997s
-[04:34:11]    🏁 Velocidad: 21 km/h
+[04:34:10] 🎮 [SIMULACIÓN] Primera detección para Jesús Gandarillas
+[04:34:10] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
+[04:34:10]    🏎️  Transponder: 24424
+[04:34:10]    ⏱️  Tiempo vuelta 1: 63.546s
+[04:34:10]    📊 Tiempo total: 1.563s
+[04:34:10]    🏁 Velocidad: 17 km/h
 [04:34:11] --------------------------------------------------
-[04:34:11] 🎮 [SIMULACIÓN] Primera detección para Valentino Rossi
-[04:34:11] 🎮 [SIMULACIÓN] Primera detección para Alain  Prost
-[04:34:11] 🎮 [SIMULACIÓN] Primera detección para Lando Norris
-[04:34:11] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[04:34:11]    🏎️  Transponder: 24413
-[04:34:11]    ⏱️  Tiempo vuelta 1: 62.647s
-[04:34:11]    📊 Tiempo total: 2.144s
-[04:34:11]    🏁 Velocidad: 17 km/h
+[04:34:11] 🎮 [SIMULACIÓN] Primera detección para Mikie Pope Clare
+[04:34:11] 🎮 [SIMULACIÓN] Primera detección para Sergio Pice
+[04:34:11] 🎮 [SIMULACIÓN] Vuelta generada para Mikie Pope Clare
+[04:34:11]    🏎️  Transponder: 2425
+[04:34:11]    ⏱️  Tiempo vuelta 1: 38.048s
+[04:34:11]    📊 Tiempo total: 0.410s
+[04:34:11]    🏁 Velocidad: 28 km/h
+[04:34:11] --------------------------------------------------
+[04:34:12] 🎮 [SIMULACIÓN] Primera detección para Charles Leclerc
+[04:34:12] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
+[04:34:12]    🏎️  Transponder: 24427
+[04:34:12]    ⏱️  Tiempo vuelta 1: 89.454s
+[04:34:12]    📊 Tiempo total: 0.202s
+[04:34:12]    🏁 Velocidad: 12 km/h
 [04:34:12] --------------------------------------------------
-[04:34:12] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[04:34:12]    🏎️  Transponder: 24411
-[04:34:12]    ⏱️  Tiempo vuelta 1: 77.070s
-[04:34:12]    📊 Tiempo total: 0.504s
+[04:34:12] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
+[04:34:12]    🏎️  Transponder: 24424
+[04:34:12]    ⏱️  Tiempo vuelta 2: 75.878s
+[04:34:12]    📊 Tiempo total: 3.248s
 [04:34:12]    🏁 Velocidad: 14 km/h
 [04:34:12] --------------------------------------------------
-[04:34:12] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
-[04:34:12]    🏎️  Transponder: 24421
-[04:34:12]    ⏱️  Tiempo vuelta 1: 38.778s
-[04:34:12]    📊 Tiempo total: 1.241s
-[04:34:12]    🏁 Velocidad: 28 km/h
-[04:34:12] --------------------------------------------------
-[04:34:12] 🎮 [SIMULACIÓN] Vuelta generada para Jose Torres Ortiz
-[04:34:12]    🏎️  Transponder: 24414
-[04:34:12]    ⏱️  Tiempo vuelta 1: 64.149s
-[04:34:12]    📊 Tiempo total: 7.174s
-[04:34:12]    🏁 Velocidad: 17 km/h
-[04:34:12] --------------------------------------------------
-[04:34:13] 🎮 [SIMULACIÓN] Vuelta generada para Jimmie Johnson
-[04:34:13]    🏎️  Transponder: 24419
-[04:34:13]    ⏱️  Tiempo vuelta 2: 76.577s
-[04:34:13]    📊 Tiempo total: 5.963s
-[04:34:13]    🏁 Velocidad: 14 km/h
+[04:34:12] 🎮 [SIMULACIÓN] Vuelta generada para Sergio Pice
+[04:34:12]    🏎️  Transponder: 24410
+[04:34:12]    ⏱️  Tiempo vuelta 1: 51.840s
+[04:34:12]    📊 Tiempo total: 1.510s
+[04:34:12]    🏁 Velocidad: 21 km/h
 [04:34:13] --------------------------------------------------
+[04:34:13] 🎮 [SIMULACIÓN] Primera detección para Thomas Winkerton
 [04:34:13] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:34:13]    🏎️  Transponder: 24415
-[04:34:13]    ⏱️  Tiempo vuelta 6: 54.361s
-[04:34:13]    📊 Tiempo total: 9.001s
-[04:34:13]    🏁 Velocidad: 20 km/h
+[04:34:13]    🏎️  Transponder: 24421
+[04:34:13]    ⏱️  Tiempo vuelta 1: 80.060s
+[04:34:13]    📊 Tiempo total: 2.773s
+[04:34:13]    🏁 Velocidad: 13 km/h
 [04:34:13] --------------------------------------------------
-[04:34:13] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
-[04:34:13]    🏎️  Transponder: 24410
-[04:34:13]    ⏱️  Tiempo vuelta 1: 55.715s
-[04:34:13]    📊 Tiempo total: 8.537s
-[04:34:13]    🏁 Velocidad: 19 km/h
-[04:34:13] --------------------------------------------------
-[04:34:14] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[04:34:14]    🏎️  Transponder: 24426
-[04:34:14]    ⏱️  Tiempo vuelta 1: 31.311s
-[04:34:14]    📊 Tiempo total: 6.211s
-[04:34:14]    🏁 Velocidad: 34 km/h
+[04:34:13] 🎮 [SIMULACIÓN] Vuelta generada para Mikie Pope Clare
+[04:34:13]    🏎️  Transponder: 2425
+[04:34:13]    ⏱️  Tiempo vuelta 2: 84.099s
+[04:34:13]    📊 Tiempo total: 2.609s
+[04:34:13]    🏁 Velocidad: 13 km/h
 [04:34:14] --------------------------------------------------
-[04:34:14] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[04:34:14]    🏎️  Transponder: 24426
-[04:34:14]    ⏱️  Tiempo vuelta 2: 49.967s
-[04:34:14]    📊 Tiempo total: 6.529s
-[04:34:14]    🏁 Velocidad: 22 km/h
+[04:34:14] 🎮 [SIMULACIÓN] Vuelta generada para Sergio Pice
+[04:34:14]    🏎️  Transponder: 24410
+[04:34:14]    ⏱️  Tiempo vuelta 2: 78.905s
+[04:34:14]    📊 Tiempo total: 2.796s
+[04:34:14]    🏁 Velocidad: 14 km/h
 [04:34:14] --------------------------------------------------
-[04:34:14] 🎮 [SIMULACIÓN] Vuelta generada para Alain  Prost
-[04:34:14]    🏎️  Transponder: 24432
-[04:34:14]    ⏱️  Tiempo vuelta 1: 38.053s
-[04:34:14]    📊 Tiempo total: 3.240s
-[04:34:14]    🏁 Velocidad: 28 km/h
+[04:34:14] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
+[04:34:14]    🏎️  Transponder: 24417
+[04:34:14]    ⏱️  Tiempo vuelta 2: 42.050s
+[04:34:14]    📊 Tiempo total: 4.976s
+[04:34:14]    🏁 Velocidad: 26 km/h
 [04:34:14] --------------------------------------------------
-[04:34:15] 🎮 [SIMULACIÓN] Vuelta generada para Max Verstappen
-[04:34:15]    🏎️  Transponder: 24434
-[04:34:15]    ⏱️  Tiempo vuelta 1: 87.339s
-[04:34:15]    📊 Tiempo total: 10.334s
-[04:34:15]    🏁 Velocidad: 12 km/h
+[04:34:14] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
+[04:34:14]    🏎️  Transponder: 24416
+[04:34:14]    ⏱️  Tiempo vuelta 2: 39.302s
+[04:34:14]    📊 Tiempo total: 5.726s
+[04:34:14]    🏁 Velocidad: 27 km/h
 [04:34:15] --------------------------------------------------
-[04:34:15] 🎮 [SIMULACIÓN] Vuelta generada para Lewis Hamilton
-[04:34:15]    🏎️  Transponder: 6250753
-[04:34:15]    ⏱️  Tiempo vuelta 2: 46.024s
-[04:34:15]    📊 Tiempo total: 8.451s
-[04:34:15]    🏁 Velocidad: 23 km/h
+[04:34:15] 🎮 [SIMULACIÓN] Vuelta generada para Mikie Pope Clare
+[04:34:15]    🏎️  Transponder: 2425
+[04:34:15]    ⏱️  Tiempo vuelta 3: 66.620s
+[04:34:15]    📊 Tiempo total: 3.977s
+[04:34:15]    🏁 Velocidad: 16 km/h
 [04:34:15] --------------------------------------------------
-[04:34:15] 🎮 [SIMULACIÓN] Vuelta generada para Jose Torres Ortiz
-[04:34:15]    🏎️  Transponder: 24414
-[04:34:15]    ⏱️  Tiempo vuelta 2: 33.995s
-[04:34:15]    📊 Tiempo total: 10.077s
-[04:34:15]    🏁 Velocidad: 32 km/h
+[04:34:15] 🎮 [SIMULACIÓN] Primera detección para Lando Norris
+[04:34:15] 🎮 [SIMULACIÓN] Vuelta generada para Mikie Pope Clare
+[04:34:15]    🏎️  Transponder: 2425
+[04:34:15]    ⏱️  Tiempo vuelta 4: 83.207s
+[04:34:15]    📊 Tiempo total: 4.505s
+[04:34:15]    🏁 Velocidad: 13 km/h
 [04:34:15] --------------------------------------------------
-[04:34:16] 🎮 [SIMULACIÓN] Vuelta generada para Jimmie Johnson
-[04:34:16]    🏎️  Transponder: 24419
-[04:34:16]    ⏱️  Tiempo vuelta 3: 88.553s
-[04:34:16]    📊 Tiempo total: 8.862s
-[04:34:16]    🏁 Velocidad: 12 km/h
+[04:34:16] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:16]    🏎️  Transponder: 24412
+[04:34:16]    ⏱️  Tiempo vuelta 1: 72.121s
+[04:34:16]    📊 Tiempo total: 6.010s
+[04:34:16]    🏁 Velocidad: 15 km/h
 [04:34:16] --------------------------------------------------
-[04:34:16] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
+[04:34:16] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
 [04:34:16]    🏎️  Transponder: 24426
-[04:34:16]    ⏱️  Tiempo vuelta 3: 65.168s
-[04:34:16]    📊 Tiempo total: 8.437s
-[04:34:16]    🏁 Velocidad: 17 km/h
+[04:34:16]    ⏱️  Tiempo vuelta 1: 39.370s
+[04:34:16]    📊 Tiempo total: 0.948s
+[04:34:16]    🏁 Velocidad: 27 km/h
 [04:34:16] --------------------------------------------------
 [04:34:16] 🎮 [SIMULACIÓN] Vuelta generada para Sergio Pice
-[04:34:16]    🏎️  Transponder: 2425
-[04:34:16]    ⏱️  Tiempo vuelta 3: 66.002s
-[04:34:16]    📊 Tiempo total: 12.797s
+[04:34:16]    🏎️  Transponder: 24410
+[04:34:16]    ⏱️  Tiempo vuelta 3: 66.061s
+[04:34:16]    📊 Tiempo total: 5.389s
 [04:34:16]    🏁 Velocidad: 16 km/h
-[04:34:16] --------------------------------------------------
-[04:34:17] 🎮 [SIMULACIÓN] Vuelta generada para Jim Clark
-[04:34:17]    🏎️  Transponder: 24429
-[04:34:17]    ⏱️  Tiempo vuelta 1: 48.036s
-[04:34:17]    📊 Tiempo total: 11.499s
+[04:34:17] --------------------------------------------------
+[04:34:17] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
+[04:34:17]    🏎️  Transponder: 24427
+[04:34:17]    ⏱️  Tiempo vuelta 2: 48.545s
+[04:34:17]    📊 Tiempo total: 5.112s
 [04:34:17]    🏁 Velocidad: 22 km/h
 [04:34:17] --------------------------------------------------
-[04:34:17] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[04:34:17]    🏎️  Transponder: 24411
-[04:34:17]    ⏱️  Tiempo vuelta 2: 74.749s
-[04:34:17]    📊 Tiempo total: 5.584s
-[04:34:17]    🏁 Velocidad: 14 km/h
+[04:34:17] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
+[04:34:17]    🏎️  Transponder: 24427
+[04:34:17]    ⏱️  Tiempo vuelta 3: 30.800s
+[04:34:17]    📊 Tiempo total: 5.423s
+[04:34:17]    🏁 Velocidad: 35 km/h
 [04:34:17] --------------------------------------------------
-[04:34:17] 🎮 [SIMULACIÓN] Vuelta generada para Mika Häkkinen
-[04:34:17]    🏎️  Transponder: 24418
-[04:34:17]    ⏱️  Tiempo vuelta 2: 84.054s
-[04:34:17]    📊 Tiempo total: 10.835s
-[04:34:17]    🏁 Velocidad: 13 km/h
+[04:34:17] 🎮 [SIMULACIÓN] Vuelta generada para Mikie Pope Clare
+[04:34:17]    🏎️  Transponder: 2425
+[04:34:17]    ⏱️  Tiempo vuelta 5: 64.075s
+[04:34:17]    📊 Tiempo total: 6.585s
+[04:34:17]    🏁 Velocidad: 17 km/h
 [04:34:17] --------------------------------------------------
-[04:34:17] 🎮 [SIMULACIÓN] Vuelta generada para Jim Clark
-[04:34:17]    🏎️  Transponder: 24429
-[04:34:17]    ⏱️  Tiempo vuelta 2: 72.000s
-[04:34:17]    📊 Tiempo total: 12.442s
-[04:34:17]    🏁 Velocidad: 15 km/h
+[04:34:18] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
+[04:34:18]    🏎️  Transponder: 24417
+[04:34:18]    ⏱️  Tiempo vuelta 3: 33.025s
+[04:34:18]    📊 Tiempo total: 8.591s
+[04:34:18]    🏁 Velocidad: 33 km/h
 [04:34:18] --------------------------------------------------
-[04:34:18] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[04:34:18]    🏎️  Transponder: 24426
-[04:34:18]    ⏱️  Tiempo vuelta 4: 65.205s
-[04:34:18]    📊 Tiempo total: 10.301s
-[04:34:18]    🏁 Velocidad: 17 km/h
-[04:34:18] --------------------------------------------------
-[04:34:18] 🎮 [SIMULACIÓN] Vuelta generada para Max Verstappen
-[04:34:18]    🏎️  Transponder: 24434
-[04:34:18]    ⏱️  Tiempo vuelta 2: 47.886s
-[04:34:18]    📊 Tiempo total: 13.823s
+[04:34:18] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
+[04:34:18]    🏎️  Transponder: 24424
+[04:34:18]    ⏱️  Tiempo vuelta 3: 47.153s
+[04:34:18]    📊 Tiempo total: 9.105s
 [04:34:18]    🏁 Velocidad: 23 km/h
 [04:34:18] --------------------------------------------------
-[04:34:18] 🎮 [SIMULACIÓN] Primera detección para Sébastien Loeb
-[04:34:19] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[04:34:19]    🏎️  Transponder: 24413
-[04:34:19]    ⏱️  Tiempo vuelta 2: 89.608s
-[04:34:19]    📊 Tiempo total: 9.264s
-[04:34:19]    🏁 Velocidad: 12 km/h
+[04:34:18] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:18]    🏎️  Transponder: 24426
+[04:34:18]    ⏱️  Tiempo vuelta 2: 56.962s
+[04:34:18]    📊 Tiempo total: 3.279s
+[04:34:18]    🏁 Velocidad: 19 km/h
+[04:34:18] --------------------------------------------------
+[04:34:19] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
+[04:34:19]    🏎️  Transponder: 24416
+[04:34:19]    ⏱️  Tiempo vuelta 3: 40.393s
+[04:34:19]    📊 Tiempo total: 9.984s
+[04:34:19]    🏁 Velocidad: 27 km/h
 [04:34:19] --------------------------------------------------
-[04:34:19] 🎮 [SIMULACIÓN] Primera detección para Dale Earnhardt
-[04:34:19] 🎮 [SIMULACIÓN] Primera detección para Colin McRae
-[04:34:19] 🎮 [SIMULACIÓN] Primera detección para Jackie Stewart
-[04:34:19] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[04:34:19]    🏎️  Transponder: 24417
-[04:34:19]    ⏱️  Tiempo vuelta 1: 52.059s
-[04:34:19]    📊 Tiempo total: 11.117s
+[04:34:19] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:19]    🏎️  Transponder: 24412
+[04:34:19]    ⏱️  Tiempo vuelta 2: 36.023s
+[04:34:19]    📊 Tiempo total: 9.318s
+[04:34:19]    🏁 Velocidad: 30 km/h
+[04:34:19] --------------------------------------------------
+[04:34:19] 🎮 [SIMULACIÓN] Vuelta generada para Mikie Pope Clare
+[04:34:19]    🏎️  Transponder: 2425
+[04:34:19]    ⏱️  Tiempo vuelta 6: 52.497s
+[04:34:19]    📊 Tiempo total: 8.551s
 [04:34:19]    🏁 Velocidad: 21 km/h
+[04:34:19] --------------------------------------------------
+[04:34:20] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
+[04:34:20]    🏎️  Transponder: 24421
+[04:34:20]    ⏱️  Tiempo vuelta 2: 65.192s
+[04:34:20]    📊 Tiempo total: 9.413s
+[04:34:20]    🏁 Velocidad: 17 km/h
 [04:34:20] --------------------------------------------------
-[04:34:20] 🎮 [SIMULACIÓN] Vuelta generada para Mika Häkkinen
-[04:34:20]    🏎️  Transponder: 24418
-[04:34:20]    ⏱️  Tiempo vuelta 3: 42.391s
-[04:34:20]    📊 Tiempo total: 13.596s
-[04:34:20]    🏁 Velocidad: 25 km/h
+[04:34:20] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
+[04:34:20]    🏎️  Transponder: 24427
+[04:34:20]    ⏱️  Tiempo vuelta 4: 68.722s
+[04:34:20]    📊 Tiempo total: 8.374s
+[04:34:20]    🏁 Velocidad: 16 km/h
 [04:34:20] --------------------------------------------------
-[04:34:20] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[04:34:20]    🏎️  Transponder: 24413
-[04:34:20]    ⏱️  Tiempo vuelta 3: 37.943s
-[04:34:20]    📊 Tiempo total: 10.932s
-[04:34:20]    🏁 Velocidad: 28 km/h
+[04:34:20] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
+[04:34:20]    🏎️  Transponder: 24416
+[04:34:20]    ⏱️  Tiempo vuelta 4: 64.827s
+[04:34:20]    📊 Tiempo total: 11.583s
+[04:34:20]    🏁 Velocidad: 17 km/h
 [04:34:20] --------------------------------------------------
-[04:34:21] 🎮 [SIMULACIÓN] Vuelta generada para Alain  Prost
-[04:34:21]    🏎️  Transponder: 24432
-[04:34:21]    ⏱️  Tiempo vuelta 2: 57.861s
-[04:34:21]    📊 Tiempo total: 9.514s
-[04:34:21]    🏁 Velocidad: 19 km/h
+[04:34:21] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:21]    🏎️  Transponder: 24412
+[04:34:21]    ⏱️  Tiempo vuelta 3: 48.589s
+[04:34:21]    📊 Tiempo total: 10.938s
+[04:34:21]    🏁 Velocidad: 22 km/h
 [04:34:21] --------------------------------------------------
-[04:34:21] 🎮 [SIMULACIÓN] Primera detección para Juan Manuel Fangio
-[04:34:21] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
-[04:34:21]    🏎️  Transponder: 24410
-[04:34:21]    ⏱️  Tiempo vuelta 2: 40.889s
-[04:34:21]    📊 Tiempo total: 16.310s
-[04:34:21]    🏁 Velocidad: 26 km/h
+[04:34:21] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:21]    🏎️  Transponder: 24426
+[04:34:21]    ⏱️  Tiempo vuelta 3: 86.107s
+[04:34:21]    📊 Tiempo total: 5.849s
+[04:34:21]    🏁 Velocidad: 13 km/h
 [04:34:21] --------------------------------------------------
-[04:34:21] 🎮 [SIMULACIÓN] Vuelta generada para Fernando Alonso
-[04:34:21]    🏎️  Transponder: 24433
-[04:34:21]    ⏱️  Tiempo vuelta 1: 55.569s
-[04:34:21]    📊 Tiempo total: 16.068s
-[04:34:21]    🏁 Velocidad: 19 km/h
-[04:34:22] --------------------------------------------------
-[04:34:22] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
-[04:34:22]    🏎️  Transponder: 24423
-[04:34:22]    ⏱️  Tiempo vuelta 1: 83.462s
-[04:34:22]    📊 Tiempo total: 2.919s
-[04:34:22]    🏁 Velocidad: 13 km/h
-[04:34:22] --------------------------------------------------
-[04:34:22] 🎮 [SIMULACIÓN] Vuelta generada para Mario Andretti
-[04:34:22]    🏎️  Transponder: 24427
-[04:34:22]    ⏱️  Tiempo vuelta 1: 79.037s
-[04:34:22]    📊 Tiempo total: 15.206s
-[04:34:22]    🏁 Velocidad: 14 km/h
-[04:34:22] --------------------------------------------------
+[04:34:21] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:21]    🏎️  Transponder: 24412
+[04:34:21]    ⏱️  Tiempo vuelta 4: 48.883s
+[04:34:21]    📊 Tiempo total: 11.560s
+[04:34:21]    🏁 Velocidad: 22 km/h
+[04:34:21] --------------------------------------------------
 [04:34:22] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:22]    🏎️  Transponder: 24412
+[04:34:22]    ⏱️  Tiempo vuelta 5: 46.688s
+[04:34:22]    📊 Tiempo total: 11.903s
+[04:34:22]    🏁 Velocidad: 23 km/h
+[04:34:22] --------------------------------------------------
+[04:34:22] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
 [04:34:22]    🏎️  Transponder: 24411
-[04:34:22]    ⏱️  Tiempo vuelta 3: 63.979s
-[04:34:22]    📊 Tiempo total: 11.186s
+[04:34:22]    ⏱️  Tiempo vuelta 1: 64.143s
+[04:34:22]    📊 Tiempo total: 9.551s
 [04:34:22]    🏁 Velocidad: 17 km/h
 [04:34:23] --------------------------------------------------
 [04:34:23] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:34:23]    🏎️  Transponder: 24415
-[04:34:23]    ⏱️  Tiempo vuelta 7: 81.034s
-[04:34:23]    📊 Tiempo total: 18.747s
-[04:34:23]    🏁 Velocidad: 13 km/h
-[04:34:23]    🏆 ¡Jesús Gandarillas COMPLETÓ LA CARRERA!
+[04:34:23]    🏎️  Transponder: 24421
+[04:34:23]    ⏱️  Tiempo vuelta 3: 71.087s
+[04:34:23]    📊 Tiempo total: 12.574s
+[04:34:23]    🏁 Velocidad: 15 km/h
 [04:34:23] --------------------------------------------------
-[04:34:23] 🎮 [SIMULACIÓN] Vuelta generada para Mika Häkkinen
-[04:34:23]    🏎️  Transponder: 24418
-[04:34:23]    ⏱️  Tiempo vuelta 4: 33.161s
-[04:34:23]    📊 Tiempo total: 16.928s
-[04:34:23]    🏁 Velocidad: 33 km/h
+[04:34:23] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:23]    🏎️  Transponder: 24412
+[04:34:23]    ⏱️  Tiempo vuelta 6: 79.202s
+[04:34:23]    📊 Tiempo total: 13.469s
+[04:34:23]    🏁 Velocidad: 14 km/h
 [04:34:23] --------------------------------------------------
-[04:34:24] 🎮 [SIMULACIÓN] Vuelta generada para Niki Lauda
-[04:34:24]    🏎️  Transponder: 24431
-[04:34:24]    ⏱️  Tiempo vuelta 2: 41.393s
-[04:34:24]    📊 Tiempo total: 14.025s
-[04:34:24]    🏁 Velocidad: 26 km/h
+[04:34:23] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
+[04:34:23]    🏎️  Transponder: 24411
+[04:34:23]    ⏱️  Tiempo vuelta 2: 61.834s
+[04:34:23]    📊 Tiempo total: 10.660s
+[04:34:23]    🏁 Velocidad: 17 km/h
 [04:34:24] --------------------------------------------------
-[04:34:24] 🎮 [SIMULACIÓN] Vuelta generada para Sergio Pice
-[04:34:24]    🏎️  Transponder: 2425
-[04:34:24]    ⏱️  Tiempo vuelta 4: 39.146s
-[04:34:24]    📊 Tiempo total: 20.465s
-[04:34:24]    🏁 Velocidad: 28 km/h
-[04:34:24] --------------------------------------------------
-[04:34:24] 🎮 [SIMULACIÓN] Primera detección para Erick Pearson
-[04:34:24] 🎮 [SIMULACIÓN] Vuelta generada para Juan Manuel Fangio
-[04:34:24]    🏎️  Transponder: 24430
-[04:34:24]    ⏱️  Tiempo vuelta 1: 76.884s
-[04:34:24]    📊 Tiempo total: 3.517s
+[04:34:24] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
+[04:34:24]    🏎️  Transponder: 24424
+[04:34:24]    ⏱️  Tiempo vuelta 4: 79.526s
+[04:34:24]    📊 Tiempo total: 14.896s
 [04:34:24]    🏁 Velocidad: 14 km/h
+[04:34:24] --------------------------------------------------
+[04:34:24] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
+[04:34:24]    🏎️  Transponder: 24411
+[04:34:24]    ⏱️  Tiempo vuelta 3: 37.746s
+[04:34:24]    📊 Tiempo total: 11.271s
+[04:34:24]    🏁 Velocidad: 29 km/h
+[04:34:24] --------------------------------------------------
+[04:34:24] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
+[04:34:24]    🏎️  Transponder: 24427
+[04:34:24]    ⏱️  Tiempo vuelta 5: 80.936s
+[04:34:24]    📊 Tiempo total: 12.823s
+[04:34:24]    🏁 Velocidad: 13 km/h
 [04:34:25] --------------------------------------------------
-[04:34:25] 🎮 [SIMULACIÓN] Vuelta generada para Erick Pearson
-[04:34:25]    🏎️  Transponder: 24412
-[04:34:25]    ⏱️  Tiempo vuelta 1: 54.632s
-[04:34:25]    📊 Tiempo total: 0.525s
-[04:34:25]    🏁 Velocidad: 20 km/h
+[04:34:25] 🎮 [SIMULACIÓN] Vuelta generada para Mikie Pope Clare
+[04:34:25]    🏎️  Transponder: 2425
+[04:34:25]    ⏱️  Tiempo vuelta 7: 48.297s
+[04:34:25]    📊 Tiempo total: 13.974s
+[04:34:25]    🏁 Velocidad: 22 km/h
+[04:34:25]    🏆 ¡Mikie Pope Clare COMPLETÓ LA CARRERA!
 [04:34:25] --------------------------------------------------
-[04:34:25] 🎮 [SIMULACIÓN] Vuelta generada para Erick Pearson
-[04:34:25]    🏎️  Transponder: 24412
-[04:34:25]    ⏱️  Tiempo vuelta 2: 63.034s
-[04:34:25]    📊 Tiempo total: 0.861s
-[04:34:25]    🏁 Velocidad: 17 km/h
+[04:34:25] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
+[04:34:25]    🏎️  Transponder: 24411
+[04:34:25]    ⏱️  Tiempo vuelta 4: 45.464s
+[04:34:25]    📊 Tiempo total: 12.341s
+[04:34:25]    🏁 Velocidad: 24 km/h
 [04:34:25] --------------------------------------------------
-[04:34:25] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[04:34:25]    🏎️  Transponder: 24417
-[04:34:25]    ⏱️  Tiempo vuelta 2: 79.704s
-[04:34:25]    📊 Tiempo total: 17.016s
-[04:34:25]    🏁 Velocidad: 14 km/h
-[04:34:25] --------------------------------------------------
-[04:34:26] 🎮 [SIMULACIÓN] Vuelta generada para Michael Schumacher
-[04:34:26]    🏎️  Transponder: 6251777
-[04:34:26]    ⏱️  Tiempo vuelta 1: 60.942s
-[04:34:26]    📊 Tiempo total: 21.871s
-[04:34:26]    🏁 Velocidad: 18 km/h
+[04:34:26] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
+[04:34:26]    🏎️  Transponder: 24421
+[04:34:26]    ⏱️  Tiempo vuelta 4: 40.908s
+[04:34:26]    📊 Tiempo total: 15.285s
+[04:34:26]    🏁 Velocidad: 26 km/h
 [04:34:26] --------------------------------------------------
-[04:34:26] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
-[04:34:26]    🏎️  Transponder: 24410
-[04:34:26]    ⏱️  Tiempo vuelta 3: 51.756s
-[04:34:26]    📊 Tiempo total: 21.250s
-[04:34:26]    🏁 Velocidad: 21 km/h
+[04:34:26] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
+[04:34:26]    🏎️  Transponder: 24424
+[04:34:26]    ⏱️  Tiempo vuelta 5: 44.597s
+[04:34:26]    📊 Tiempo total: 17.003s
+[04:34:26]    🏁 Velocidad: 24 km/h
 [04:34:26] --------------------------------------------------
-[04:34:26] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
-[04:34:26]    🏎️  Transponder: 24410
-[04:34:26]    ⏱️  Tiempo vuelta 4: 85.346s
-[04:34:26]    📊 Tiempo total: 21.578s
-[04:34:26]    🏁 Velocidad: 13 km/h
+[04:34:26] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
+[04:34:26]    🏎️  Transponder: 24416
+[04:34:26]    ⏱️  Tiempo vuelta 5: 32.414s
+[04:34:26]    📊 Tiempo total: 17.530s
+[04:34:26]    🏁 Velocidad: 33 km/h
+[04:34:26] --------------------------------------------------
+[04:34:27] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
+[04:34:27]    🏎️  Transponder: 24421
+[04:34:27]    ⏱️  Tiempo vuelta 5: 31.394s
+[04:34:27]    📊 Tiempo total: 16.313s
+[04:34:27]    🏁 Velocidad: 34 km/h
+[04:34:27] --------------------------------------------------
+[04:34:27] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
+[04:34:27]    🏎️  Transponder: 24416
+[04:34:27]    ⏱️  Tiempo vuelta 6: 57.841s
+[04:34:27]    📊 Tiempo total: 18.177s
+[04:34:27]    🏁 Velocidad: 19 km/h
 [04:34:27] --------------------------------------------------
 [04:34:27] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[04:34:27]    🏎️  Transponder: 24411
-[04:34:27]    ⏱️  Tiempo vuelta 4: 74.316s
-[04:34:27]    📊 Tiempo total: 15.468s
-[04:34:27]    🏁 Velocidad: 15 km/h
-[04:34:27] --------------------------------------------------
-[04:34:27] 🎮 [SIMULACIÓN] Vuelta generada para Michael Schumacher
-[04:34:27]    🏎️  Transponder: 6251777
-[04:34:27]    ⏱️  Tiempo vuelta 2: 38.619s
-[04:34:27]    📊 Tiempo total: 23.219s
-[04:34:27]    🏁 Velocidad: 28 km/h
-[04:34:27] --------------------------------------------------
-[04:34:27] 🎮 [SIMULACIÓN] Vuelta generada para Mika Häkkinen
-[04:34:27]    🏎️  Transponder: 24418
-[04:34:27]    ⏱️  Tiempo vuelta 5: 49.579s
-[04:34:27]    📊 Tiempo total: 21.039s
-[04:34:27]    🏁 Velocidad: 22 km/h
-[04:34:27] --------------------------------------------------
-[04:34:28] 🎮 [SIMULACIÓN] Vuelta generada para Alain  Prost
-[04:34:28]    🏎️  Transponder: 24432
-[04:34:28]    ⏱️  Tiempo vuelta 3: 83.975s
-[04:34:28]    📊 Tiempo total: 16.631s
-[04:34:28]    🏁 Velocidad: 13 km/h
+[04:34:27]    🏎️  Transponder: 24412
+[04:34:27]    ⏱️  Tiempo vuelta 7: 55.833s
+[04:34:27]    📊 Tiempo total: 17.493s
+[04:34:27]    🏁 Velocidad: 19 km/h
+[04:34:28]    🏆 ¡Lando Norris COMPLETÓ LA CARRERA!
 [04:34:28] --------------------------------------------------
 [04:34:28] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:28]    🏎️  Transponder: 24426
+[04:34:28]    ⏱️  Tiempo vuelta 4: 40.779s
+[04:34:28]    📊 Tiempo total: 12.642s
+[04:34:28]    🏁 Velocidad: 26 km/h
+[04:34:28] --------------------------------------------------
+[04:34:28] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
 [04:34:28]    🏎️  Transponder: 24424
-[04:34:28]    ⏱️  Tiempo vuelta 1: 49.898s
-[04:34:28]    📊 Tiempo total: 24.419s
+[04:34:28]    ⏱️  Tiempo vuelta 6: 48.386s
+[04:34:28]    📊 Tiempo total: 19.111s
 [04:34:28]    🏁 Velocidad: 22 km/h
 [04:34:28] --------------------------------------------------
-[04:34:28] 🎮 [SIMULACIÓN] Vuelta generada para Jackie Stewart
-[04:34:28]    🏎️  Transponder: 24428
-[04:34:28]    ⏱️  Tiempo vuelta 1: 43.745s
-[04:34:28]    📊 Tiempo total: 9.058s
-[04:34:28]    🏁 Velocidad: 25 km/h
-[04:34:28] --------------------------------------------------
-[04:34:29] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
-[04:34:29]    🏎️  Transponder: 24421
-[04:34:29]    ⏱️  Tiempo vuelta 2: 39.886s
-[04:34:29]    📊 Tiempo total: 17.855s
+[04:34:28] 🎮 [SIMULACIÓN] Vuelta generada para Mikie Pope Clare
+[04:34:28]    🏎️  Transponder: 2425
+[04:34:28]    ⏱️  Tiempo vuelta 8: 66.962s
+[04:34:28]    📊 Tiempo total: 17.579s
+[04:34:28]    🏁 Velocidad: 16 km/h
+[04:34:29] --------------------------------------------------
+[04:34:29] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
+[04:34:29]    🏎️  Transponder: 24417
+[04:34:29]    ⏱️  Tiempo vuelta 4: 47.918s
+[04:34:29]    📊 Tiempo total: 19.596s
+[04:34:29]    🏁 Velocidad: 23 km/h
+[04:34:29] --------------------------------------------------
+[04:34:29] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:29]    🏎️  Transponder: 24412
+[04:34:29]    ⏱️  Tiempo vuelta 8: 37.368s
+[04:34:29]    📊 Tiempo total: 19.325s
+[04:34:29]    🏁 Velocidad: 29 km/h
+[04:34:29] --------------------------------------------------
+[04:34:29] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
+[04:34:29]    🏎️  Transponder: 24424
+[04:34:29]    ⏱️  Tiempo vuelta 7: 39.279s
+[04:34:29]    📊 Tiempo total: 20.430s
 [04:34:29]    🏁 Velocidad: 27 km/h
-[04:34:29] --------------------------------------------------
-[04:34:29] 🎮 [SIMULACIÓN] Vuelta generada para Alain  Prost
-[04:34:29]    🏎️  Transponder: 24432
-[04:34:29]    ⏱️  Tiempo vuelta 4: 50.138s
-[04:34:29]    📊 Tiempo total: 17.979s
-[04:34:29]    🏁 Velocidad: 22 km/h
-[04:34:29] --------------------------------------------------
-[04:34:29] 🎮 [SIMULACIÓN] Vuelta generada para Colin McRae
-[04:34:29]    🏎️  Transponder: 24422
-[04:34:29]    ⏱️  Tiempo vuelta 1: 62.061s
-[04:34:29]    📊 Tiempo total: 10.243s
-[04:34:29]    🏁 Velocidad: 17 km/h
-[04:34:29] --------------------------------------------------
-[04:34:30] 🎮 [SIMULACIÓN] Vuelta generada para Michael Schumacher
-[04:34:30]    🏎️  Transponder: 6251777
-[04:34:30]    ⏱️  Tiempo vuelta 3: 65.177s
-[04:34:30]    📊 Tiempo total: 25.802s
-[04:34:30]    🏁 Velocidad: 17 km/h
+[04:34:30]    🏆 ¡Dale Earnhardt COMPLETÓ LA CARRERA!
 [04:34:30] --------------------------------------------------
-[04:34:30] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[04:34:30]    🏎️  Transponder: 24413
-[04:34:30]    ⏱️  Tiempo vuelta 4: 44.842s
-[04:34:30]    📊 Tiempo total: 20.649s
-[04:34:30]    🏁 Velocidad: 24 km/h
+[04:34:30] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
+[04:34:30]    🏎️  Transponder: 24417
+[04:34:30]    ⏱️  Tiempo vuelta 5: 77.495s
+[04:34:30]    📊 Tiempo total: 20.678s
+[04:34:30]    🏁 Velocidad: 14 km/h
 [04:34:30] --------------------------------------------------
-[04:34:30] 🎮 [SIMULACIÓN] Vuelta generada para Erick Pearson
-[04:34:30]    🏎️  Transponder: 24412
-[04:34:30]    ⏱️  Tiempo vuelta 3: 50.233s
-[04:34:30]    📊 Tiempo total: 6.041s
-[04:34:30]    🏁 Velocidad: 21 km/h
+[04:34:30] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
+[04:34:30]    🏎️  Transponder: 24417
+[04:34:30]    ⏱️  Tiempo vuelta 6: 88.945s
+[04:34:30]    📊 Tiempo total: 20.981s
+[04:34:30]    🏁 Velocidad: 12 km/h
 [04:34:30] --------------------------------------------------
+[04:34:30] 🎮 [SIMULACIÓN] Vuelta generada para Mikie Pope Clare
+[04:34:30]    🏎️  Transponder: 2425
+[04:34:30]    ⏱️  Tiempo vuelta 9: 89.435s
+[04:34:30]    📊 Tiempo total: 19.700s
+[04:34:30]    🏁 Velocidad: 12 km/h
+[04:34:31] --------------------------------------------------
 [04:34:31] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:31]    🏎️  Transponder: 24426
+[04:34:31]    ⏱️  Tiempo vuelta 5: 40.711s
+[04:34:31]    📊 Tiempo total: 15.791s
+[04:34:31]    🏁 Velocidad: 27 km/h
+[04:34:31] --------------------------------------------------
+[04:34:31] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
 [04:34:31]    🏎️  Transponder: 24411
-[04:34:31]    ⏱️  Tiempo vuelta 5: 36.869s
-[04:34:31]    📊 Tiempo total: 19.297s
-[04:34:31]    🏁 Velocidad: 29 km/h
+[04:34:31]    ⏱️  Tiempo vuelta 5: 58.842s
+[04:34:31]    📊 Tiempo total: 18.337s
+[04:34:31]    🏁 Velocidad: 18 km/h
 [04:34:31] --------------------------------------------------
-[04:34:31] 🎮 [SIMULACIÓN] Vuelta generada para Michael Schumacher
-[04:34:31]    🏎️  Transponder: 6251777
-[04:34:31]    ⏱️  Tiempo vuelta 4: 34.394s
-[04:34:31]    📊 Tiempo total: 27.046s
-[04:34:31]    🏁 Velocidad: 31 km/h
-[04:34:31] --------------------------------------------------
-[04:34:31] 🎮 [SIMULACIÓN] Vuelta generada para Jim Clark
-[04:34:31]    🏎️  Transponder: 24429
-[04:34:31]    ⏱️  Tiempo vuelta 3: 48.649s
-[04:34:31]    📊 Tiempo total: 26.187s
-[04:34:31]    🏁 Velocidad: 22 km/h
-[04:34:31] --------------------------------------------------
-[04:34:31] 🎮 [SIMULACIÓN] Vuelta generada para Mika Häkkinen
-[04:34:31]    🏎️  Transponder: 24418
-[04:34:31]    ⏱️  Tiempo vuelta 6: 65.733s
-[04:34:31]    📊 Tiempo total: 25.177s
-[04:34:31]    🏁 Velocidad: 16 km/h
+[04:34:32] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
+[04:34:32]    🏎️  Transponder: 24417
+[04:34:32]    ⏱️  Tiempo vuelta 7: 76.378s
+[04:34:32]    📊 Tiempo total: 22.404s
+[04:34:32]    🏁 Velocidad: 14 km/h
+[04:34:32]    🏆 ¡Herbert Ying Kie Lee Covarrubias COMPLETÓ LA CARRERA!
 [04:34:32] --------------------------------------------------
-[04:34:32] 🎮 [SIMULACIÓN] Vuelta generada para Jose Torres Ortiz
-[04:34:32]    🏎️  Transponder: 24414
-[04:34:32]    ⏱️  Tiempo vuelta 3: 34.763s
-[04:34:32]    📊 Tiempo total: 26.598s
-[04:34:32]    🏁 Velocidad: 31 km/h
-[04:34:32] --------------------------------------------------
-[04:34:32] 🎮 [SIMULACIÓN] Vuelta generada para Mario Andretti
+[04:34:32] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
 [04:34:32]    🏎️  Transponder: 24427
-[04:34:32]    ⏱️  Tiempo vuelta 2: 41.800s
-[04:34:32]    📊 Tiempo total: 25.219s
-[04:34:32]    🏁 Velocidad: 26 km/h
+[04:34:32]    ⏱️  Tiempo vuelta 6: 33.959s
+[04:34:32]    📊 Tiempo total: 20.384s
+[04:34:32]    🏁 Velocidad: 32 km/h
 [04:34:32] --------------------------------------------------
-[04:34:32] 🎮 [SIMULACIÓN] Vuelta generada para Jackie Stewart
-[04:34:32]    🏎️  Transponder: 24428
-[04:34:32]    ⏱️  Tiempo vuelta 2: 65.402s
-[04:34:32]    📊 Tiempo total: 13.158s
-[04:34:32]    🏁 Velocidad: 17 km/h
-[04:34:33] --------------------------------------------------
-[04:34:33] 🎮 [SIMULACIÓN] Vuelta generada para Sergio Pice
-[04:34:33]    🏎️  Transponder: 2425
-[04:34:33]    ⏱️  Tiempo vuelta 5: 89.507s
-[04:34:33]    📊 Tiempo total: 29.307s
-[04:34:33]    🏁 Velocidad: 12 km/h
+[04:34:32] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:32]    🏎️  Transponder: 24426
+[04:34:32]    ⏱️  Tiempo vuelta 6: 40.906s
+[04:34:32]    📊 Tiempo total: 17.299s
+[04:34:32]    🏁 Velocidad: 26 km/h
 [04:34:33] --------------------------------------------------
 [04:34:33] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[04:34:33]    🏎️  Transponder: 24424
-[04:34:33]    ⏱️  Tiempo vuelta 2: 50.247s
-[04:34:33]    📊 Tiempo total: 29.443s
-[04:34:33]    🏁 Velocidad: 21 km/h
+[04:34:33]    🏎️  Transponder: 24412
+[04:34:33]    ⏱️  Tiempo vuelta 9: 47.345s
+[04:34:33]    📊 Tiempo total: 23.086s
+[04:34:33]    🏁 Velocidad: 23 km/h
 [04:34:33] --------------------------------------------------
-[04:34:33] 🎮 [SIMULACIÓN] Vuelta generada para Jimmie Johnson
-[04:34:33]    🏎️  Transponder: 24419
-[04:34:33]    ⏱️  Tiempo vuelta 4: 58.090s
-[04:34:33]    📊 Tiempo total: 26.644s
-[04:34:33]    🏁 Velocidad: 19 km/h
+[04:34:33] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:33]    🏎️  Transponder: 24412
+[04:34:33]    ⏱️  Tiempo vuelta 10: 32.321s
+[04:34:33]    📊 Tiempo total: 23.372s
+[04:34:33]    🏁 Velocidad: 33 km/h
 [04:34:33] --------------------------------------------------
-[04:34:34] 🎮 [SIMULACIÓN] Vuelta generada para Colin McRae
-[04:34:34]    🏎️  Transponder: 24422
-[04:34:34]    ⏱️  Tiempo vuelta 2: 45.602s
-[04:34:34]    📊 Tiempo total: 14.563s
-[04:34:34]    🏁 Velocidad: 24 km/h
+[04:34:33] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
+[04:34:33]    🏎️  Transponder: 24416
+[04:34:33]    ⏱️  Tiempo vuelta 7: 61.703s
+[04:34:33]    📊 Tiempo total: 24.678s
+[04:34:33]    🏁 Velocidad: 18 km/h
+[04:34:34]    🏆 ¡Andrés Suárez Encinas COMPLETÓ LA CARRERA!
 [04:34:34] --------------------------------------------------
-[04:34:34] 🎮 [SIMULACIÓN] Vuelta generada para Jimmie Johnson
-[04:34:34]    🏎️  Transponder: 24419
-[04:34:34]    ⏱️  Tiempo vuelta 5: 75.585s
-[04:34:34]    📊 Tiempo total: 27.270s
-[04:34:34]    🏁 Velocidad: 14 km/h
+[04:34:34] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
+[04:34:34]    🏎️  Transponder: 24421
+[04:34:34]    ⏱️  Tiempo vuelta 6: 83.381s
+[04:34:34]    📊 Tiempo total: 23.569s
+[04:34:34]    🏁 Velocidad: 13 km/h
+[04:34:34] --------------------------------------------------
+[04:34:34] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
+[04:34:34]    🏎️  Transponder: 24424
+[04:34:34]    ⏱️  Tiempo vuelta 8: 55.897s
+[04:34:34]    📊 Tiempo total: 25.246s
+[04:34:34]    🏁 Velocidad: 19 km/h
+[04:34:34] --------------------------------------------------
+[04:34:35] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
+[04:34:35]    🏎️  Transponder: 24427
+[04:34:35]    ⏱️  Tiempo vuelta 7: 31.053s
+[04:34:35]    📊 Tiempo total: 22.941s
+[04:34:35]    🏁 Velocidad: 35 km/h
+[04:34:35]    🏆 ¡Charles Leclerc COMPLETÓ LA CARRERA!
 [04:34:35] --------------------------------------------------
-[04:34:35] 🎮 [SIMULACIÓN] Vuelta generada para Jim Clark
-[04:34:35]    🏎️  Transponder: 24429
-[04:34:35]    ⏱️  Tiempo vuelta 4: 84.807s
-[04:34:35]    📊 Tiempo total: 29.842s
+[04:34:35] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:35]    🏎️  Transponder: 24412
+[04:34:35]    ⏱️  Tiempo vuelta 11: 85.030s
+[04:34:35]    📊 Tiempo total: 25.265s
 [04:34:35]    🏁 Velocidad: 13 km/h
 [04:34:35] --------------------------------------------------
-[04:34:35] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[04:34:35]    🏎️  Transponder: 24413
-[04:34:35]    ⏱️  Tiempo vuelta 5: 63.893s
-[04:34:35]    📊 Tiempo total: 25.919s
-[04:34:35]    🏁 Velocidad: 17 km/h
+[04:34:35] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
+[04:34:35]    🏎️  Transponder: 24411
+[04:34:35]    ⏱️  Tiempo vuelta 6: 85.549s
+[04:34:35]    📊 Tiempo total: 22.421s
+[04:34:35]    🏁 Velocidad: 13 km/h
 [04:34:35] --------------------------------------------------
-[04:34:36] 🎮 [SIMULACIÓN] Vuelta generada para Mario Andretti
-[04:34:36]    🏎️  Transponder: 24427
-[04:34:36]    ⏱️  Tiempo vuelta 3: 31.189s
-[04:34:36]    📊 Tiempo total: 28.596s
-[04:34:36]    🏁 Velocidad: 35 km/h
+[04:34:36] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
+[04:34:36]    🏎️  Transponder: 24421
+[04:34:36]    ⏱️  Tiempo vuelta 7: 66.046s
+[04:34:36]    📊 Tiempo total: 25.332s
+[04:34:36]    🏁 Velocidad: 16 km/h
+[04:34:36]    🏆 ¡Jesús Gandarillas COMPLETÓ LA CARRERA!
 [04:34:36] --------------------------------------------------
-[04:34:36] 🎮 [SIMULACIÓN] Vuelta generada para Michael Schumacher
-[04:34:36]    🏎️  Transponder: 6251777
-[04:34:36]    ⏱️  Tiempo vuelta 5: 81.501s
-[04:34:36]    📊 Tiempo total: 32.045s
-[04:34:36]    🏁 Velocidad: 13 km/h
+[04:34:36] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
+[04:34:36]    🏎️  Transponder: 24416
+[04:34:36]    ⏱️  Tiempo vuelta 8: 72.165s
+[04:34:36]    📊 Tiempo total: 27.296s
+[04:34:36]    🏁 Velocidad: 15 km/h
 [04:34:36] --------------------------------------------------
-[04:34:36] 🎮 [SIMULACIÓN] Vuelta generada para Max Verstappen
-[04:34:36]    🏎️  Transponder: 24434
-[04:34:36]    ⏱️  Tiempo vuelta 3: 82.298s
-[04:34:36]    📊 Tiempo total: 31.988s
-[04:34:36]    🏁 Velocidad: 13 km/h
-[04:34:36] --------------------------------------------------
-[04:34:37] 🎮 [SIMULACIÓN] Vuelta generada para Jimmie Johnson
-[04:34:37]    🏎️  Transponder: 24419
-[04:34:37]    ⏱️  Tiempo vuelta 6: 68.972s
-[04:34:37]    📊 Tiempo total: 29.806s
-[04:34:37]    🏁 Velocidad: 16 km/h
+[04:34:36] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
+[04:34:36]    🏎️  Transponder: 24411
+[04:34:36]    ⏱️  Tiempo vuelta 7: 86.992s
+[04:34:36]    📊 Tiempo total: 23.507s
+[04:34:36]    🏁 Velocidad: 12 km/h
+[04:34:37]    🏆 ¡Thomas Winkerton COMPLETÓ LA CARRERA!
 [04:34:37] --------------------------------------------------
 [04:34:37] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[04:34:37]    🏎️  Transponder: 24426
-[04:34:37]    ⏱️  Tiempo vuelta 5: 47.950s
-[04:34:37]    📊 Tiempo total: 29.388s
-[04:34:37]    🏁 Velocidad: 23 km/h
+[04:34:37]    🏎️  Transponder: 24427
+[04:34:37]    ⏱️  Tiempo vuelta 8: 45.347s
+[04:34:37]    📊 Tiempo total: 25.181s
+[04:34:37]    🏁 Velocidad: 24 km/h
 [04:34:37] --------------------------------------------------
-[04:34:37] 🎮 [SIMULACIÓN] Vuelta generada para Sébastien Loeb
-[04:34:37]    🏎️  Transponder: 24420
-[04:34:37]    ⏱️  Tiempo vuelta 1: 52.737s
-[04:34:37]    📊 Tiempo total: 18.770s
-[04:34:37]    🏁 Velocidad: 20 km/h
+[04:34:37] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
+[04:34:37]    🏎️  Transponder: 24424
+[04:34:37]    ⏱️  Tiempo vuelta 9: 45.646s
+[04:34:37]    📊 Tiempo total: 28.185s
+[04:34:37]    🏁 Velocidad: 24 km/h
 [04:34:37] --------------------------------------------------
-[04:34:37] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[04:34:37]    🏎️  Transponder: 24411
-[04:34:37]    ⏱️  Tiempo vuelta 6: 31.801s
-[04:34:37]    📊 Tiempo total: 26.189s
-[04:34:37]    🏁 Velocidad: 34 km/h
+[04:34:37] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
+[04:34:37]    🏎️  Transponder: 24427
+[04:34:37]    ⏱️  Tiempo vuelta 9: 62.042s
+[04:34:37]    📊 Tiempo total: 25.861s
+[04:34:37]    🏁 Velocidad: 17 km/h
 [04:34:38] --------------------------------------------------
-[04:34:38] 🎮 [SIMULACIÓN] Vuelta generada para Max Verstappen
-[04:34:38]    🏎️  Transponder: 24434
-[04:34:38]    ⏱️  Tiempo vuelta 4: 78.322s
-[04:34:38]    📊 Tiempo total: 33.486s
+[04:34:38] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
+[04:34:38]    🏎️  Transponder: 24417
+[04:34:38]    ⏱️  Tiempo vuelta 8: 89.321s
+[04:34:38]    📊 Tiempo total: 28.691s
+[04:34:38]    🏁 Velocidad: 12 km/h
+[04:34:38] --------------------------------------------------
+[04:34:38] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:38]    🏎️  Transponder: 24426
+[04:34:38]    ⏱️  Tiempo vuelta 7: 74.640s
+[04:34:38]    📊 Tiempo total: 23.022s
 [04:34:38]    🏁 Velocidad: 14 km/h
+[04:34:38]    🏆 ¡Lando Norris COMPLETÓ LA CARRERA!
 [04:34:38] --------------------------------------------------
-[04:34:38] 🎮 [SIMULACIÓN] Vuelta generada para Jim Clark
-[04:34:38]    🏎️  Transponder: 24429
-[04:34:38]    ⏱️  Tiempo vuelta 5: 69.956s
-[04:34:38]    📊 Tiempo total: 33.067s
-[04:34:38]    🏁 Velocidad: 15 km/h
-[04:34:38] --------------------------------------------------
-[04:34:38] 🎮 [SIMULACIÓN] Vuelta generada para Jimmie Johnson
-[04:34:38]    🏎️  Transponder: 24419
-[04:34:38]    ⏱️  Tiempo vuelta 7: 37.421s
-[04:34:38]    📊 Tiempo total: 31.655s
-[04:34:38]    🏁 Velocidad: 29 km/h
-[04:34:39]    🏆 ¡Jimmie Johnson COMPLETÓ LA CARRERA!
-[04:34:39] --------------------------------------------------
-[04:34:39] 🎮 [SIMULACIÓN] Vuelta generada para Niki Lauda
-[04:34:39]    🏎️  Transponder: 24431
-[04:34:39]    ⏱️  Tiempo vuelta 3: 57.851s
-[04:34:39]    📊 Tiempo total: 29.320s
-[04:34:39]    🏁 Velocidad: 19 km/h
-[04:34:39] --------------------------------------------------
-[04:34:39] 🎮 [SIMULACIÓN] Vuelta generada para Niki Lauda
-[04:34:39]    🏎️  Transponder: 24431
-[04:34:39]    ⏱️  Tiempo vuelta 4: 70.137s
-[04:34:39]    📊 Tiempo total: 29.656s
+[04:34:39] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:39]    🏎️  Transponder: 24412
+[04:34:39]    ⏱️  Tiempo vuelta 12: 73.730s
+[04:34:39]    📊 Tiempo total: 28.894s
 [04:34:39]    🏁 Velocidad: 15 km/h
 [04:34:39] --------------------------------------------------
-[04:34:39] 🎮 [SIMULACIÓN] Vuelta generada para Fernando Alonso
-[04:34:39]    🏎️  Transponder: 24433
-[04:34:39]    ⏱️  Tiempo vuelta 2: 62.190s
-[04:34:39]    📊 Tiempo total: 34.073s
-[04:34:39]    🏁 Velocidad: 17 km/h
-[04:34:40] --------------------------------------------------
-[04:34:40] 🎮 [SIMULACIÓN] Vuelta generada para Jackie Stewart
-[04:34:40]    🏎️  Transponder: 24428
-[04:34:40]    ⏱️  Tiempo vuelta 3: 48.130s
-[04:34:40]    📊 Tiempo total: 20.536s
-[04:34:40]    🏁 Velocidad: 22 km/h
+[04:34:39] 🎮 [SIMULACIÓN] Vuelta generada para Sergio Pice
+[04:34:39]    🏎️  Transponder: 24410
+[04:34:39]    ⏱️  Tiempo vuelta 4: 33.525s
+[04:34:39]    📊 Tiempo total: 27.925s
+[04:34:39]    🏁 Velocidad: 32 km/h
+[04:34:39] --------------------------------------------------
+[04:34:39] 🎮 [SIMULACIÓN] Vuelta generada para Mikie Pope Clare
+[04:34:39]    🏎️  Transponder: 2425
+[04:34:39]    ⏱️  Tiempo vuelta 10: 88.270s
+[04:34:39]    📊 Tiempo total: 28.472s
+[04:34:39]    🏁 Velocidad: 12 km/h
+[04:34:39] --------------------------------------------------
+[04:34:40] 🎮 [SIMULACIÓN] Vuelta generada para Mikie Pope Clare
+[04:34:40]    🏎️  Transponder: 2425
+[04:34:40]    ⏱️  Tiempo vuelta 11: 89.006s
+[04:34:40]    📊 Tiempo total: 28.816s
+[04:34:40]    🏁 Velocidad: 12 km/h
 [04:34:40] --------------------------------------------------
 [04:34:40] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
-[04:34:40]    🏎️  Transponder: 24423
-[04:34:40]    ⏱️  Tiempo vuelta 2: 82.010s
-[04:34:40]    📊 Tiempo total: 21.286s
-[04:34:40]    🏁 Velocidad: 13 km/h
+[04:34:40]    🏎️  Transponder: 24424
+[04:34:40]    ⏱️  Tiempo vuelta 10: 56.910s
+[04:34:40]    📊 Tiempo total: 30.991s
+[04:34:40]    🏁 Velocidad: 19 km/h
 [04:34:40] --------------------------------------------------
-[04:34:41] 🎮 [SIMULACIÓN] Vuelta generada para Lewis Hamilton
-[04:34:41]    🏎️  Transponder: 6250753
-[04:34:41]    ⏱️  Tiempo vuelta 3: 46.672s
-[04:34:41]    📊 Tiempo total: 33.998s
-[04:34:41]    🏁 Velocidad: 23 km/h
+[04:34:40] 🎮 [SIMULACIÓN] Vuelta generada para Sergio Pice
+[04:34:40]    🏎️  Transponder: 24410
+[04:34:40]    ⏱️  Tiempo vuelta 5: 72.219s
+[04:34:40]    📊 Tiempo total: 29.223s
+[04:34:40]    🏁 Velocidad: 15 km/h
+[04:34:40] --------------------------------------------------
+[04:34:41] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
+[04:34:41]    🏎️  Transponder: 24427
+[04:34:41]    ⏱️  Tiempo vuelta 10: 82.051s
+[04:34:41]    📊 Tiempo total: 28.966s
+[04:34:41]    🏁 Velocidad: 13 km/h
 [04:34:41] --------------------------------------------------
-[04:34:41] 🎮 [SIMULACIÓN] Vuelta generada para Juan Manuel Fangio
-[04:34:41]    🏎️  Transponder: 24430
-[04:34:41]    ⏱️  Tiempo vuelta 2: 87.110s
-[04:34:41]    📊 Tiempo total: 19.922s
-[04:34:41]    🏁 Velocidad: 12 km/h
-[04:34:41] --------------------------------------------------
-[04:34:41] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
+[04:34:41] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
 [04:34:41]    🏎️  Transponder: 24421
-[04:34:41]    ⏱️  Tiempo vuelta 3: 67.218s
-[04:34:41]    📊 Tiempo total: 30.284s
+[04:34:41]    ⏱️  Tiempo vuelta 8: 52.709s
+[04:34:41]    📊 Tiempo total: 30.610s
+[04:34:41]    🏁 Velocidad: 20 km/h
+[04:34:41] --------------------------------------------------
+[04:34:41] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
+[04:34:41]    🏎️  Transponder: 24417
+[04:34:41]    ⏱️  Tiempo vuelta 9: 68.393s
+[04:34:41]    📊 Tiempo total: 32.076s
 [04:34:41]    🏁 Velocidad: 16 km/h
 [04:34:41] --------------------------------------------------
-[04:34:41] 🎮 [SIMULACIÓN] Vuelta generada para Mika Häkkinen
-[04:34:41]    🏎️  Transponder: 24418
-[04:34:41]    ⏱️  Tiempo vuelta 7: 73.702s
-[04:34:41]    📊 Tiempo total: 35.111s
-[04:34:41]    🏁 Velocidad: 15 km/h
-[04:34:42]    🏆 ¡Mika Häkkinen COMPLETÓ LA CARRERA!
+[04:34:42] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:42]    🏎️  Transponder: 24426
+[04:34:42]    ⏱️  Tiempo vuelta 8: 34.568s
+[04:34:42]    📊 Tiempo total: 26.506s
+[04:34:42]    🏁 Velocidad: 31 km/h
 [04:34:42] --------------------------------------------------
-[04:34:42] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
-[04:34:42]    🏎️  Transponder: 24423
-[04:34:42]    ⏱️  Tiempo vuelta 3: 59.832s
-[04:34:42]    📊 Tiempo total: 22.937s
-[04:34:42]    🏁 Velocidad: 18 km/h
+[04:34:42] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:42]    🏎️  Transponder: 24426
+[04:34:42]    ⏱️  Tiempo vuelta 9: 45.095s
+[04:34:42]    📊 Tiempo total: 26.847s
+[04:34:42]    🏁 Velocidad: 24 km/h
 [04:34:42] --------------------------------------------------
-[04:34:42] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
+[04:34:42] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
 [04:34:42]    🏎️  Transponder: 24421
-[04:34:42]    ⏱️  Tiempo vuelta 4: 80.650s
-[04:34:42]    📊 Tiempo total: 31.327s
-[04:34:42]    🏁 Velocidad: 13 km/h
+[04:34:42]    ⏱️  Tiempo vuelta 9: 57.954s
+[04:34:42]    📊 Tiempo total: 31.953s
+[04:34:42]    🏁 Velocidad: 19 km/h
 [04:34:42] --------------------------------------------------
-[04:34:42] 🎮 [SIMULACIÓN] Vuelta generada para Jim Clark
-[04:34:42]    🏎️  Transponder: 24429
-[04:34:42]    ⏱️  Tiempo vuelta 6: 37.619s
-[04:34:42]    📊 Tiempo total: 37.458s
-[04:34:42]    🏁 Velocidad: 29 km/h
+[04:34:43] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
+[04:34:43]    🏎️  Transponder: 24427
+[04:34:43]    ⏱️  Tiempo vuelta 11: 65.491s
+[04:34:43]    📊 Tiempo total: 30.967s
+[04:34:43]    🏁 Velocidad: 16 km/h
 [04:34:43] --------------------------------------------------
-[04:34:43] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[04:34:43]    🏎️  Transponder: 24413
-[04:34:43]    ⏱️  Tiempo vuelta 6: 86.087s
-[04:34:43]    📊 Tiempo total: 33.496s
-[04:34:43]    🏁 Velocidad: 13 km/h
+[04:34:43] 🎮 [SIMULACIÓN] Vuelta generada para Mikie Pope Clare
+[04:34:43]    🏎️  Transponder: 2425
+[04:34:43]    ⏱️  Tiempo vuelta 12: 47.689s
+[04:34:43]    📊 Tiempo total: 32.155s
+[04:34:43]    🏁 Velocidad: 23 km/h
 [04:34:43] --------------------------------------------------
-[04:34:43] 🎮 [SIMULACIÓN] Vuelta generada para Max Verstappen
-[04:34:43]    🏎️  Transponder: 24434
-[04:34:43]    ⏱️  Tiempo vuelta 5: 85.864s
-[04:34:43]    📊 Tiempo total: 38.850s
-[04:34:43]    🏁 Velocidad: 13 km/h
+[04:34:43] 🎮 [SIMULACIÓN] Vuelta generada para Sergio Pice
+[04:34:43]    🏎️  Transponder: 24410
+[04:34:43]    ⏱️  Tiempo vuelta 6: 89.017s
+[04:34:43]    📊 Tiempo total: 32.250s
+[04:34:43]    🏁 Velocidad: 12 km/h
 [04:34:43] --------------------------------------------------
-[04:34:43] 🎮 [SIMULACIÓN] Vuelta generada para Jim Clark
-[04:34:43]    🏎️  Transponder: 24429
-[04:34:43]    ⏱️  Tiempo vuelta 7: 59.082s
-[04:34:43]    📊 Tiempo total: 38.401s
-[04:34:43]    🏁 Velocidad: 18 km/h
-[04:34:44]    🏆 ¡Jim Clark COMPLETÓ LA CARRERA!
-[04:34:44] --------------------------------------------------
-[04:34:44] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
-[04:34:44]    🏎️  Transponder: 24423
-[04:34:44]    ⏱️  Tiempo vuelta 4: 68.771s
-[04:34:44]    📊 Tiempo total: 25.039s
-[04:34:44]    🏁 Velocidad: 16 km/h
+[04:34:44] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
+[04:34:44]    🏎️  Transponder: 24411
+[04:34:44]    ⏱️  Tiempo vuelta 8: 31.590s
+[04:34:44]    📊 Tiempo total: 30.738s
+[04:34:44]    🏁 Velocidad: 34 km/h
 [04:34:44] --------------------------------------------------
 [04:34:44] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:34:44]    🏎️  Transponder: 24415
-[04:34:44]    ⏱️  Tiempo vuelta 8: 74.905s
-[04:34:44]    📊 Tiempo total: 40.218s
-[04:34:44]    🏁 Velocidad: 14 km/h
+[04:34:44]    🏎️  Transponder: 24421
+[04:34:44]    ⏱️  Tiempo vuelta 10: 62.488s
+[04:34:44]    📊 Tiempo total: 33.652s
+[04:34:44]    🏁 Velocidad: 17 km/h
 [04:34:44] --------------------------------------------------
-[04:34:45] 🎮 [SIMULACIÓN] Vuelta generada para Erick Pearson
-[04:34:45]    🏎️  Transponder: 24412
-[04:34:45]    ⏱️  Tiempo vuelta 4: 74.894s
-[04:34:45]    📊 Tiempo total: 20.346s
+[04:34:44] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
+[04:34:44]    🏎️  Transponder: 24421
+[04:34:44]    ⏱️  Tiempo vuelta 11: 68.549s
+[04:34:44]    📊 Tiempo total: 33.963s
+[04:34:44]    🏁 Velocidad: 16 km/h
+[04:34:44] --------------------------------------------------
+[04:34:45] 🎮 [SIMULACIÓN] Vuelta generada para Mikie Pope Clare
+[04:34:45]    🏎️  Transponder: 2425
+[04:34:45]    ⏱️  Tiempo vuelta 13: 79.411s
+[04:34:45]    📊 Tiempo total: 33.842s
 [04:34:45]    🏁 Velocidad: 14 km/h
 [04:34:45] --------------------------------------------------
-[04:34:45] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
-[04:34:45]    🏎️  Transponder: 24410
-[04:34:45]    ⏱️  Tiempo vuelta 5: 37.009s
-[04:34:45]    📊 Tiempo total: 40.114s
-[04:34:45]    🏁 Velocidad: 29 km/h
-[04:34:45] --------------------------------------------------
 [04:34:45] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[04:34:45]    🏎️  Transponder: 24424
-[04:34:45]    ⏱️  Tiempo vuelta 3: 51.463s
-[04:34:45]    📊 Tiempo total: 41.629s
-[04:34:45]    🏁 Velocidad: 21 km/h
+[04:34:45]    🏎️  Transponder: 24412
+[04:34:45]    ⏱️  Tiempo vuelta 13: 60.101s
+[04:34:45]    📊 Tiempo total: 35.289s
+[04:34:45]    🏁 Velocidad: 18 km/h
 [04:34:45] --------------------------------------------------
-[04:34:46] 🎮 [SIMULACIÓN] Vuelta generada para Colin McRae
-[04:34:46]    🏎️  Transponder: 24422
-[04:34:46]    ⏱️  Tiempo vuelta 3: 31.422s
-[04:34:46]    📊 Tiempo total: 26.464s
-[04:34:46]    🏁 Velocidad: 34 km/h
+[04:34:45] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
+[04:34:45]    🏎️  Transponder: 24424
+[04:34:45]    ⏱️  Tiempo vuelta 11: 33.869s
+[04:34:45]    📊 Tiempo total: 36.371s
+[04:34:45]    🏁 Velocidad: 32 km/h
+[04:34:45] --------------------------------------------------
+[04:34:46] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
+[04:34:46]    🏎️  Transponder: 24411
+[04:34:46]    ⏱️  Tiempo vuelta 9: 39.302s
+[04:34:46]    📊 Tiempo total: 32.788s
+[04:34:46]    🏁 Velocidad: 27 km/h
 [04:34:46] --------------------------------------------------
-[04:34:46] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
-[04:34:46]    🏎️  Transponder: 24421
-[04:34:46]    ⏱️  Tiempo vuelta 5: 71.928s
-[04:34:46]    📊 Tiempo total: 35.034s
-[04:34:46]    🏁 Velocidad: 15 km/h
+[04:34:46] 🎮 [SIMULACIÓN] Vuelta generada para Mikie Pope Clare
+[04:34:46]    🏎️  Transponder: 2425
+[04:34:46]    ⏱️  Tiempo vuelta 14: 58.594s
+[04:34:46]    📊 Tiempo total: 35.195s
+[04:34:46]    🏁 Velocidad: 18 km/h
 [04:34:46] --------------------------------------------------
-[04:34:46] 🎮 [SIMULACIÓN] Vuelta generada para Alain  Prost
-[04:34:46]    🏎️  Transponder: 24432
-[04:34:46]    ⏱️  Tiempo vuelta 5: 55.548s
-[04:34:46]    📊 Tiempo total: 35.162s
-[04:34:46]    🏁 Velocidad: 19 km/h
+[04:34:46] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:46]    🏎️  Transponder: 24412
+[04:34:46]    ⏱️  Tiempo vuelta 14: 79.652s
+[04:34:46]    📊 Tiempo total: 36.609s
+[04:34:46]    🏁 Velocidad: 14 km/h
 [04:34:46] --------------------------------------------------
-[04:34:47] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[04:34:47]    🏎️  Transponder: 24426
-[04:34:47]    ⏱️  Tiempo vuelta 6: 35.044s
-[04:34:47]    📊 Tiempo total: 39.056s
-[04:34:47]    🏁 Velocidad: 31 km/h
-[04:34:47] --------------------------------------------------
-[04:34:47] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:47] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
 [04:34:47]    🏎️  Transponder: 24424
-[04:34:47]    ⏱️  Tiempo vuelta 4: 50.561s
-[04:34:47]    📊 Tiempo total: 43.212s
-[04:34:47]    🏁 Velocidad: 21 km/h
+[04:34:47]    ⏱️  Tiempo vuelta 12: 87.314s
+[04:34:47]    📊 Tiempo total: 37.736s
+[04:34:47]    🏁 Velocidad: 12 km/h
 [04:34:47] --------------------------------------------------
-[04:34:47] 🎮 [SIMULACIÓN] Vuelta generada para Jim Clark
-[04:34:47]    🏎️  Transponder: 24429
-[04:34:47]    ⏱️  Tiempo vuelta 8: 53.650s
-[04:34:47]    📊 Tiempo total: 42.156s
-[04:34:47]    🏁 Velocidad: 20 km/h
+[04:34:47] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
+[04:34:47]    🏎️  Transponder: 24416
+[04:34:47]    ⏱️  Tiempo vuelta 9: 67.150s
+[04:34:47]    📊 Tiempo total: 38.284s
+[04:34:47]    🏁 Velocidad: 16 km/h
 [04:34:47] --------------------------------------------------
-[04:34:47] 🎮 [SIMULACIÓN] Primera detección para Andrés Suárez Encinas
-[04:34:48] 🎮 [SIMULACIÓN] Vuelta generada para Sébastien Loeb
-[04:34:48]    🏎️  Transponder: 24420
-[04:34:48]    ⏱️  Tiempo vuelta 2: 56.100s
-[04:34:48]    📊 Tiempo total: 29.327s
-[04:34:48]    🏁 Velocidad: 19 km/h
+[04:34:47] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
+[04:34:47]    🏎️  Transponder: 24421
+[04:34:47]    ⏱️  Tiempo vuelta 12: 72.258s
+[04:34:47]    📊 Tiempo total: 37.036s
+[04:34:47]    🏁 Velocidad: 15 km/h
+[04:34:47] --------------------------------------------------
+[04:34:48] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:48]    🏎️  Transponder: 24412
+[04:34:48]    ⏱️  Tiempo vuelta 15: 86.362s
+[04:34:48]    📊 Tiempo total: 37.974s
+[04:34:48]    🏁 Velocidad: 13 km/h
 [04:34:48] --------------------------------------------------
-[04:34:48] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
-[04:34:48]    🏎️  Transponder: 24416
-[04:34:48]    ⏱️  Tiempo vuelta 1: 42.216s
-[04:34:48]    📊 Tiempo total: 0.593s
-[04:34:48]    🏁 Velocidad: 26 km/h
+[04:34:48] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
+[04:34:48]    🏎️  Transponder: 24421
+[04:34:48]    ⏱️  Tiempo vuelta 13: 68.976s
+[04:34:48]    📊 Tiempo total: 37.746s
+[04:34:48]    🏁 Velocidad: 16 km/h
 [04:34:48] --------------------------------------------------
-[04:34:48] 🎮 [SIMULACIÓN] Vuelta generada para Jim Clark
-[04:34:48]    🏎️  Transponder: 24429
-[04:34:48]    ⏱️  Tiempo vuelta 9: 78.315s
-[04:34:48]    📊 Tiempo total: 43.371s
-[04:34:48]    🏁 Velocidad: 14 km/h
-[04:34:48] --------------------------------------------------
-[04:34:49] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[04:34:49]    🏎️  Transponder: 24426
-[04:34:49]    ⏱️  Tiempo vuelta 7: 41.217s
-[04:34:49]    📊 Tiempo total: 41.227s
-[04:34:49]    🏁 Velocidad: 26 km/h
-[04:34:49]    🏆 ¡Charles Leclerc COMPLETÓ LA CARRERA!
+[04:34:48] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
+[04:34:48]    🏎️  Transponder: 24424
+[04:34:48]    ⏱️  Tiempo vuelta 13: 51.370s
+[04:34:48]    📊 Tiempo total: 39.433s
+[04:34:48]    🏁 Velocidad: 21 km/h
 [04:34:49] --------------------------------------------------
-[04:34:49] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[04:34:49]    🏎️  Transponder: 24424
-[04:34:49]    ⏱️  Tiempo vuelta 5: 31.493s
-[04:34:49]    📊 Tiempo total: 45.479s
-[04:34:49]    🏁 Velocidad: 34 km/h
+[04:34:49] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
+[04:34:49]    🏎️  Transponder: 24417
+[04:34:49]    ⏱️  Tiempo vuelta 10: 65.012s
+[04:34:49]    📊 Tiempo total: 39.596s
+[04:34:49]    🏁 Velocidad: 17 km/h
 [04:34:49] --------------------------------------------------
 [04:34:49] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:34:49]    🏎️  Transponder: 24415
-[04:34:49]    ⏱️  Tiempo vuelta 9: 55.835s
-[04:34:49]    📊 Tiempo total: 45.361s
-[04:34:49]    🏁 Velocidad: 19 km/h
+[04:34:49]    🏎️  Transponder: 24421
+[04:34:49]    ⏱️  Tiempo vuelta 14: 51.690s
+[04:34:49]    📊 Tiempo total: 38.801s
+[04:34:49]    🏁 Velocidad: 21 km/h
 [04:34:49] --------------------------------------------------
-[04:34:50] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
-[04:34:50]    🏎️  Transponder: 24416
-[04:34:50]    ⏱️  Tiempo vuelta 2: 58.166s
-[04:34:50]    📊 Tiempo total: 2.223s
-[04:34:50]    🏁 Velocidad: 19 km/h
+[04:34:49] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
+[04:34:49]    🏎️  Transponder: 24426
+[04:34:49]    ⏱️  Tiempo vuelta 10: 43.529s
+[04:34:49]    📊 Tiempo total: 34.319s
+[04:34:49]    🏁 Velocidad: 25 km/h
 [04:34:50] --------------------------------------------------
-[04:34:50] 🎮 [SIMULACIÓN] Vuelta generada para Jose Torres Ortiz
-[04:34:50]    🏎️  Transponder: 24414
-[04:34:50]    ⏱️  Tiempo vuelta 4: 30.719s
-[04:34:50]    📊 Tiempo total: 44.838s
-[04:34:50]    🏁 Velocidad: 35 km/h
+[04:34:50] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
+[04:34:50]    🏎️  Transponder: 24411
+[04:34:50]    ⏱️  Tiempo vuelta 10: 55.173s
+[04:34:50]    📊 Tiempo total: 36.975s
+[04:34:50]    🏁 Velocidad: 20 km/h
 [04:34:50] --------------------------------------------------
-[04:34:50] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
-[04:34:50]    🏎️  Transponder: 24416
-[04:34:50]    ⏱️  Tiempo vuelta 3: 51.963s
-[04:34:50]    📊 Tiempo total: 2.873s
-[04:34:50]    🏁 Velocidad: 21 km/h
-[04:34:50] --------------------------------------------------
-[04:34:51] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[04:34:51]    🏎️  Transponder: 24426
-[04:34:51]    ⏱️  Tiempo vuelta 8: 67.756s
-[04:34:51]    📊 Tiempo total: 43.193s
-[04:34:51]    🏁 Velocidad: 16 km/h
+[04:34:50] 🎮 [SIMULACIÓN] Vuelta generada para Sergio Pice
+[04:34:50]    🏎️  Transponder: 24410
+[04:34:50]    ⏱️  Tiempo vuelta 7: 72.925s
+[04:34:50]    📊 Tiempo total: 39.130s
+[04:34:50]    🏁 Velocidad: 15 km/h
+[04:34:50]    🏆 ¡Sergio Pice COMPLETÓ LA CARRERA!
+[04:34:51] 👑 GANADOR OFICIAL: Mikie Pope Clare
 [04:34:51] --------------------------------------------------
-[04:34:51] 🎮 [SIMULACIÓN] Vuelta generada para Lewis Hamilton
-[04:34:51]    🏎️  Transponder: 6250753
-[04:34:51]    ⏱️  Tiempo vuelta 4: 78.464s
-[04:34:51]    📊 Tiempo total: 44.456s
-[04:34:51]    🏁 Velocidad: 14 km/h
-[04:34:51] --------------------------------------------------
-[04:34:51] 🎮 [SIMULACIÓN] Vuelta generada para Mario Andretti
-[04:34:51]    🏎️  Transponder: 24427
-[04:34:51]    ⏱️  Tiempo vuelta 4: 86.547s
-[04:34:51]    📊 Tiempo total: 44.361s
-[04:34:51]    🏁 Velocidad: 12 km/h
-[04:34:51] --------------------------------------------------
-[04:34:52] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
-[04:34:52]    🏎️  Transponder: 24421
-[04:34:52]    ⏱️  Tiempo vuelta 6: 41.742s
-[04:34:52]    📊 Tiempo total: 40.796s
-[04:34:52]    🏁 Velocidad: 26 km/h
-[04:34:52] --------------------------------------------------
-[04:34:52] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[04:34:52]    🏎️  Transponder: 24413
-[04:34:52]    ⏱️  Tiempo vuelta 7: 50.264s
-[04:34:52]    📊 Tiempo total: 42.659s
-[04:34:52]    🏁 Velocidad: 21 km/h
-[04:34:52]    🏆 ¡Travis Taylor COMPLETÓ LA CARRERA!
-[04:34:52] --------------------------------------------------
-[04:34:52] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:34:52]    🏎️  Transponder: 24415
-[04:34:52]    ⏱️  Tiempo vuelta 10: 64.363s
-[04:34:52]    📊 Tiempo total: 48.328s
-[04:34:52]    🏁 Velocidad: 17 km/h
-[04:34:52] --------------------------------------------------
-[04:34:53] 🎮 [SIMULACIÓN] Vuelta generada para Jackie Stewart
-[04:34:53]    🏎️  Transponder: 24428
-[04:34:53]    ⏱️  Tiempo vuelta 4: 58.354s
-[04:34:53]    📊 Tiempo total: 33.401s
-[04:34:53]    🏁 Velocidad: 19 km/h
-[04:34:53] --------------------------------------------------
-[04:34:53] 🎮 [SIMULACIÓN] Vuelta generada para Michael Schumacher
-[04:34:53]    🏎️  Transponder: 6251777
-[04:34:53]    ⏱️  Tiempo vuelta 6: 89.073s
-[04:34:53]    📊 Tiempo total: 49.210s
-[04:34:53]    🏁 Velocidad: 12 km/h
-[04:34:53] --------------------------------------------------
-[04:34:53] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
-[04:34:53]    🏎️  Transponder: 24421
-[04:34:53]    ⏱️  Tiempo vuelta 7: 65.887s
-[04:34:53]    📊 Tiempo total: 42.503s
-[04:34:53]    🏁 Velocidad: 16 km/h
-[04:34:54]    🏆 ¡Valentino Rossi COMPLETÓ LA CARRERA!
-[04:34:54] --------------------------------------------------
-[04:34:54] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[04:34:54]    🏎️  Transponder: 24413
-[04:34:54]    ⏱️  Tiempo vuelta 8: 36.277s
-[04:34:54]    📊 Tiempo total: 44.436s
-[04:34:54]    🏁 Velocidad: 30 km/h
-[04:34:54] --------------------------------------------------
-[04:34:54] 🎮 [SIMULACIÓN] Vuelta generada para Juan Manuel Fangio
-[04:34:54]    🏎️  Transponder: 24430
-[04:34:54]    ⏱️  Tiempo vuelta 3: 59.478s
-[04:34:54]    📊 Tiempo total: 33.145s
-[04:34:54]    🏁 Velocidad: 18 km/h
-[04:34:54] --------------------------------------------------
-[04:34:54] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[04:34:54]    🏎️  Transponder: 24413
-[04:34:54]    ⏱️  Tiempo vuelta 9: 77.579s
-[04:34:54]    📊 Tiempo total: 45.116s
-[04:34:54]    🏁 Velocidad: 14 km/h
-[04:34:55] --------------------------------------------------
-[04:34:55] 🎮 [SIMULACIÓN] Vuelta generada para Lewis Hamilton
-[04:34:55]    🏎️  Transponder: 6250753
-[04:34:55]    ⏱️  Tiempo vuelta 5: 45.789s
-[04:34:55]    📊 Tiempo total: 48.214s
-[04:34:55]    🏁 Velocidad: 24 km/h
-[04:34:55] --------------------------------------------------
-[04:34:55] 🎮 [SIMULACIÓN] Vuelta generada para Michael Schumacher
-[04:34:55]    🏎️  Transponder: 6251777
-[04:34:55]    ⏱️  Tiempo vuelta 7: 35.273s
-[04:34:55]    📊 Tiempo total: 51.251s
-[04:34:55]    🏁 Velocidad: 31 km/h
-[04:34:55]    🏆 ¡Michael Schumacher COMPLETÓ LA CARRERA!
-[04:34:55] --------------------------------------------------
-[04:34:55] 🎮 [SIMULACIÓN] Vuelta generada para Juan Manuel Fangio
-[04:34:55]    🏎️  Transponder: 24430
-[04:34:55]    ⏱️  Tiempo vuelta 4: 33.066s
-[04:34:55]    📊 Tiempo total: 34.554s
-[04:34:55]    🏁 Velocidad: 33 km/h
-[04:34:56] --------------------------------------------------
-[04:34:56] 🎮 [SIMULACIÓN] Vuelta generada para Colin McRae
-[04:34:56]    🏎️  Transponder: 24422
-[04:34:56]    ⏱️  Tiempo vuelta 4: 66.842s
-[04:34:56]    📊 Tiempo total: 36.685s
-[04:34:56]    🏁 Velocidad: 16 km/h
-[04:34:56] --------------------------------------------------
-[04:34:56] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[04:34:56]    🏎️  Transponder: 24411
-[04:34:56]    ⏱️  Tiempo vuelta 7: 83.689s
-[04:34:56]    📊 Tiempo total: 44.882s
-[04:34:56]    🏁 Velocidad: 13 km/h
-[04:34:56]    🏆 ¡Lando Norris COMPLETÓ LA CARRERA!
-[04:34:56] --------------------------------------------------
-[04:34:56] 🎮 [SIMULACIÓN] Vuelta generada para Jose Torres Ortiz
-[04:34:56]    🏎️  Transponder: 24414
-[04:34:56]    ⏱️  Tiempo vuelta 5: 44.953s
-[04:34:56]    📊 Tiempo total: 51.282s
-[04:34:56]    🏁 Velocidad: 24 km/h
-[04:34:57] --------------------------------------------------
-[04:34:57] 🎮 [SIMULACIÓN] Vuelta generada para Michael Schumacher
-[04:34:57]    🏎️  Transponder: 6251777
-[04:34:57]    ⏱️  Tiempo vuelta 8: 31.263s
-[04:34:57]    📊 Tiempo total: 53.002s
-[04:34:57]    🏁 Velocidad: 35 km/h
-[04:34:57] --------------------------------------------------
-[04:34:57] 🎮 [SIMULACIÓN] Vuelta generada para Jackie Stewart
-[04:34:57]    🏎️  Transponder: 24428
-[04:34:57]    ⏱️  Tiempo vuelta 5: 40.452s
-[04:34:57]    📊 Tiempo total: 37.891s
-[04:34:57]    🏁 Velocidad: 27 km/h
-[04:34:57] --------------------------------------------------
-[04:34:57] 🎮 [SIMULACIÓN] Vuelta generada para Jim Clark
-[04:34:57]    🏎️  Transponder: 24429
-[04:34:57]    ⏱️  Tiempo vuelta 10: 33.291s
-[04:34:57]    📊 Tiempo total: 52.484s
-[04:34:57]    🏁 Velocidad: 32 km/h
-[04:34:58] --------------------------------------------------
-[04:34:58] 🎮 [SIMULACIÓN] Vuelta generada para Colin McRae
-[04:34:58]    🏎️  Transponder: 24422
-[04:34:58]    ⏱️  Tiempo vuelta 5: 70.361s
-[04:34:58]    📊 Tiempo total: 38.728s
-[04:34:58]    🏁 Velocidad: 15 km/h
-[04:34:58] --------------------------------------------------
-[04:34:58] 🎮 [SIMULACIÓN] Vuelta generada para Juan Manuel Fangio
-[04:34:58]    🏎️  Transponder: 24430
-[04:34:58]    ⏱️  Tiempo vuelta 5: 71.557s
-[04:34:58]    📊 Tiempo total: 37.322s
-[04:34:58]    🏁 Velocidad: 15 km/h
-[04:34:58] --------------------------------------------------
-[04:34:59] 🎮 [SIMULACIÓN] Vuelta generada para Erick Pearson
-[04:34:59]    🏎️  Transponder: 24412
-[04:34:59]    ⏱️  Tiempo vuelta 5: 54.166s
-[04:34:59]    📊 Tiempo total: 34.317s
-[04:34:59]    🏁 Velocidad: 20 km/h
-[04:34:59] --------------------------------------------------
-[04:34:59] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
-[04:34:59]    🏎️  Transponder: 24423
-[04:34:59]    ⏱️  Tiempo vuelta 5: 52.021s
-[04:34:59]    📊 Tiempo total: 40.015s
-[04:34:59]    🏁 Velocidad: 21 km/h
-[04:34:59] --------------------------------------------------
-[04:34:59] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[04:34:59]    🏎️  Transponder: 24424
-[04:34:59]    ⏱️  Tiempo vuelta 6: 57.409s
-[04:34:59]    📊 Tiempo total: 55.618s
-[04:34:59]    🏁 Velocidad: 19 km/h
-[04:34:59] --------------------------------------------------
-[04:35:00] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[04:35:00]    🏎️  Transponder: 24411
-[04:35:00]    ⏱️  Tiempo vuelta 8: 56.477s
-[04:35:00]    📊 Tiempo total: 48.280s
-[04:35:00]    🏁 Velocidad: 19 km/h
-[04:35:00] --------------------------------------------------
-[04:35:00] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[04:35:00]    🏎️  Transponder: 24417
-[04:35:00]    ⏱️  Tiempo vuelta 3: 42.057s
-[04:35:00]    📊 Tiempo total: 51.467s
-[04:35:00]    🏁 Velocidad: 26 km/h
-[04:35:00] --------------------------------------------------
-[04:35:00] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[04:35:00]    🏎️  Transponder: 24424
-[04:35:00]    ⏱️  Tiempo vuelta 7: 42.615s
-[04:35:00]    📊 Tiempo total: 56.589s
-[04:35:00]    🏁 Velocidad: 25 km/h
-[04:35:00]    🏆 ¡Lando Norris COMPLETÓ LA CARRERA!
-[04:35:00] --------------------------------------------------
-[04:35:01] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[04:35:01]    🏎️  Transponder: 24413
-[04:35:01]    ⏱️  Tiempo vuelta 10: 58.486s
-[04:35:01]    📊 Tiempo total: 51.273s
-[04:35:01]    🏁 Velocidad: 18 km/h
-[04:35:01] --------------------------------------------------
-[04:35:01] 🎮 [SIMULACIÓN] Vuelta generada para Niki Lauda
-[04:35:01]    🏎️  Transponder: 24431
-[04:35:01]    ⏱️  Tiempo vuelta 5: 87.422s
-[04:35:01]    📊 Tiempo total: 51.428s
-[04:35:01]    🏁 Velocidad: 12 km/h
-[04:35:01] --------------------------------------------------
-[04:35:01] 🎮 [SIMULACIÓN] Vuelta generada para Jackie Stewart
-[04:35:01]    🏎️  Transponder: 24428
-[04:35:01]    ⏱️  Tiempo vuelta 6: 37.182s
-[04:35:01]    📊 Tiempo total: 42.006s
-[04:35:01]    🏁 Velocidad: 29 km/h
-[04:35:01] --------------------------------------------------
-[04:35:02] 🎮 [SIMULACIÓN] Vuelta generada para Fernando Alonso
-[04:35:02]    🏎️  Transponder: 24433
-[04:35:02]    ⏱️  Tiempo vuelta 3: 37.214s
-[04:35:02]    📊 Tiempo total: 56.168s
-[04:35:02]    🏁 Velocidad: 29 km/h
-[04:35:02] --------------------------------------------------
-[04:35:02] 🎮 [SIMULACIÓN] Vuelta generada para Max Verstappen
-[04:35:02]    🏎️  Transponder: 24434
-[04:35:02]    ⏱️  Tiempo vuelta 6: 71.845s
-[04:35:02]    📊 Tiempo total: 57.715s
-[04:35:02]    🏁 Velocidad: 15 km/h
-[04:35:02] --------------------------------------------------
-[04:35:02] 🎮 [SIMULACIÓN] Vuelta generada para Lewis Hamilton
-[04:35:02]    🏎️  Transponder: 6250753
-[04:35:02]    ⏱️  Tiempo vuelta 6: 32.836s
-[04:35:02]    📊 Tiempo total: 55.786s
-[04:35:02]    🏁 Velocidad: 33 km/h
-[04:35:02] --------------------------------------------------
-[04:35:03] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[04:35:03]    🏎️  Transponder: 24417
-[04:35:03]    ⏱️  Tiempo vuelta 4: 48.130s
-[04:35:03]    📊 Tiempo total: 54.254s
-[04:35:03]    🏁 Velocidad: 22 km/h
-[04:35:03] --------------------------------------------------
-[04:35:03] 🎮 [SIMULACIÓN] Vuelta generada para Lewis Hamilton
-[04:35:03]    🏎️  Transponder: 6250753
-[04:35:03]    ⏱️  Tiempo vuelta 7: 45.274s
-[04:35:03]    📊 Tiempo total: 56.524s
-[04:35:03]    🏁 Velocidad: 24 km/h
-[04:35:03]    🏆 ¡Lewis Hamilton COMPLETÓ LA CARRERA!
-[04:35:03] --------------------------------------------------
-[04:35:03] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[04:35:03]    🏎️  Transponder: 24411
-[04:35:03]    ⏱️  Tiempo vuelta 9: 48.727s
-[04:35:03]    📊 Tiempo total: 52.249s
-[04:35:04]    🏁 Velocidad: 22 km/h
-[04:35:04] --------------------------------------------------
-[04:35:04] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
-[04:35:04]    🏎️  Transponder: 24423
-[04:35:04]    ⏱️  Tiempo vuelta 6: 62.068s
-[04:35:04]    📊 Tiempo total: 44.971s
-[04:35:04]    🏁 Velocidad: 17 km/h
-[04:35:04] --------------------------------------------------
-[04:35:04] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:35:04]    🏎️  Transponder: 24415
-[04:35:04]    ⏱️  Tiempo vuelta 11: 78.712s
-[04:35:04]    📊 Tiempo total: 60.172s
-[04:35:04]    🏁 Velocidad: 14 km/h
-[04:35:04] --------------------------------------------------
-[04:35:05] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[04:35:05]    🏎️  Transponder: 24417
-[04:35:05]    ⏱️  Tiempo vuelta 5: 41.091s
-[04:35:05]    📊 Tiempo total: 56.153s
-[04:35:05]    🏁 Velocidad: 26 km/h
-[04:35:05] --------------------------------------------------
-[04:35:05] 🎮 [SIMULACIÓN] Vuelta generada para Alain  Prost
-[04:35:05]    🏎️  Transponder: 24432
-[04:35:05]    ⏱️  Tiempo vuelta 6: 59.221s
-[04:35:05]    📊 Tiempo total: 53.861s
-[04:35:05]    🏁 Velocidad: 18 km/h
-[04:35:05] --------------------------------------------------
-[04:35:05] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[04:35:05]    🏎️  Transponder: 24411
-[04:35:05]    ⏱️  Tiempo vuelta 10: 34.155s
-[04:35:05]    📊 Tiempo total: 53.990s
-[04:35:05]    🏁 Velocidad: 32 km/h
-[04:35:06] --------------------------------------------------
-[04:35:06] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
-[04:35:06]    🏎️  Transponder: 24421
-[04:35:06]    ⏱️  Tiempo vuelta 8: 35.474s
-[04:35:06]    📊 Tiempo total: 55.217s
-[04:35:06]    🏁 Velocidad: 30 km/h
-[04:35:06] --------------------------------------------------
-[04:35:06] 🎮 [SIMULACIÓN] Vuelta generada para Jimmie Johnson
-[04:35:06]    🏎️  Transponder: 24419
-[04:35:06]    ⏱️  Tiempo vuelta 8: 86.790s
-[04:35:06]    📊 Tiempo total: 59.698s
-[04:35:06]    🏁 Velocidad: 12 km/h
-[04:35:07] --------------------------------------------------
-[04:35:07] 🎮 [SIMULACIÓN] Vuelta generada para Colin McRae
-[04:35:07]    🏎️  Transponder: 24422
-[04:35:07]    ⏱️  Tiempo vuelta 6: 55.586s
-[04:35:07]    📊 Tiempo total: 47.653s
-[04:35:07]    🏁 Velocidad: 19 km/h
-[04:35:07] --------------------------------------------------
-[04:35:07] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[04:35:07]    🏎️  Transponder: 24413
-[04:35:07]    ⏱️  Tiempo vuelta 11: 76.872s
-[04:35:07]    📊 Tiempo total: 57.758s
-[04:35:07]    🏁 Velocidad: 14 km/h
-[04:35:07] --------------------------------------------------
-[04:35:07] 🎮 [SIMULACIÓN] Vuelta generada para Mario Andretti
-[04:35:07]    🏎️  Transponder: 24427
-[04:35:07]    ⏱️  Tiempo vuelta 5: 74.635s
-[04:35:07]    📊 Tiempo total: 60.441s
-[04:35:07]    🏁 Velocidad: 14 km/h
-[04:35:07] --------------------------------------------------
-[04:35:08] 🎮 [SIMULACIÓN] Vuelta generada para Juan Manuel Fangio
-[04:35:08]    🏎️  Transponder: 24430
-[04:35:08]    ⏱️  Tiempo vuelta 6: 65.135s
-[04:35:08]    📊 Tiempo total: 46.754s
-[04:35:08]    🏁 Velocidad: 17 km/h
-[04:35:08] --------------------------------------------------
-[04:35:08] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[04:35:08]    🏎️  Transponder: 24426
-[04:35:08]    ⏱️  Tiempo vuelta 9: 85.607s
-[04:35:08]    📊 Tiempo total: 60.549s
-[04:35:08]    🏁 Velocidad: 13 km/h
-[04:35:08] --------------------------------------------------
-[04:35:08] 🎮 [SIMULACIÓN] Vuelta generada para Jose Torres Ortiz
-[04:35:08]    🏎️  Transponder: 24414
-[04:35:08]    ⏱️  Tiempo vuelta 6: 66.945s
-[04:35:08]    📊 Tiempo total: 63.086s
-[04:35:08]    🏁 Velocidad: 16 km/h
-[04:35:08] --------------------------------------------------
-[04:35:09] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:35:09]    🏎️  Transponder: 24415
-[04:35:09]    ⏱️  Tiempo vuelta 12: 82.993s
-[04:35:09]    📊 Tiempo total: 64.575s
-[04:35:09]    🏁 Velocidad: 13 km/h
-[04:35:09] --------------------------------------------------
-[04:35:09] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
-[04:35:09]    🏎️  Transponder: 24423
-[04:35:09]    ⏱️  Tiempo vuelta 7: 37.427s
-[04:35:09]    📊 Tiempo total: 50.066s
-[04:35:09]    🏁 Velocidad: 29 km/h
-[04:35:09]    🏆 ¡Dale Earnhardt COMPLETÓ LA CARRERA!
-[04:35:09] --------------------------------------------------
-[04:35:09] 🎮 [SIMULACIÓN] Vuelta generada para Sergio Pice
-[04:35:09]    🏎️  Transponder: 2425
-[04:35:09]    ⏱️  Tiempo vuelta 6: 33.372s
-[04:35:09]    📊 Tiempo total: 65.974s
-[04:35:09]    🏁 Velocidad: 32 km/h
-[04:35:09] --------------------------------------------------
-[04:35:10] 🎮 [SIMULACIÓN] Vuelta generada para Sergio Pice
-[04:35:10]    🏎️  Transponder: 2425
-[04:35:10]    ⏱️  Tiempo vuelta 7: 46.530s
-[04:35:10]    📊 Tiempo total: 66.275s
-[04:35:10]    🏁 Velocidad: 23 km/h
-[04:35:10]    🏆 ¡Sergio Pice COMPLETÓ LA CARRERA!
-[04:35:10] --------------------------------------------------
-[04:35:10] 🎮 [SIMULACIÓN] Vuelta generada para Erick Pearson
-[04:35:10]    🏎️  Transponder: 24412
-[04:35:10]    ⏱️  Tiempo vuelta 6: 88.596s
-[04:35:10]    📊 Tiempo total: 45.867s
-[04:35:10]    🏁 Velocidad: 12 km/h
-[04:35:10] --------------------------------------------------
-[04:35:10] 🎮 [SIMULACIÓN] Vuelta generada para Mario Andretti
-[04:35:10]    🏎️  Transponder: 24427
-[04:35:10]    ⏱️  Tiempo vuelta 6: 58.617s
-[04:35:10]    📊 Tiempo total: 63.469s
-[04:35:10]    🏁 Velocidad: 18 km/h
-[04:35:10] --------------------------------------------------
-[04:35:11] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
-[04:35:11]    🏎️  Transponder: 24421
-[04:35:11]    ⏱️  Tiempo vuelta 9: 81.282s
-[04:35:11]    📊 Tiempo total: 59.844s
-[04:35:11]    🏁 Velocidad: 13 km/h
-[04:35:11] --------------------------------------------------
-[04:35:11] 🎮 [SIMULACIÓN] Vuelta generada para Colin McRae
-[04:35:11]    🏎️  Transponder: 24422
-[04:35:11]    ⏱️  Tiempo vuelta 7: 54.268s
-[04:35:11]    📊 Tiempo total: 51.955s
-[04:35:11]    🏁 Velocidad: 20 km/h
-[04:35:11]    🏆 ¡Colin McRae COMPLETÓ LA CARRERA!
-[04:35:11] --------------------------------------------------
-[04:35:11] 🎮 [SIMULACIÓN] Vuelta generada para Colin McRae
-[04:35:11]    🏎️  Transponder: 24422
-[04:35:11]    ⏱️  Tiempo vuelta 8: 58.683s
-[04:35:11]    📊 Tiempo total: 52.359s
-[04:35:11]    🏁 Velocidad: 18 km/h
-[04:35:12] --------------------------------------------------
-[04:35:12] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
-[04:35:12]    🏎️  Transponder: 24421
-[04:35:12]    ⏱️  Tiempo vuelta 10: 62.872s
-[04:35:12]    📊 Tiempo total: 60.912s
-[04:35:12]    🏁 Velocidad: 17 km/h
-[04:35:12] --------------------------------------------------
-[04:35:12] 🎮 [SIMULACIÓN] Vuelta generada para Erick Pearson
-[04:35:12]    🏎️  Transponder: 24412
-[04:35:12]    ⏱️  Tiempo vuelta 7: 81.122s
-[04:35:12]    📊 Tiempo total: 47.858s
-[04:35:12]    🏁 Velocidad: 13 km/h
-[04:35:12]    🏆 ¡Erick Pearson COMPLETÓ LA CARRERA!
-[04:35:12] --------------------------------------------------
-[04:35:12] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
-[04:35:12]    🏎️  Transponder: 24410
-[04:35:12]    ⏱️  Tiempo vuelta 6: 53.970s
-[04:35:12]    📊 Tiempo total: 67.666s
-[04:35:12]    🏁 Velocidad: 20 km/h
-[04:35:13] --------------------------------------------------
-[04:35:13] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[04:35:13]    🏎️  Transponder: 24411
-[04:35:13]    ⏱️  Tiempo vuelta 11: 33.307s
-[04:35:13]    📊 Tiempo total: 61.566s
-[04:35:13]    🏁 Velocidad: 32 km/h
-[04:35:13] --------------------------------------------------
-[04:35:13] 🎮 [SIMULACIÓN] Vuelta generada para Jackie Stewart
-[04:35:13]    🏎️  Transponder: 24428
-[04:35:13]    ⏱️  Tiempo vuelta 7: 77.354s
-[04:35:13]    📊 Tiempo total: 53.876s
-[04:35:13]    🏁 Velocidad: 14 km/h
-[04:35:13]    🏆 ¡Jackie Stewart COMPLETÓ LA CARRERA!
-[04:35:13] --------------------------------------------------
-[04:35:14] 🎮 [SIMULACIÓN] Vuelta generada para Jackie Stewart
-[04:35:14]    🏎️  Transponder: 24428
-[04:35:14]    ⏱️  Tiempo vuelta 8: 31.621s
-[04:35:14]    📊 Tiempo total: 54.276s
-[04:35:14]    🏁 Velocidad: 34 km/h
-[04:35:14] --------------------------------------------------
-[04:35:14] 🎮 [SIMULACIÓN] Vuelta generada para Lewis Hamilton
-[04:35:14]    🏎️  Transponder: 6250753
-[04:35:14]    ⏱️  Tiempo vuelta 8: 36.420s
-[04:35:14]    📊 Tiempo total: 67.402s
-[04:35:14]    🏁 Velocidad: 30 km/h
-[04:35:14] --------------------------------------------------
-[04:35:14] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
-[04:35:14]    🏎️  Transponder: 24410
-[04:35:14]    ⏱️  Tiempo vuelta 7: 70.397s
-[04:35:14]    📊 Tiempo total: 69.475s
-[04:35:14]    🏁 Velocidad: 15 km/h
-[04:35:14]    🏆 ¡Thomas Winkerton COMPLETÓ LA CARRERA!
-[04:35:14] --------------------------------------------------
-[04:35:15] 🎮 [SIMULACIÓN] Vuelta generada para Michael Schumacher
-[04:35:15]    🏎️  Transponder: 6251777
-[04:35:15]    ⏱️  Tiempo vuelta 9: 61.738s
-[04:35:15]    📊 Tiempo total: 70.842s
-[04:35:15]    🏁 Velocidad: 17 km/h
-[04:35:15] --------------------------------------------------
-[04:35:15] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[04:35:15]    🏎️  Transponder: 24426
-[04:35:15]    ⏱️  Tiempo vuelta 10: 67.816s
-[04:35:15]    📊 Tiempo total: 67.600s
-[04:35:15]    🏁 Velocidad: 16 km/h
-[04:35:15] --------------------------------------------------
-[04:35:16] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[04:35:16]    🏎️  Transponder: 24426
-[04:35:16]    ⏱️  Tiempo vuelta 11: 43.308s
-[04:35:16]    📊 Tiempo total: 68.121s
-[04:35:16]    🏁 Velocidad: 25 km/h
-[04:35:16] --------------------------------------------------
-[04:35:16] 🎮 [SIMULACIÓN] Vuelta generada para Fernando Alonso
-[04:35:16]    🏎️  Transponder: 24433
-[04:35:16]    ⏱️  Tiempo vuelta 4: 59.667s
-[04:35:16]    📊 Tiempo total: 70.461s
-[04:35:16]    🏁 Velocidad: 18 km/h
-[04:35:16] --------------------------------------------------
-[04:35:16] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[04:35:16]    🏎️  Transponder: 24424
-[04:35:16]    ⏱️  Tiempo vuelta 8: 83.105s
-[04:35:16]    📊 Tiempo total: 72.625s
-[04:35:16]    🏁 Velocidad: 13 km/h
-[04:35:16] --------------------------------------------------
-[04:35:17] 🎮 [SIMULACIÓN] Vuelta generada para Lewis Hamilton
-[04:35:17]    🏎️  Transponder: 6250753
-[04:35:17]    ⏱️  Tiempo vuelta 9: 54.411s
-[04:35:17]    📊 Tiempo total: 70.146s
-[04:35:17]    🏁 Velocidad: 20 km/h
-[04:35:17] --------------------------------------------------
-[04:35:17] 🎮 [SIMULACIÓN] Vuelta generada para Niki Lauda
-[04:35:17]    🏎️  Transponder: 24431
-[04:35:17]    ⏱️  Tiempo vuelta 6: 48.270s
-[04:35:17]    📊 Tiempo total: 67.553s
-[04:35:17]    🏁 Velocidad: 22 km/h
-[04:35:17] --------------------------------------------------
-[04:35:17] 🎮 [SIMULACIÓN] Vuelta generada para Alain  Prost
-[04:35:17]    🏎️  Transponder: 24432
-[04:35:17]    ⏱️  Tiempo vuelta 7: 68.916s
-[04:35:17]    📊 Tiempo total: 66.347s
-[04:35:17]    🏁 Velocidad: 16 km/h
-[04:35:18]    🏆 ¡Alain  Prost COMPLETÓ LA CARRERA!
-[04:35:18] --------------------------------------------------
-[04:35:18] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
-[04:35:18]    🏎️  Transponder: 24423
-[04:35:18]    ⏱️  Tiempo vuelta 8: 35.975s
-[04:35:18]    📊 Tiempo total: 59.062s
-[04:35:18]    🏁 Velocidad: 30 km/h
-[04:35:18] --------------------------------------------------
-[04:35:18] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[04:35:18]    🏎️  Transponder: 24426
-[04:35:18]    ⏱️  Tiempo vuelta 12: 83.996s
-[04:35:18]    📊 Tiempo total: 70.857s
-[04:35:18]    🏁 Velocidad: 13 km/h
-[04:35:18] --------------------------------------------------
-[04:35:19] 🎮 [SIMULACIÓN] Vuelta generada para Max Verstappen
-[04:35:19]    🏎️  Transponder: 24434
-[04:35:19]    ⏱️  Tiempo vuelta 7: 86.309s
-[04:35:19]    📊 Tiempo total: 74.407s
-[04:35:19]    🏁 Velocidad: 13 km/h
-[04:35:19]    🏆 ¡Max Verstappen COMPLETÓ LA CARRERA!
-[04:35:19] --------------------------------------------------
-[04:35:19] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[04:35:19]    🏎️  Transponder: 24413
-[04:35:19]    ⏱️  Tiempo vuelta 12: 58.919s
-[04:35:19]    📊 Tiempo total: 69.751s
-[04:35:19]    🏁 Velocidad: 18 km/h
-[04:35:19] --------------------------------------------------
-[04:35:19] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[04:35:19]    🏎️  Transponder: 24413
-[04:35:19]    ⏱️  Tiempo vuelta 13: 39.565s
-[04:35:19]    📊 Tiempo total: 70.071s
-[04:35:19]    🏁 Velocidad: 27 km/h
-[04:35:19] --------------------------------------------------
-[04:35:20] 🎮 [SIMULACIÓN] Vuelta generada para Colin McRae
-[04:35:20]    🏎️  Transponder: 24422
-[04:35:20]    ⏱️  Tiempo vuelta 9: 71.943s
-[04:35:20]    📊 Tiempo total: 60.592s
-[04:35:20]    🏁 Velocidad: 15 km/h
-[04:35:20] --------------------------------------------------
-[04:35:20] 🎮 [SIMULACIÓN] Vuelta generada para Alain  Prost
-[04:35:20]    🏎️  Transponder: 24432
-[04:35:20]    ⏱️  Tiempo vuelta 8: 75.946s
-[04:35:20]    📊 Tiempo total: 68.992s
-[04:35:20]    🏁 Velocidad: 14 km/h
-[04:35:20] --------------------------------------------------
-[04:35:20] 🎮 [SIMULACIÓN] Vuelta generada para Jim Clark
-[04:35:20]    🏎️  Transponder: 24429
-[04:35:20]    ⏱️  Tiempo vuelta 11: 61.132s
-[04:35:20]    📊 Tiempo total: 75.354s
-[04:35:20]    🏁 Velocidad: 18 km/h
-[04:35:20] --------------------------------------------------
-[04:35:21] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
-[04:35:21]    🏎️  Transponder: 24416
-[04:35:21]    ⏱️  Tiempo vuelta 4: 80.814s
-[04:35:21]    📊 Tiempo total: 33.175s
-[04:35:21]    🏁 Velocidad: 13 km/h
-[04:35:21] --------------------------------------------------
-[04:35:21] 🎮 [SIMULACIÓN] Vuelta generada para Alain  Prost
-[04:35:21]    🏎️  Transponder: 24432
-[04:35:21]    ⏱️  Tiempo vuelta 9: 75.712s
-[04:35:21]    📊 Tiempo total: 70.029s
-[04:35:21]    🏁 Velocidad: 14 km/h
-[04:35:21] --------------------------------------------------
-[04:35:21] 🎮 [SIMULACIÓN] Vuelta generada para Niki Lauda
-[04:35:21]    🏎️  Transponder: 24431
-[04:35:21]    ⏱️  Tiempo vuelta 7: 34.828s
-[04:35:21]    📊 Tiempo total: 71.873s
-[04:35:21]    🏁 Velocidad: 31 km/h
-[04:35:22]    🏆 ¡Niki Lauda COMPLETÓ LA CARRERA!
-[04:35:22] --------------------------------------------------
-[04:35:22] 🎮 [SIMULACIÓN] Vuelta generada para Mika Häkkinen
-[04:35:22]    🏎️  Transponder: 24418
-[04:35:22]    ⏱️  Tiempo vuelta 8: 46.594s
-[04:35:22]    📊 Tiempo total: 75.460s
-[04:35:22]    🏁 Velocidad: 23 km/h
-[04:35:22] --------------------------------------------------
-[04:35:22] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[04:35:22]    🏎️  Transponder: 24417
-[04:35:22]    ⏱️  Tiempo vuelta 6: 63.217s
-[04:35:22]    📊 Tiempo total: 73.743s
-[04:35:22]    🏁 Velocidad: 17 km/h
-[04:35:22] --------------------------------------------------
-[04:35:22] 🎮 [SIMULACIÓN] Vuelta generada para Erick Pearson
-[04:35:22]    🏎️  Transponder: 24412
-[04:35:22]    ⏱️  Tiempo vuelta 8: 50.396s
-[04:35:22]    📊 Tiempo total: 58.193s
-[04:35:22]    🏁 Velocidad: 21 km/h
-[04:35:23] --------------------------------------------------
-[04:35:23] 🎮 [SIMULACIÓN] Vuelta generada para Alain  Prost
-[04:35:23]    🏎️  Transponder: 24432
-[04:35:23]    ⏱️  Tiempo vuelta 10: 85.254s
-[04:35:23]    📊 Tiempo total: 71.713s
-[04:35:23]    🏁 Velocidad: 13 km/h
-[04:35:23] --------------------------------------------------
-[04:35:23] 🎮 [SIMULACIÓN] Vuelta generada para Niki Lauda
-[04:35:23]    🏎️  Transponder: 24431
-[04:35:23]    ⏱️  Tiempo vuelta 8: 81.180s
-[04:35:23]    📊 Tiempo total: 73.581s
-[04:35:23]    🏁 Velocidad: 13 km/h
-[04:35:23] --------------------------------------------------
-[04:35:23] 🎮 [SIMULACIÓN] Vuelta generada para Jim Clark
-[04:35:23]    🏎️  Transponder: 24429
-[04:35:23]    ⏱️  Tiempo vuelta 12: 84.208s
-[04:35:23]    📊 Tiempo total: 78.393s
-[04:35:23]    🏁 Velocidad: 13 km/h
-[04:35:23] --------------------------------------------------
-[04:35:24] 🎮 [SIMULACIÓN] Vuelta generada para Jimmie Johnson
-[04:35:24]    🏎️  Transponder: 24419
-[04:35:24]    ⏱️  Tiempo vuelta 9: 87.191s
-[04:35:24]    📊 Tiempo total: 76.991s
-[04:35:24]    🏁 Velocidad: 12 km/h
-[04:35:24] --------------------------------------------------
-[04:35:24] 🎮 [SIMULACIÓN] Vuelta generada para Jim Clark
-[04:35:24]    🏎️  Transponder: 24429
-[04:35:24]    ⏱️  Tiempo vuelta 13: 59.529s
-[04:35:24]    📊 Tiempo total: 79.004s
-[04:35:24]    🏁 Velocidad: 18 km/h
-[04:35:24] --------------------------------------------------
-[04:35:24] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
-[04:35:24]    🏎️  Transponder: 24410
-[04:35:24]    ⏱️  Tiempo vuelta 8: 66.070s
-[04:35:24]    📊 Tiempo total: 79.514s
-[04:35:24]    🏁 Velocidad: 16 km/h
-[04:35:24] --------------------------------------------------
-[04:35:25] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
-[04:35:25]    🏎️  Transponder: 24416
-[04:35:25]    ⏱️  Tiempo vuelta 5: 51.472s
-[04:35:25]    📊 Tiempo total: 37.147s
-[04:35:25]    🏁 Velocidad: 21 km/h
-[04:35:25] --------------------------------------------------
-[04:35:25] 🎮 [SIMULACIÓN] Vuelta generada para Fernando Alonso
-[04:35:25]    🏎️  Transponder: 24433
-[04:35:25]    ⏱️  Tiempo vuelta 5: 67.828s
-[04:35:25]    📊 Tiempo total: 79.541s
-[04:35:25]    🏁 Velocidad: 16 km/h
-[04:35:25] --------------------------------------------------
-[04:35:25] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
-[04:35:25]    🏎️  Transponder: 24416
-[04:35:25]    ⏱️  Tiempo vuelta 6: 88.536s
-[04:35:25]    📊 Tiempo total: 37.768s
-[04:35:25]    🏁 Velocidad: 12 km/h
-[04:35:25] --------------------------------------------------
-[04:35:26] 🎮 [SIMULACIÓN] Vuelta generada para Sébastien Loeb
-[04:35:26]    🏎️  Transponder: 24420
-[04:35:26]    ⏱️  Tiempo vuelta 3: 49.618s
-[04:35:26]    📊 Tiempo total: 67.183s
-[04:35:26]    🏁 Velocidad: 22 km/h
-[04:35:26] --------------------------------------------------
-[04:35:26] 🎮 [SIMULACIÓN] Vuelta generada para Jimmie Johnson
-[04:35:26]    🏎️  Transponder: 24419
-[04:35:26]    ⏱️  Tiempo vuelta 10: 31.792s
-[04:35:26]    📊 Tiempo total: 79.197s
-[04:35:26]    🏁 Velocidad: 34 km/h
-[04:35:26] --------------------------------------------------
-[04:35:26] 🎮 [SIMULACIÓN] Vuelta generada para Erick Pearson
-[04:35:26]    🏎️  Transponder: 24412
-[04:35:26]    ⏱️  Tiempo vuelta 9: 44.958s
-[04:35:26]    📊 Tiempo total: 62.025s
-[04:35:26]    🏁 Velocidad: 24 km/h
-[04:35:26] --------------------------------------------------
-[04:35:27] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
-[04:35:27]    🏎️  Transponder: 24423
-[04:35:27]    ⏱️  Tiempo vuelta 9: 75.529s
-[04:35:27]    📊 Tiempo total: 67.671s
-[04:35:27]    🏁 Velocidad: 14 km/h
-[04:35:27] --------------------------------------------------
-[04:35:27] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[04:35:27]    🏎️  Transponder: 24424
-[04:35:27]    ⏱️  Tiempo vuelta 9: 30.290s
-[04:35:27]    📊 Tiempo total: 83.275s
-[04:35:27]    🏁 Velocidad: 36 km/h
-[04:35:27] --------------------------------------------------
-[04:35:27] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
-[04:35:27]    🏎️  Transponder: 24421
-[04:35:27]    ⏱️  Tiempo vuelta 11: 62.559s
-[04:35:27]    📊 Tiempo total: 76.364s
-[04:35:27]    🏁 Velocidad: 17 km/h
-[04:35:27] --------------------------------------------------
-[04:35:28] 🎮 [SIMULACIÓN] Vuelta generada para Sébastien Loeb
-[04:35:28]    🏎️  Transponder: 24420
-[04:35:28]    ⏱️  Tiempo vuelta 4: 89.242s
-[04:35:28]    📊 Tiempo total: 69.136s
-[04:35:28]    🏁 Velocidad: 12 km/h
-[04:35:28] --------------------------------------------------
-[04:35:28] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[04:35:28]    🏎️  Transponder: 24417
-[04:35:28]    ⏱️  Tiempo vuelta 7: 56.195s
-[04:35:28]    📊 Tiempo total: 79.463s
-[04:35:28]    🏁 Velocidad: 19 km/h
-[04:35:28]    🏆 ¡Herbert Ying Kie Lee Covarrubias COMPLETÓ LA CARRERA!
-[04:35:28] --------------------------------------------------
-[04:35:28] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
-[04:35:28]    🏎️  Transponder: 24421
-[04:35:28]    ⏱️  Tiempo vuelta 12: 35.923s
-[04:35:28]    📊 Tiempo total: 77.411s
-[04:35:28]    🏁 Velocidad: 30 km/h
-[04:35:28] --------------------------------------------------
-[04:35:29] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
-[04:35:29]    🏎️  Transponder: 24410
-[04:35:29]    ⏱️  Tiempo vuelta 9: 85.809s
-[04:35:29]    📊 Tiempo total: 83.752s
-[04:35:29]    🏁 Velocidad: 13 km/h
-[04:35:29] --------------------------------------------------
-[04:35:29] 🎮 [SIMULACIÓN] Vuelta generada para Michael Schumacher
-[04:35:29]    🏎️  Transponder: 6251777
-[04:35:29]    ⏱️  Tiempo vuelta 10: 53.190s
-[04:35:29]    📊 Tiempo total: 85.148s
-[04:35:29]    🏁 Velocidad: 20 km/h
-[04:35:29] --------------------------------------------------
-[04:35:29] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:35:29]    🏎️  Transponder: 24415
-[04:35:29]    ⏱️  Tiempo vuelta 13: 81.959s
-[04:35:29]    📊 Tiempo total: 85.269s
-[04:35:29]    🏁 Velocidad: 13 km/h
-[04:35:29] --------------------------------------------------
-[04:35:30] 🎮 [SIMULACIÓN] Vuelta generada para Herbert Ying Kie Lee Covarrubias
-[04:35:30]    🏎️  Transponder: 24417
-[04:35:30]    ⏱️  Tiempo vuelta 8: 71.603s
-[04:35:30]    📊 Tiempo total: 81.248s
-[04:35:30]    🏁 Velocidad: 15 km/h
-[04:35:30] --------------------------------------------------
-[04:35:30] 🎮 [SIMULACIÓN] Vuelta generada para Mario Andretti
-[04:35:30]    🏎️  Transponder: 24427
-[04:35:30]    ⏱️  Tiempo vuelta 7: 60.364s
-[04:35:30]    📊 Tiempo total: 83.044s
-[04:35:30]    🏁 Velocidad: 18 km/h
-[04:35:30]    🏆 ¡Mario Andretti COMPLETÓ LA CARRERA!
-[04:35:30] --------------------------------------------------
-[04:35:30] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[04:35:30]    🏎️  Transponder: 24426
-[04:35:30]    ⏱️  Tiempo vuelta 13: 68.108s
-[04:35:30]    📊 Tiempo total: 82.931s
-[04:35:30]    🏁 Velocidad: 16 km/h
-[04:35:30] --------------------------------------------------
-[04:35:31] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
-[04:35:31]    🏎️  Transponder: 24416
-[04:35:31]    ⏱️  Tiempo vuelta 7: 32.195s
-[04:35:31]    📊 Tiempo total: 43.210s
-[04:35:31]    🏁 Velocidad: 34 km/h
-[04:35:31]    🏆 ¡Andrés Suárez Encinas COMPLETÓ LA CARRERA!
-[04:35:31] --------------------------------------------------
-[04:35:31] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[04:35:31]    🏎️  Transponder: 24413
-[04:35:31]    ⏱️  Tiempo vuelta 14: 47.761s
-[04:35:31]    📊 Tiempo total: 81.825s
-[04:35:31]    🏁 Velocidad: 23 km/h
-[04:35:31] --------------------------------------------------
-[04:35:31] 🎮 [SIMULACIÓN] Vuelta generada para Michael Schumacher
-[04:35:31]    🏎️  Transponder: 6251777
-[04:35:31]    ⏱️  Tiempo vuelta 11: 64.681s
-[04:35:31]    📊 Tiempo total: 87.633s
-[04:35:31]    🏁 Velocidad: 17 km/h
-[04:35:32] --------------------------------------------------
-[04:35:32] 🎮 [SIMULACIÓN] Vuelta generada para Colin McRae
-[04:35:32]    🏎️  Transponder: 24422
-[04:35:32]    ⏱️  Tiempo vuelta 10: 81.813s
-[04:35:32]    📊 Tiempo total: 72.660s
-[04:35:32]    🏁 Velocidad: 13 km/h
-[04:35:32] --------------------------------------------------
-[04:35:32] 🎮 [SIMULACIÓN] Vuelta generada para Jimmie Johnson
-[04:35:32]    🏎️  Transponder: 24419
-[04:35:32]    ⏱️  Tiempo vuelta 11: 64.031s
-[04:35:32]    📊 Tiempo total: 85.367s
-[04:35:32]    🏁 Velocidad: 17 km/h
-[04:35:32] --------------------------------------------------
-[04:35:32] 🎮 [SIMULACIÓN] Vuelta generada para Jimmie Johnson
-[04:35:32]    🏎️  Transponder: 24419
-[04:35:32]    ⏱️  Tiempo vuelta 12: 78.320s
-[04:35:32]    📊 Tiempo total: 85.667s
-[04:35:32]    🏁 Velocidad: 14 km/h
-[04:35:32] --------------------------------------------------
-[04:35:33] 🎮 [SIMULACIÓN] Vuelta generada para Mario Andretti
-[04:35:33]    🏎️  Transponder: 24427
-[04:35:33]    ⏱️  Tiempo vuelta 8: 46.821s
-[04:35:33]    📊 Tiempo total: 85.761s
-[04:35:33]    🏁 Velocidad: 23 km/h
-[04:35:33] --------------------------------------------------
-[04:35:33] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:35:33]    🏎️  Transponder: 24415
-[04:35:33]    ⏱️  Tiempo vuelta 14: 82.995s
-[04:35:33]    📊 Tiempo total: 88.963s
-[04:35:33]    🏁 Velocidad: 13 km/h
-[04:35:33] --------------------------------------------------
-[04:35:33] 🎮 [SIMULACIÓN] Vuelta generada para Juan Manuel Fangio
-[04:35:33]    🏎️  Transponder: 24430
-[04:35:33]    ⏱️  Tiempo vuelta 7: 73.130s
-[04:35:33]    📊 Tiempo total: 72.417s
-[04:35:33]    🏁 Velocidad: 15 km/h
-[04:35:34]    🏆 ¡Juan Manuel Fangio COMPLETÓ LA CARRERA!
-[04:35:34] --------------------------------------------------
-[04:35:34] 🎮 [SIMULACIÓN] Vuelta generada para Michael Schumacher
-[04:35:34]    🏎️  Transponder: 6251777
-[04:35:34]    ⏱️  Tiempo vuelta 12: 46.558s
-[04:35:34]    📊 Tiempo total: 89.916s
-[04:35:34]    🏁 Velocidad: 23 km/h
-[04:35:34] --------------------------------------------------
-[04:35:34] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[04:35:34]    🏎️  Transponder: 24426
-[04:35:34]    ⏱️  Tiempo vuelta 14: 80.215s
-[04:35:34]    📊 Tiempo total: 86.669s
-[04:35:34]    🏁 Velocidad: 13 km/h
-[04:35:34] --------------------------------------------------
-[04:35:34] 🎮 [SIMULACIÓN] Vuelta generada para Niki Lauda
-[04:35:34]    🏎️  Transponder: 24431
-[04:35:34]    ⏱️  Tiempo vuelta 9: 70.779s
-[04:35:34]    📊 Tiempo total: 84.908s
-[04:35:34]    🏁 Velocidad: 15 km/h
-[04:35:35] --------------------------------------------------
-[04:35:35] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:35:35]    🏎️  Transponder: 24415
-[04:35:35]    ⏱️  Tiempo vuelta 15: 58.552s
-[04:35:35]    📊 Tiempo total: 90.722s
-[04:35:35]    🏁 Velocidad: 18 km/h
-[04:35:35] --------------------------------------------------
-[04:35:35] 🎮 [SIMULACIÓN] Vuelta generada para Colin McRae
-[04:35:35]    🏎️  Transponder: 24422
-[04:35:35]    ⏱️  Tiempo vuelta 11: 36.755s
-[04:35:35]    📊 Tiempo total: 76.000s
-[04:35:35]    🏁 Velocidad: 29 km/h
-[04:35:35] --------------------------------------------------
-[04:35:35] 🎮 [SIMULACIÓN] Vuelta generada para Sébastien Loeb
-[04:35:35]    🏎️  Transponder: 24420
-[04:35:35]    ⏱️  Tiempo vuelta 5: 62.461s
-[04:35:35]    📊 Tiempo total: 77.035s
-[04:35:35]    🏁 Velocidad: 17 km/h
-[04:35:36] --------------------------------------------------
-[04:35:36] 🎮 [SIMULACIÓN] Vuelta generada para Juan Manuel Fangio
-[04:35:36]    🏎️  Transponder: 24430
-[04:35:36]    ⏱️  Tiempo vuelta 8: 63.845s
-[04:35:36]    📊 Tiempo total: 74.838s
-[04:35:36]    🏁 Velocidad: 17 km/h
-[04:35:36] --------------------------------------------------
-[04:35:36] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
-[04:35:36]    🏎️  Transponder: 24416
-[04:35:36]    ⏱️  Tiempo vuelta 8: 57.834s
-[04:35:36]    📊 Tiempo total: 48.596s
-[04:35:36]    🏁 Velocidad: 19 km/h
-[04:35:36] --------------------------------------------------
-[04:35:36] 🎮 [SIMULACIÓN] Vuelta generada para Sébastien Loeb
-[04:35:36]    🏎️  Transponder: 24420
-[04:35:36]    ⏱️  Tiempo vuelta 6: 57.839s
-[04:35:36]    📊 Tiempo total: 78.055s
-[04:35:36]    🏁 Velocidad: 19 km/h
-[04:35:37] --------------------------------------------------
-[04:35:37] 🎮 [SIMULACIÓN] Vuelta generada para Lewis Hamilton
-[04:35:37]    🏎️  Transponder: 6250753
-[04:35:37]    ⏱️  Tiempo vuelta 10: 72.078s
-[04:35:37]    📊 Tiempo total: 90.378s
-[04:35:37]    🏁 Velocidad: 15 km/h
-[04:35:37] --------------------------------------------------
-[04:35:37] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
-[04:35:37]    🏎️  Transponder: 24410
-[04:35:37]    ⏱️  Tiempo vuelta 10: 75.762s
-[04:35:37]    📊 Tiempo total: 92.494s
-[04:35:37]    🏁 Velocidad: 14 km/h
-[04:35:37] --------------------------------------------------
-[04:35:38] 🎮 [SIMULACIÓN] Vuelta generada para Max Verstappen
-[04:35:38]    🏎️  Transponder: 24434
-[04:35:38]    ⏱️  Tiempo vuelta 8: 72.605s
-[04:35:38]    📊 Tiempo total: 93.336s
-[04:35:38]    🏁 Velocidad: 15 km/h
-[04:35:38] --------------------------------------------------
-[04:35:38] 🎮 [SIMULACIÓN] Vuelta generada para Sergio Pice
-[04:35:38]    🏎️  Transponder: 2425
-[04:35:38]    ⏱️  Tiempo vuelta 8: 33.081s
-[04:35:38]    📊 Tiempo total: 94.529s
-[04:35:38]    🏁 Velocidad: 33 km/h
-[04:35:38] --------------------------------------------------
-[04:35:38] 🎮 [SIMULACIÓN] Vuelta generada para Jackie Stewart
-[04:35:38]    🏎️  Transponder: 24428
-[04:35:38]    ⏱️  Tiempo vuelta 9: 73.897s
-[04:35:38]    📊 Tiempo total: 78.971s
-[04:35:38]    🏁 Velocidad: 15 km/h
-[04:35:38] --------------------------------------------------
-[04:35:39] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:35:39]    🏎️  Transponder: 24415
-[04:35:39]    ⏱️  Tiempo vuelta 16: 70.248s
-[04:35:39]    📊 Tiempo total: 94.533s
-[04:35:39]    🏁 Velocidad: 15 km/h
-[04:35:39] --------------------------------------------------
-[04:35:39] 🎮 [SIMULACIÓN] Vuelta generada para Jackie Stewart
-[04:35:39]    🏎️  Transponder: 24428
-[04:35:39]    ⏱️  Tiempo vuelta 10: 66.710s
-[04:35:39]    📊 Tiempo total: 79.603s
-[04:35:39]    🏁 Velocidad: 16 km/h
-[04:35:39] --------------------------------------------------
-[04:35:39] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:35:39]    🏎️  Transponder: 24415
-[04:35:39]    ⏱️  Tiempo vuelta 17: 55.537s
-[04:35:39]    📊 Tiempo total: 95.202s
-[04:35:39]    🏁 Velocidad: 19 km/h
-[04:35:39] --------------------------------------------------
-[04:35:40] 🎮 [SIMULACIÓN] Vuelta generada para Andrés Suárez Encinas
-[04:35:40]    🏎️  Transponder: 24416
-[04:35:40]    ⏱️  Tiempo vuelta 9: 33.637s
-[04:35:40]    📊 Tiempo total: 52.123s
-[04:35:40]    🏁 Velocidad: 32 km/h
-[04:35:40] --------------------------------------------------
-[04:35:40] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
-[04:35:40]    🏎️  Transponder: 24410
-[04:35:40]    ⏱️  Tiempo vuelta 11: 84.966s
-[04:35:40]    📊 Tiempo total: 95.179s
-[04:35:40]    🏁 Velocidad: 13 km/h
-[04:35:40] --------------------------------------------------
-[04:35:40] 🎮 [SIMULACIÓN] Vuelta generada para Erick Pearson
-[04:35:40]    🏎️  Transponder: 24412
-[04:35:40]    ⏱️  Tiempo vuelta 10: 76.963s
-[04:35:40]    📊 Tiempo total: 76.097s
-[04:35:40]    🏁 Velocidad: 14 km/h
-[04:35:40] --------------------------------------------------
-[04:35:41] 🎮 [SIMULACIÓN] Vuelta generada para Sergio Pice
-[04:35:41]    🏎️  Transponder: 2425
-[04:35:41]    ⏱️  Tiempo vuelta 9: 48.783s
-[04:35:41]    📊 Tiempo total: 97.208s
-[04:35:41]    🏁 Velocidad: 22 km/h
-[04:35:41] --------------------------------------------------
-[04:35:41] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:35:41]    🏎️  Transponder: 24415
-[04:35:41]    ⏱️  Tiempo vuelta 18: 53.475s
-[04:35:41]    📊 Tiempo total: 96.941s
-[04:35:41]    🏁 Velocidad: 20 km/h
-[04:35:41] --------------------------------------------------
-[04:35:41] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[04:35:41]    🏎️  Transponder: 24424
-[04:35:41]    ⏱️  Tiempo vuelta 10: 36.174s
-[04:35:41]    📊 Tiempo total: 97.685s
-[04:35:41]    🏁 Velocidad: 30 km/h
-[04:35:41] --------------------------------------------------
-[04:35:42] 🎮 [SIMULACIÓN] Vuelta generada para Jackie Stewart
-[04:35:42]    🏎️  Transponder: 24428
-[04:35:42]    ⏱️  Tiempo vuelta 11: 40.499s
-[04:35:42]    📊 Tiempo total: 82.321s
-[04:35:42]    🏁 Velocidad: 27 km/h
-[04:35:42] --------------------------------------------------
-[04:35:42] 🎮 [SIMULACIÓN] Vuelta generada para Travis Taylor
-[04:35:42]    🏎️  Transponder: 24413
-[04:35:42]    ⏱️  Tiempo vuelta 15: 69.889s
-[04:35:42]    📊 Tiempo total: 92.684s
-[04:35:42]    🏁 Velocidad: 15 km/h
-[04:35:42] --------------------------------------------------
-[04:35:42] 🎮 [SIMULACIÓN] Vuelta generada para Mario Andretti
-[04:35:42]    🏎️  Transponder: 24427
-[04:35:42]    ⏱️  Tiempo vuelta 9: 40.880s
-[04:35:42]    📊 Tiempo total: 95.458s
-[04:35:42]    🏁 Velocidad: 26 km/h
-[04:35:42] --------------------------------------------------
-[04:35:43] 🎮 [SIMULACIÓN] Vuelta generada para Jesús Gandarillas
-[04:35:43]    🏎️  Transponder: 24415
-[04:35:43]    ⏱️  Tiempo vuelta 19: 88.408s
-[04:35:43]    📊 Tiempo total: 98.626s
-[04:35:43]    🏁 Velocidad: 12 km/h
-[04:35:43] --------------------------------------------------
-[04:35:43] 🎮 [SIMULACIÓN] Vuelta generada para Fernando Alonso
-[04:35:43]    🏎️  Transponder: 24433
-[04:35:43]    ⏱️  Tiempo vuelta 6: 41.757s
-[04:35:43]    📊 Tiempo total: 97.613s
-[04:35:43]    🏁 Velocidad: 26 km/h
-[04:35:43] --------------------------------------------------
-[04:35:43] 🎮 [SIMULACIÓN] Vuelta generada para Charles Leclerc
-[04:35:43]    🏎️  Transponder: 24426
-[04:35:43]    ⏱️  Tiempo vuelta 15: 38.791s
-[04:35:43]    📊 Tiempo total: 95.893s
-[04:35:43]    🏁 Velocidad: 28 km/h
-[04:35:43] --------------------------------------------------
-[04:35:44] 🎮 [SIMULACIÓN] Vuelta generada para Lando Norris
-[04:35:44]    🏎️  Transponder: 24424
-[04:35:44]    ⏱️  Tiempo vuelta 11: 84.774s
-[04:35:44]    📊 Tiempo total: 100.026s
-[04:35:44]    🏁 Velocidad: 13 km/h
-[04:35:44] --------------------------------------------------
-[04:35:44] 🎮 [SIMULACIÓN] Vuelta generada para Mario Andretti
-[04:35:44]    🏎️  Transponder: 24427
-[04:35:44]    ⏱️  Tiempo vuelta 10: 86.912s
-[04:35:44]    📊 Tiempo total: 97.080s
-[04:35:44]    🏁 Velocidad: 12 km/h
-[04:35:44] --------------------------------------------------
-[04:35:44] 🎮 [SIMULACIÓN] Vuelta generada para Sergio Pice
-[04:35:44]    🏎️  Transponder: 2425
-[04:35:44]    ⏱️  Tiempo vuelta 10: 58.856s
-[04:35:44]    📊 Tiempo total: 100.952s
-[04:35:44]    🏁 Velocidad: 18 km/h
-[04:35:44] --------------------------------------------------
-[04:35:45] 🎮 [SIMULACIÓN] Vuelta generada para Jackie Stewart
-[04:35:45]    🏎️  Transponder: 24428
-[04:35:45]    ⏱️  Tiempo vuelta 12: 78.934s
-[04:35:45]    📊 Tiempo total: 85.378s
-[04:35:45]    🏁 Velocidad: 14 km/h
-[04:35:45] --------------------------------------------------
-[04:35:45] 🎮 [SIMULACIÓN] Vuelta generada para Colin McRae
-[04:35:45]    🏎️  Transponder: 24422
-[04:35:45]    ⏱️  Tiempo vuelta 12: 56.612s
-[04:35:45]    📊 Tiempo total: 85.896s
-[04:35:45]    🏁 Velocidad: 19 km/h
-[04:35:45] --------------------------------------------------
-[04:35:45] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
-[04:35:45]    🏎️  Transponder: 24410
-[04:35:45]    ⏱️  Tiempo vuelta 12: 66.593s
-[04:35:45]    📊 Tiempo total: 100.503s
-[04:35:45]    🏁 Velocidad: 16 km/h
-[04:35:45] --------------------------------------------------
-[04:35:46] 🎮 [SIMULACIÓN] Vuelta generada para Dale Earnhardt
-[04:35:46]    🏎️  Transponder: 24423
-[04:35:46]    ⏱️  Tiempo vuelta 10: 67.404s
-[04:35:46]    📊 Tiempo total: 86.708s
-[04:35:46]    🏁 Velocidad: 16 km/h
-[04:35:46] --------------------------------------------------
-[04:35:46] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
-[04:35:46]    🏎️  Transponder: 24421
-[04:35:46]    ⏱️  Tiempo vuelta 13: 66.018s
-[04:35:46]    📊 Tiempo total: 95.060s
-[04:35:46]    🏁 Velocidad: 16 km/h
-[04:35:46] --------------------------------------------------
-[04:35:46] 🎮 [SIMULACIÓN] Vuelta generada para Niki Lauda
-[04:35:46]    🏎️  Transponder: 24431
-[04:35:46]    ⏱️  Tiempo vuelta 10: 54.242s
-[04:35:46]    📊 Tiempo total: 96.734s
-[04:35:46]    🏁 Velocidad: 20 km/h
-[04:35:46] --------------------------------------------------
-[04:35:47] 🎮 [SIMULACIÓN] Vuelta generada para Lewis Hamilton
-[04:35:47]    🏎️  Transponder: 6250753
-[04:35:47]    ⏱️  Tiempo vuelta 11: 52.535s
-[04:35:47]    📊 Tiempo total: 100.031s
-[04:35:47]    🏁 Velocidad: 21 km/h
-[04:35:47] --------------------------------------------------
-[04:35:47] 🎮 [SIMULACIÓN] Vuelta generada para Juan Manuel Fangio
-[04:35:47]    🏎️  Transponder: 24430
-[04:35:47]    ⏱️  Tiempo vuelta 9: 70.547s
-[04:35:47]    📊 Tiempo total: 86.018s
-[04:35:47]    🏁 Velocidad: 15 km/h
-[04:35:47] --------------------------------------------------
-[04:35:47] 🎮 [SIMULACIÓN] Vuelta generada para Sébastien Loeb
-[04:35:47]    🏎️  Transponder: 24420
-[04:35:47]    ⏱️  Tiempo vuelta 7: 85.716s
-[04:35:47]    📊 Tiempo total: 88.888s
-[04:35:47]    🏁 Velocidad: 13 km/h
-[04:35:48]    🏆 ¡Sébastien Loeb COMPLETÓ LA CARRERA!
-[04:35:48] --------------------------------------------------
-[04:35:48] 🎮 [SIMULACIÓN] Vuelta generada para Jose Torres Ortiz
-[04:35:48]    🏎️  Transponder: 24414
-[04:35:48]    ⏱️  Tiempo vuelta 7: 43.958s
-[04:35:48]    📊 Tiempo total: 102.724s
-[04:35:48]    🏁 Velocidad: 25 km/h
-[04:35:48]    🏆 ¡Jose Torres Ortiz COMPLETÓ LA CARRERA!
-[04:35:48] --------------------------------------------------
-[04:35:48] 🎮 [SIMULACIÓN] Vuelta generada para Michael Schumacher
-[04:35:48]    🏎️  Transponder: 6251777
-[04:35:48]    ⏱️  Tiempo vuelta 13: 37.072s
-[04:35:48]    📊 Tiempo total: 104.534s
-[04:35:48]    🏁 Velocidad: 29 km/h
-[04:35:48] --------------------------------------------------
-[04:35:49] 🎮 [SIMULACIÓN] Vuelta generada para Jim Clark
-[04:35:49]    🏎️  Transponder: 24429
-[04:35:49]    ⏱️  Tiempo vuelta 14: 57.406s
-[04:35:49]    📊 Tiempo total: 103.658s
-[04:35:49]    🏁 Velocidad: 19 km/h
-[04:35:49] --------------------------------------------------
-[04:35:49] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
-[04:35:49]    🏎️  Transponder: 24410
-[04:35:49]    ⏱️  Tiempo vuelta 13: 85.517s
-[04:35:49]    📊 Tiempo total: 104.189s
-[04:35:49]    🏁 Velocidad: 13 km/h
-[04:35:49] --------------------------------------------------
-[04:35:49] 🎮 [SIMULACIÓN] Vuelta generada para Sébastien Loeb
-[04:35:49]    🏎️  Transponder: 24420
-[04:35:49]    ⏱️  Tiempo vuelta 8: 72.249s
-[04:35:49]    📊 Tiempo total: 90.974s
-[04:35:49]    🏁 Velocidad: 15 km/h
-[04:35:49] --------------------------------------------------
-[04:35:50] 🎮 [SIMULACIÓN] Vuelta generada para Thomas Winkerton
-[04:35:50]    🏎️  Transponder: 24410
-[04:35:50]    ⏱️  Tiempo vuelta 14: 53.274s
-[04:35:50]    📊 Tiempo total: 104.836s
-[04:35:50]    🏁 Velocidad: 20 km/h
-[04:35:50] --------------------------------------------------
-[04:35:50] 🎮 [SIMULACIÓN] Vuelta generada para Jackie Stewart
-[04:35:50]    🏎️  Transponder: 24428
-[04:35:50]    ⏱️  Tiempo vuelta 13: 64.922s
-[04:35:50]    📊 Tiempo total: 90.708s
-[04:35:50]    🏁 Velocidad: 17 km/h
-[04:35:50] --------------------------------------------------
-[04:35:50] 🎮 [SIMULACIÓN] Vuelta generada para Mario Andretti
-[04:35:50]    🏎️  Transponder: 24427
-[04:35:50]    ⏱️  Tiempo vuelta 11: 59.285s
-[04:35:50]    📊 Tiempo total: 103.445s
-[04:35:50]    🏁 Velocidad: 18 km/h
-[04:35:50] --------------------------------------------------
-[04:35:51] 🎮 [SIMULACIÓN] Vuelta generada para Mika Häkkinen
-[04:35:51]    🏎️  Transponder: 24418
-[04:35:51]    ⏱️  Tiempo vuelta 9: 42.688s
-[04:35:51]    📊 Tiempo total: 104.366s
-[04:35:51]    🏁 Velocidad: 25 km/h
-[04:35:51] --------------------------------------------------
-[04:35:51] 🎮 [SIMULACIÓN] Vuelta generada para Jimmie Johnson
-[04:35:51]    🏎️  Transponder: 24419
-[04:35:51]    ⏱️  Tiempo vuelta 13: 47.122s
-[04:35:51]    📊 Tiempo total: 104.310s
-[04:35:51]    🏁 Velocidad: 23 km/h
-[04:35:51] --------------------------------------------------
-[04:35:51] 🎮 [SIMULACIÓN] Vuelta generada para Sébastien Loeb
-[04:35:51]    🏎️  Transponder: 24420
-[04:35:51]    ⏱️  Tiempo vuelta 9: 58.941s
-[04:35:51]    📊 Tiempo total: 92.993s
-[04:35:51]    🏁 Velocidad: 18 km/h
-[04:35:51] --------------------------------------------------
-[04:35:52] 🎮 [SIMULACIÓN] Vuelta generada para Mika Häkkinen
-[04:35:52]    🏎️  Transponder: 24418
-[04:35:52]    ⏱️  Tiempo vuelta 10: 33.689s
-[04:35:52]    📊 Tiempo total: 105.351s
-[04:35:52]    🏁 Velocidad: 32 km/h
-[04:35:52] --------------------------------------------------
-[04:35:52] 🎮 [SIMULACIÓN] Vuelta generada para Valentino Rossi
-[04:35:52]    🏎️  Transponder: 24421
-[04:35:52]    ⏱️  Tiempo vuelta 14: 77.304s
-[04:35:52]    📊 Tiempo total: 101.153s
-[04:35:52]    🏁 Velocidad: 14 km/h
-[04:35:52] --------------------------------------------------
-[04:35:52] 🎮 [SIMULACIÓN] Vuelta generada para Fernando Alonso
-[04:35:52]    🏎️  Transponder: 24433
-[04:35:52]    ⏱️  Tiempo vuelta 7: 32.764s
-[04:35:52]    📊 Tiempo total: 106.926s
-[04:35:52]    🏁 Velocidad: 33 km/h
-[04:35:53]    🏆 ¡Fernando Alonso COMPLETÓ LA CARRERA!
-[04:35:53] 👑 GANADOR OFICIAL: Jesús Gandarillas
-[04:35:53] --------------------------------------------------

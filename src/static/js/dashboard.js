@@ -24,6 +24,23 @@ let allRaceHistory = [];
 let currentHistoryFilter = '';
 let globalRaceData = null;
 let globalSessionId = null;
+let currentPilotFilter = null;
+let allPilotsHistory = [];
+let historyCurrentPage = 1;
+let historyPageSize = 10;
+let historyTotalItems = 0;
+let historyFilteredData = [];
+let classificationModalTimer = null;
+let winnerConfig = {
+    autoShow: true,
+    showLimit: 1,
+    displayTime: 15
+};
+let winnerShowCount = 0;
+let currentSessionId = null;
+let classificationModalShown = false;
+let currentIp = null;
+let manualIp = null;
 
 function setupNavigation() {
 
@@ -320,6 +337,7 @@ function toggleExtraDriverFields() {
 
 function updateRaceControls(session) {
     const status = session?.status || 'pending';
+    const raceMode = session?.race_mode || 'position';
     const btnStart = document.getElementById('startRaceBtn');
     const btnPause = document.getElementById('pauseRaceBtn');
     const btnResume = document.getElementById('resumeRaceBtn');
@@ -331,6 +349,10 @@ function updateRaceControls(session) {
 
     if (!(btnStart && btnPause && btnResume && btnFinish && btnRepeat && btnResetBoard)) return;
 
+    // ✅ SIEMPRE ocultar ambos botones primero
+    if (showWinnerBtn) showWinnerBtn.style.display = 'none';
+    if (showClassificationBtn) showClassificationBtn.style.display = 'none';
+
     if (status === 'active') {
         btnStart.style.display = 'none';
         btnPause.style.display = 'inline-block';
@@ -338,8 +360,6 @@ function updateRaceControls(session) {
         btnFinish.style.display = 'inline-block';
         btnRepeat.style.display = 'none';
         btnResetBoard.style.display = 'none';
-        if (showWinnerBtn) showWinnerBtn.style.display = 'none';
-        if (showClassificationBtn) showClassificationBtn.style.display = 'none';
         btnRepeat.disabled = true;
         btnResetBoard.disabled = true;
     } else if (status === 'paused') {
@@ -349,8 +369,6 @@ function updateRaceControls(session) {
         btnFinish.style.display = 'inline-block';
         btnRepeat.style.display = 'none';
         btnResetBoard.style.display = 'none';
-        if (showWinnerBtn) showWinnerBtn.style.display = 'none';
-        if (showClassificationBtn) showClassificationBtn.style.display = 'none';
         btnRepeat.disabled = true;
         btnResetBoard.disabled = true;
     } else if (status === 'completed') {
@@ -360,23 +378,24 @@ function updateRaceControls(session) {
         btnFinish.style.display = 'none';
         btnRepeat.style.display = 'inline-block';
         btnResetBoard.style.display = 'inline-block';
-        if (currentRaceMode === 'classification') {
-            if (showWinnerBtn) showWinnerBtn.style.display = 'none';
+        btnRepeat.disabled = false;
+        btnResetBoard.disabled = false;
+
+        // ✅ SOLO mostrar el botón correspondiente si está COMPLETED
+        const normalizedMode = normalizeRaceMode(raceMode);
+        if (normalizedMode === 'classification') {
             if (showClassificationBtn) showClassificationBtn.style.display = 'inline-block';
         } else {
             if (showWinnerBtn) showWinnerBtn.style.display = 'inline-block';
-            if (showClassificationBtn) showClassificationBtn.style.display = 'none';
         }
-        btnRepeat.disabled = false;
-        btnResetBoard.disabled = false;
     } else {
+        // ✅ PENDING: ocultar todo
         btnStart.style.display = 'inline-block';
         btnPause.style.display = 'none';
         btnResume.style.display = 'none';
         btnFinish.style.display = 'none';
         btnRepeat.style.display = 'none';
         btnResetBoard.style.display = 'none';
-        if (showWinnerBtn) showWinnerBtn.style.display = 'none';
         btnRepeat.disabled = true;
         btnResetBoard.disabled = true;
     }
@@ -604,6 +623,8 @@ async function loadLiveData() {
         const lapDetails = fullData.lap_details;
         const speeds = fullData.speeds || {};
 
+        currentRaceMode = normalizeRaceMode(session.race_mode);
+
         // Guardar en variable global
         globalRaceData = fullData;
         globalSessionId = session.id;
@@ -706,6 +727,7 @@ async function loadLiveData() {
 
         // ✅ USAR LOS MISMOS DATOS PARA TODOS LOS PANELES
         renderLiveLeaderboardPublicStyle(leaderboard, session, speeds, timesMap);
+        applyColumnsConfig();  // ✅ AGREGADO: Aplicar configuración de columnas después de renderizar el leaderboard
 
         if (document.getElementById('liveLeaderName')) {
             const leader = leaderboard?.[0];
@@ -719,6 +741,7 @@ async function loadLiveData() {
         loadTableroPublicoFromData(session, leaderboard, speeds);
         loadPublicViewFromData(session, leaderboard, speeds);
         loadTvViewFromData(session, leaderboard, speeds);
+        applyColumnsConfig();  // ✅ AGREGADO: Aplicar configuración de columnas después de actualizar todos los paneles
         await updateTimeRemaining();
 
         if (status === 'completed' && !winnerModalShown) {
@@ -730,11 +753,13 @@ async function loadLiveData() {
             if (podiumRaceMode === 'classification') {
                 const groups = podiumRes?.classification_groups;
                 if (groups && (groups.q1?.length || groups.q2?.length || groups.q3?.length || groups.dnq?.length)) {
-                    showClassificationModal(groups.q1, groups.q2, groups.q3, groups.dnq);
+                    // ✅ AUTOMÁTICO: manual = false
+                    showClassificationModal(groups.q1, groups.q2, groups.q3, groups.dnq, false);
                     winnerModalShown = true;
                 }
             } else if (podium.length) {
-                showWinnerModalComplete(podium[0], podium[1], podium[2]);
+                // ✅ AUTOMÁTICO: manual = false
+                showWinnerModalComplete(podium[0], podium[1], podium[2], false);
                 winnerModalShown = true;
             }
         }
@@ -745,6 +770,7 @@ async function loadLiveData() {
             if (panelId === 'panel-live') {
                 // Refrescar el panel de control con los mismos datos
                 renderLiveLeaderboardPublicStyle(leaderboard, session, speeds, timesMap);
+                applyColumnsConfig();  // ✅ AGREGADO: Aplicar configuración al refrescar el panel live
                 updateLiveHeader(session);
             }
         }
@@ -754,9 +780,7 @@ async function loadLiveData() {
     }
 
     await loadUsbAndSignals();
-
 }
-
 
 async function updateTimeRemaining() {
     try {
@@ -1259,6 +1283,8 @@ async function loadTableroPublicoFromData(session, leaderboard, speedsMap = {}) 
             </div>
         `;
     }).join('');
+
+    applyColumnsConfig();
 }
 
 async function loadPublicViewFromData(session, leaderboard, speedsMap = {}) {
@@ -2031,6 +2057,8 @@ async function loadTableroPublico(preloaded = null) {
 
     // ✅ Llamar a la función corregida
     await loadTableroPublicoFromData(session, leaderboard, {});
+
+     applyColumnsConfig();
 }
 
 let allDriversData = []; // Cache global para búsquedas
@@ -2094,11 +2122,11 @@ async function loadDrivers(searchTerm) {
 function renderDriversTable(searchTerm) {
     const tbody = document.getElementById('driversList');
     if (!tbody) return;
-    
+
     let filtered = allDriversData;
     if (searchTerm) {
         const term = searchTerm.toLowerCase();
-        filtered = allDriversData.filter(d => 
+        filtered = allDriversData.filter(d =>
             (d.name || '').toLowerCase().includes(term) ||
             (d.lastname || '').toLowerCase().includes(term) ||
             (d.email || '').toLowerCase().includes(term) ||
@@ -2108,14 +2136,14 @@ function renderDriversTable(searchTerm) {
             String(d.id || '').includes(term)
         );
     }
-    
+
     if (filtered.length > 0) {
         tbody.innerHTML = filtered.map(d => {
             // ✅ CORREGIDO: URL CORRECTA PARA LA FOTO
-            const photo = d.photo && d.photo !== 'default-avatar.png' 
-                ? `/static/uploads/drivers/${d.photo}` 
+            const photo = d.photo && d.photo !== 'default-avatar.png'
+                ? `/static/uploads/drivers/${d.photo}`
                 : '/static/default-avatar.png';
-            
+
             const kart = d.transponder_kart_id || '--';
             return `<tr data-driver-id="${d.id}">
                 <td>${d.id}</td>
@@ -2146,13 +2174,13 @@ let persistentCheckedIds = new Set();
 async function loadEnrollmentCheckboxes(searchTerm) {
     const container = document.getElementById('enrollmentCheckboxList');
     if (!container) return;
-    
+
     // PASO 1: Sincronizar el Set persistente con el DOM actual
     container.querySelectorAll('.enrollment-checkbox').forEach(cb => {
         if (cb.checked) persistentCheckedIds.add(cb.value);
         else persistentCheckedIds.delete(cb.value);
     });
-    
+
     // ✅ PASO 2: OBTENER DATOS ACTUALES
     const session = await apiCall('/api/session/current');
     let inscritosIds = [];
@@ -2160,12 +2188,12 @@ async function loadEnrollmentCheckboxes(searchTerm) {
         const raceDrivers = await apiCall(`/api/race/drivers/${session.session.id}`);
         inscritosIds = raceDrivers ? raceDrivers.map(d => d.driver_id) : [];
     }
-    
+
     // ✅ PASO 3: FILTRAR POR BÚSQUEDA
     let filtered = allDriversData;
     if (searchTerm && searchTerm.trim() !== '') {
         const term = searchTerm.toLowerCase().trim();
-        filtered = allDriversData.filter(d => 
+        filtered = allDriversData.filter(d =>
             (d.name || '').toLowerCase().includes(term) ||
             (d.lastname || '').toLowerCase().includes(term) ||
             (d.email || '').toLowerCase().includes(term) ||
@@ -2174,7 +2202,7 @@ async function loadEnrollmentCheckboxes(searchTerm) {
             String(d.transponder_id || '').includes(term)
         );
     }
-    
+
     // Limpiar del Set persistente pilotos que ya fueron inscritos
     for (const id of persistentCheckedIds) {
         if (inscritosIds.includes(parseInt(id))) persistentCheckedIds.delete(id);
@@ -2182,31 +2210,28 @@ async function loadEnrollmentCheckboxes(searchTerm) {
 
     // PASO 4: Solo mostrar no inscritos
     const disponibles = filtered.filter(d => !inscritosIds.includes(d.id));
-    
+
     if (disponibles.length === 0) {
         container.innerHTML = '<span style="font-size:0.7rem;color:#888;">No hay pilotos disponibles</span>';
         return;
     }
-    
-    // ✅ PASO 5: RECONSTRUIR CHECKBOXES CON ESTADO PRESERVADO
+
     container.innerHTML = disponibles.map(d => {
-        // ✅ URL CORRECTA PARA LA FOTO
-        const photo = d.photo && d.photo !== 'default-avatar.png' 
-            ? `/static/uploads/drivers/${d.photo}` 
+        const photo = d.photo && d.photo !== 'default-avatar.png'
+            ? `/static/uploads/drivers/${d.photo}`
             : '/static/pilotcircle1.png';
-        
-        // ✅ VERIFICAR SI ESTE CHECKBOX DEBERÍA ESTAR MARCADO
+
         const wasChecked = persistentCheckedIds.has(String(d.id));
         const checked = wasChecked ? ' checked' : '';
-        
+
         const kart = d.transponder_kart_id || '';
         const hasTransponder = d.transponder_id && d.transponder_id > 0;
         const disabled = hasTransponder ? '' : 'disabled';
         const tStyle = hasTransponder ? 'color:#ffd700;' : 'color:#e5484d;';
         const tText = hasTransponder ? d.transponder_id : 'SIN TRANSPONDER ⛔';
-        
+
         return `<label style="display:flex;align-items:center;gap:0.35rem;padding:0.25rem 0.3rem;cursor:pointer;font-size:0.72rem;border-bottom:1px solid #1a1e26;${hasTransponder ? '' : 'opacity:0.5;'}">
-            <input type="checkbox" value="${d.id}" class="enrollment-checkbox" data-transponder="${d.transponder_id||d.id}" ${checked} ${disabled} style="width:14px;height:14px;flex-shrink:0;">
+            <input type="checkbox" value="${d.id}" class="enrollment-checkbox" data-transponder="${d.transponder_id || d.id}" ${checked} ${disabled} style="width:14px;height:14px;flex-shrink:0;">
             <img src="${photo}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.src='/static/pilotcircle1.png'">
             <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.name} ${d.lastname || ''}</span>
             ${kart ? `<span style="color:#00AAE4;font-size:0.6rem;flex-shrink:0;font-weight:bold;">${kart}</span>` : ''}
@@ -2615,6 +2640,26 @@ document.getElementById('addDriverToRaceBtn').onclick = async () => {
         return;
     }
 
+    // ✅ OBTENER PILOTOS ACTUALES
+    const currentDrivers = await apiCall(`/api/race/drivers/${session.session.id}`);
+    const currentCount = currentDrivers?.length || 0;
+    const newCount = checkboxes.length;
+    const total = currentCount + newCount;
+
+    // ✅ Si está dentro del límite recomendado, inscribir directamente
+    if (total <= MAX_RECOMMENDED_PILOTS) {
+        await inscribirPilotos(checkboxes, session);
+        return;
+    }
+
+    // ✅ Mostrar modal de advertencia
+    showPilotCapacityWarning(currentCount, newCount, async () => {
+        await inscribirPilotos(checkboxes, session);
+    });
+};
+
+// ✅ FUNCIÓN AUXILIAR PARA INSCRIBIR
+async function inscribirPilotos(checkboxes, session) {
     showLoader(`Inscribiendo ${checkboxes.length} piloto(s)...`);
     let inscritos = 0;
     for (const cb of checkboxes) {
@@ -2635,7 +2680,347 @@ document.getElementById('addDriverToRaceBtn').onclick = async () => {
     persistentCheckedIds.clear();
     loadDrivers();
     loadLiveData();
-};
+}
+
+// ============================================================
+// CONFIGURACIÓN DE VENTANAS DE RESULTADOS
+// ============================================================
+
+async function loadWinnerConfig() {
+    try {
+        const token = sessionToken || localStorage.getItem('chronit_session_token');
+        if (!token) {
+            winnerConfig = { autoShow: true, showLimit: 1, displayTime: 15 };
+            applyWinnerConfigUI();
+            return;
+        }
+
+        const response = await fetch('/api/user/preferences', {
+            headers: { 'X-Session-Token': token }
+        });
+        const data = await response.json();
+
+        if (data.success && data.preferences) {
+            winnerConfig = {
+                autoShow: data.preferences.winner_auto_show !== 'false',
+                showLimit: parseInt(data.preferences.winner_show_limit) || 1,
+                displayTime: parseInt(data.preferences.winner_display_time) || 15
+            };
+        }
+        applyWinnerConfigUI();
+    } catch (e) {
+        console.warn('Error cargando configuración:', e);
+        winnerConfig = { autoShow: true, showLimit: 1, displayTime: 15 };
+        applyWinnerConfigUI();
+    }
+}
+
+function applyWinnerConfigUI() {
+    const toggle = document.getElementById('winnerAutoShowToggle');
+    const status = document.getElementById('winnerAutoShowStatus');
+    const limitSlider = document.getElementById('winnerShowLimitSlider');
+    const limitValue = document.getElementById('winnerShowLimitValue');
+    const timeSlider = document.getElementById('winnerDisplayTimeSlider');
+    const timeValue = document.getElementById('winnerDisplayTimeValue');
+
+    if (toggle) {
+        toggle.checked = winnerConfig.autoShow;
+        if (status) {
+            status.innerText = winnerConfig.autoShow ? 'Activado' : 'Desactivado';
+            status.style.color = winnerConfig.autoShow ? '#34d399' : '#ef7a86';
+        }
+    }
+    if (limitSlider) limitSlider.value = winnerConfig.showLimit;
+    if (limitValue) limitValue.value = winnerConfig.showLimit;
+    if (timeSlider) timeSlider.value = winnerConfig.displayTime;
+    if (timeValue) timeValue.value = winnerConfig.displayTime;
+
+    // ✅ Actualizar preview
+    const previewTimer = document.getElementById('winnerPreviewTimer');
+    if (previewTimer) {
+        previewTimer.textContent = `${winnerConfig.displayTime}s`;
+    }
+}
+
+
+async function saveWinnerConfig() {
+    const toggle = document.getElementById('winnerAutoShowToggle');
+    const limitValue = document.getElementById('winnerShowLimitValue');
+    const timeValue = document.getElementById('winnerDisplayTimeValue');
+
+    const config = {
+        winner_auto_show: toggle ? toggle.checked : true,
+        winner_show_limit: parseInt(limitValue?.value) || 1,
+        winner_display_time: parseInt(timeValue?.value) || 15
+    };
+
+    console.log('[CONFIG] Guardando:', config);
+
+    const statusSpan = document.getElementById('winnerConfigStatus');
+    if (statusSpan) {
+        statusSpan.innerText = '⏳ Guardando...';
+        statusSpan.style.color = '#ffaa00';
+    }
+
+    try {
+        const token = sessionToken || localStorage.getItem('chronit_session_token');
+        if (!token) {
+            showToast('⚠️', 'Inicia sesión para guardar configuración', 'warning');
+            return;
+        }
+
+        const response = await fetch('/api/user/preferences', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Session-Token': token
+            },
+            body: JSON.stringify(config)
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            winnerConfig = config;
+
+            // ✅ ACTUALIZAR winnerShowCount para que coincida con el nuevo límite
+            // Si el límite es 0 (ilimitado), no resetear
+            if (winnerConfig.showLimit > 0) {
+                winnerShowCount = 0;
+            }
+
+            if (statusSpan) {
+                statusSpan.innerText = '✅ Guardado';
+                statusSpan.style.color = '#34d399';
+            }
+
+            showToast('✅', 'Configuración guardada. Recargando página...', 'success');
+
+            // ✅ RECARGAR LA PÁGINA DESPUÉS DE 1 SEGUNDO
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+
+        } else {
+            if (statusSpan) {
+                statusSpan.innerText = '❌ Error';
+                statusSpan.style.color = '#ef7a86';
+            }
+            showToast('❌', data.error || 'Error al guardar', 'error');
+        }
+    } catch (e) {
+        console.error('Error guardando configuración:', e);
+        if (statusSpan) {
+            statusSpan.innerText = '❌ Error';
+            statusSpan.style.color = '#ef7a86';
+        }
+        showToast('❌', 'Error al conectar con el servidor', 'error');
+    }
+}
+
+function updateConfigHints() {
+    const limitSlider = document.getElementById('winnerShowLimitSlider');
+    const limitValue = document.getElementById('winnerShowLimitValue');
+    const timeSlider = document.getElementById('winnerDisplayTimeSlider');
+    const timeValue = document.getElementById('winnerDisplayTimeValue');
+    const previewTimer = document.getElementById('winnerPreviewTimer');
+    const autoToggle = document.getElementById('winnerAutoShowToggle');
+    const autoStatus = document.getElementById('winnerAutoShowStatus');
+
+    // Actualizar límite
+    if (limitSlider) limitSlider.value = winnerConfig.showLimit;
+    if (limitValue) limitValue.value = winnerConfig.showLimit;
+
+    // Actualizar tiempo
+    if (timeSlider) timeSlider.value = winnerConfig.displayTime;
+    if (timeValue) timeValue.value = winnerConfig.displayTime;
+
+    // Actualizar preview
+    if (previewTimer) {
+        previewTimer.textContent = `${winnerConfig.displayTime}s`;
+    }
+
+    // Actualizar toggle
+    if (autoToggle) {
+        autoToggle.checked = winnerConfig.autoShow;
+        if (autoStatus) {
+            autoStatus.innerText = winnerConfig.autoShow ? 'Activado' : 'Desactivado';
+            autoStatus.style.color = winnerConfig.autoShow ? '#34d399' : '#ef7a86';
+        }
+    }
+
+    // Actualizar hints
+    const limitHint = document.querySelector('#winnerShowLimitSlider')?.closest('.compact-config-row')?.querySelector('.hint');
+    if (limitHint) {
+        const val = winnerConfig.showLimit;
+        if (val == 0) limitHint.innerText = '♾️ Ilimitado - Se mostrará siempre';
+        else if (val == 1) limitHint.innerText = '🔄 Se mostrará 1 vez por sesión';
+        else limitHint.innerText = `🔄 Se mostrará ${val} veces por sesión`;
+    }
+
+    const timeHint = document.querySelector('#winnerDisplayTimeSlider')?.closest('.compact-config-row')?.querySelector('.hint');
+    if (timeHint) {
+        const val = winnerConfig.displayTime;
+        if (val <= 10) timeHint.innerText = `⏱️ Se mostrará ${val} segundos (rápido)`;
+        else if (val <= 20) timeHint.innerText = `⏱️ Se mostrará ${val} segundos (normal)`;
+        else timeHint.innerText = `⏱️ Se mostrará ${val} segundos (largo)`;
+    }
+}
+
+// Configurar eventos de los controles
+function setupWinnerConfigControls() {
+    console.log('[CONFIG] Inicializando controles...');
+
+    const limitSlider = document.getElementById('winnerShowLimitSlider');
+    const limitValue = document.getElementById('winnerShowLimitValue');
+    const timeSlider = document.getElementById('winnerDisplayTimeSlider');
+    const timeValue = document.getElementById('winnerDisplayTimeValue');
+    const autoToggle = document.getElementById('winnerAutoShowToggle');
+    const autoStatus = document.getElementById('winnerAutoShowStatus');
+    const saveBtn = document.getElementById('saveWinnerConfigBtn');
+    const previewTimer = document.getElementById('winnerPreviewTimer');
+
+    // ✅ VERIFICAR QUE LOS ELEMENTOS EXISTAN
+    console.log('[CONFIG] limitSlider:', limitSlider);
+    console.log('[CONFIG] limitValue:', limitValue);
+    console.log('[CONFIG] timeSlider:', timeSlider);
+    console.log('[CONFIG] timeValue:', timeValue);
+
+    // ✅ SINCRONIZAR: Slider → Input (Límite)
+    if (limitSlider && limitValue) {
+        limitSlider.oninput = function () {
+            const val = parseInt(this.value);
+            limitValue.value = val;
+            updateHint('limit', val);
+            updatePreview(val);
+        };
+
+        limitValue.onchange = function () {
+            let val = parseInt(this.value);
+            if (isNaN(val)) val = 1;
+            if (val < 0) val = 0;
+            if (val > 10) val = 10;
+            this.value = val;
+            limitSlider.value = val;
+            updateHint('limit', val);
+            updatePreview(val);
+        };
+    }
+
+    // ✅ SINCRONIZAR: Slider → Input (Tiempo)
+    if (timeSlider && timeValue) {
+        timeSlider.oninput = function () {
+            const val = parseInt(this.value);
+            timeValue.value = val;
+            updateHint('time', val);
+            updatePreview(val);
+        };
+
+        timeValue.onchange = function () {
+            let val = parseInt(this.value);
+            if (isNaN(val)) val = 15;
+            if (val < 5) val = 5;
+            if (val > 60) val = 60;
+            this.value = val;
+            timeSlider.value = val;
+            updateHint('time', val);
+            updatePreview(val);
+        };
+    }
+
+    // ✅ FUNCIÓN: Actualizar hints
+    function updateHint(type, value) {
+        if (type === 'limit') {
+            const hint = limitSlider?.closest('.compact-config-row')?.querySelector('.hint');
+            if (hint) {
+                if (value == 0) hint.innerText = '♾️ Ilimitado - Se mostrará siempre';
+                else if (value == 1) hint.innerText = '🔄 Se mostrará 1 vez por sesión';
+                else hint.innerText = `🔄 Se mostrará ${value} veces por sesión`;
+            }
+        } else if (type === 'time') {
+            const hint = timeSlider?.closest('.compact-config-row')?.querySelector('.hint');
+            if (hint) {
+                hint.innerText = `⏱️ Se mostrará ${value} segundos`;
+            }
+        }
+    }
+
+    // ✅ FUNCIÓN: Actualizar preview
+    function updatePreview(value) {
+        if (previewTimer) {
+            previewTimer.textContent = `${value}s`;
+        }
+    }
+
+    // ✅ Toggle
+    if (autoToggle && autoStatus) {
+        autoToggle.onchange = function () {
+            autoStatus.innerText = this.checked ? 'Activado' : 'Desactivado';
+            autoStatus.style.color = this.checked ? '#34d399' : '#ef7a86';
+        };
+    }
+
+    // ✅ Botón Guardar
+    if (saveBtn) {
+        saveBtn.onclick = saveWinnerConfig;
+    }
+
+    // ✅ INICIALIZAR valores al cargar
+    if (limitSlider) {
+        const val = parseInt(limitSlider.value) || 1;
+        if (limitValue) limitValue.value = val;
+        updateHint('limit', val);
+        updatePreview(val);
+    }
+    if (timeSlider) {
+        const val = parseInt(timeSlider.value) || 15;
+        if (timeValue) timeValue.value = val;
+        updateHint('time', val);
+        updatePreview(val);
+    }
+    if (autoToggle && autoStatus) {
+        autoStatus.innerText = autoToggle.checked ? 'Activado' : 'Desactivado';
+        autoStatus.style.color = autoToggle.checked ? '#34d399' : '#ef7a86';
+    }
+
+    console.log('[CONFIG] Controles inicializados correctamente');
+}
+
+// ============================================================
+// FUNCIONES DE CONFIGURACIÓN DE VENTANAS
+// ============================================================
+
+function shouldShowWinner() {
+    // ✅ Verificar autoShow (solo para automático)
+    if (!winnerConfig.autoShow) {
+        console.log('[WINNER] AutoShow desactivado');
+        return false;
+    }
+
+    // ✅ Verificar límite (0 = ilimitado)
+    if (winnerConfig.showLimit > 0 && winnerShowCount >= winnerConfig.showLimit) {
+        console.log(`[WINNER] Límite alcanzado: ${winnerShowCount}/${winnerConfig.showLimit}`);
+        return false;
+    }
+
+    return true;
+}
+
+// ✅ NUEVA FUNCIÓN: Para mostrar manualmente (SIEMPRE muestra)
+function shouldShowWinnerManual() {
+    // ✅ Solo verificar autoShow, NO el límite
+    if (!winnerConfig.autoShow) {
+        console.log('[WINNER MANUAL] AutoShow desactivado, pero mostrando por botón');
+        // ✅ Aún así mostramos, porque el usuario presionó el botón
+        return true;
+    }
+    return true;
+}
+
+function incrementWinnerShowCount() {
+    winnerShowCount++;
+    console.log(`[WINNER] Mostrado ${winnerShowCount}/${winnerConfig.showLimit} veces`);
+}
+
 
 // ═══════════════════════════════════════════
 // NUEVOS HANDLERS DE PILOTOS
@@ -3329,7 +3714,6 @@ function winnerDetailsText(driver) {
     const mode = normalizeRaceMode(currentRaceMode);
     const bestLap = driver.best_lap != null ? `${Number(driver.best_lap).toFixed(3)} s` : '--';
 
-    // ✅ Calcular tiempo total si no está disponible
     let total = '--';
     let realTotal = '--';
 
@@ -3359,11 +3743,37 @@ function winnerDetailsText(driver) {
 
 let winnerModalTimer = null;
 
-function showClassificationModal(q1, q2, q3, dnq) {
+function showClassificationModal(q1, q2, q3, dnq, manual = false) {
+
+    if (!manual) {
+
+        if (!shouldShowWinner()) {
+            console.log('[CLASSIFICATION] Configuración impide mostrar ventana (automático)');
+            return;
+        }
+    } else {
+
+        console.log('[CLASSIFICATION] Mostrando manualmente (ignorando límite)');
+    }
+
+    if (classificationModalShown) return;
+    classificationModalShown = true;
+
+
+    if (!manual) {
+        incrementWinnerShowCount();
+    }
+
     const formatPilot = (d, idx) => {
         const name = (d.full_name || (d.name || '') + ' ' + (d.lastname || '')).trim();
         const best = d.best_lap ? (d.best_lap.toFixed(3) + 's') : '--';
-        return `<div style="display:flex;align-items:center;gap:0.4rem;padding:0.2rem 0;font-size:0.78rem;border-bottom:1px solid #1a1e26;">
+
+        const photo = d.photo && d.photo !== 'default-avatar.png'
+            ? `/static/uploads/drivers/${d.photo}`
+            : '/static/default-avatar.png';
+
+        return `<div style="display:flex;align-items:center;gap:0.6rem;padding:0.3rem 0;font-size:0.78rem;border-bottom:1px solid #1a1e26;">
+            <img src="${photo}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:2px solid #ffd700;flex-shrink:0;" onerror="this.src='/static/default-avatar.png'">
             <span style="color:#ffd700;font-weight:bold;min-width:22px;">${idx + 1}.</span>
             <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${name}</span>
             <span style="color:#ffd700;font-family:monospace;">${best}</span>
@@ -3394,11 +3804,17 @@ function showClassificationModal(q1, q2, q3, dnq) {
     if (dnq && dnq.length > 0) {
         html += '<div style="margin-top:0.8rem;background:#1a0a0a;border:1px solid #e5484d;border-radius:10px;padding:0.5rem;">';
         html += '<div style="text-align:center;font-weight:bold;font-size:0.85rem;color:#e5484d;margin-bottom:0.3rem;">❌ DNQ (Sin vuelta válida)</div>';
-        html += dnq.map((d, i) => `<div style="display:flex;align-items:center;gap:0.4rem;padding:0.15rem 0;font-size:0.72rem;border-bottom:1px solid #2a0a0a;">
-            <span style="color:#e5484d;">•</span>
-            <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${(d.full_name || (d.name || '') + ' ' + (d.lastname || '')).trim()}</span>
-            <span style="color:#888;font-size:0.65rem;">${d.total_laps || 0} v</span>
-        </div>`).join('');
+        html += dnq.map((d, i) => {
+            const photo = d.photo && d.photo !== 'default-avatar.png'
+                ? `/static/uploads/drivers/${d.photo}`
+                : '/static/default-avatar.png';
+            return `<div style="display:flex;align-items:center;gap:0.6rem;padding:0.2rem 0;font-size:0.72rem;border-bottom:1px solid #2a0a0a;">
+                <img src="${photo}" style="width:22px;height:22px;border-radius:50%;object-fit:cover;border:1px solid #e5484d;flex-shrink:0;" onerror="this.src='/static/default-avatar.png'">
+                <span style="color:#e5484d;">•</span>
+                <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${(d.full_name || (d.name || '') + ' ' + (d.lastname || '')).trim()}</span>
+                <span style="color:#888;font-size:0.65rem;">${d.total_laps || 0} v</span>
+            </div>`;
+        }).join('');
         html += '</div>';
     }
 
@@ -3409,47 +3825,146 @@ function showClassificationModal(q1, q2, q3, dnq) {
     document.getElementById('modal').style.display = 'flex';
     document.getElementById('modalConfirm').style.display = 'none';
     document.getElementById('modalCancel').innerText = 'Cerrar';
+
+    // ✅ TIMER DE CIERRE AUTOMÁTICO (usando configuración)
+    const displayTime = winnerConfig.displayTime || 15;
+    if (classificationModalTimer) clearTimeout(classificationModalTimer);
+    classificationModalTimer = setTimeout(() => {
+        document.getElementById('modal').style.display = 'none';
+        classificationModalTimer = null;
+        classificationModalShown = false; // ✅ Resetear al cerrar
+    }, displayTime * 1000);
+
+    const modal = document.getElementById('modal');
+    modal.onclick = function (e) {
+        if (e.target === modal) {
+            document.getElementById('modal').style.display = 'none';
+            if (classificationModalTimer) {
+                clearTimeout(classificationModalTimer);
+                classificationModalTimer = null;
+            }
+            classificationModalShown = false; // ✅ Resetear al cerrar
+        }
+    };
+
+    document.onkeydown = function (e) {
+        if (e.key === 'Escape' && document.getElementById('modal').style.display === 'flex') {
+            document.getElementById('modal').style.display = 'none';
+            if (classificationModalTimer) {
+                clearTimeout(classificationModalTimer);
+                classificationModalTimer = null;
+            }
+            classificationModalShown = false; // ✅ Resetear al cerrar
+        }
+    };
 }
 
-function showWinnerModalComplete(winner, second, third) {
+
+function showWinnerModalComplete(winner, second, third, manual = false) {
+    // ✅ Si es MANUAL, NO verificar configuración
+    if (!manual) {
+        if (!shouldShowWinner()) {
+            console.log('[WINNER] Configuración impide mostrar ventana (automático)');
+            return;
+        }
+    } else {
+        console.log('[WINNER] Mostrando manualmente (ignorando límite)');
+    }
+
     if (winnerModalShown) return;
     winnerModalShown = true;
 
-    document.getElementById('modalWinnerName').innerText = winner.full_name || winner.name;
-    document.getElementById('modalWinnerTime').innerText = winnerDetailsText(winner);
-
-    const secondContainer = document.getElementById('modalSecondContainer');
-    if (secondContainer) {
-        if (second) {
-            document.getElementById('modalSecondName').innerText = second.full_name || second.name;
-            document.getElementById('modalSecondTime').innerText = winnerDetailsText(second);
-            secondContainer.style.display = 'block';
-        } else {
-            secondContainer.style.display = 'none';
-        }
+    if (!manual) {
+        incrementWinnerShowCount();
     }
 
-    const thirdContainer = document.getElementById('modalThirdContainer');
-    if (thirdContainer) {
-        if (third) {
-            document.getElementById('modalThirdName').innerText = third.full_name || third.name;
-            document.getElementById('modalThirdTime').innerText = winnerDetailsText(third);
-            thirdContainer.style.display = 'block';
-        } else {
-            thirdContainer.style.display = 'none';
-        }
+    // ✅ FUNCIÓN PARA CREAR FILA DE PILOTO
+    function createPilotRow(pilot, position, medal, borderColor) {
+        if (!pilot) return '';
+
+        const photo = pilot.photo && pilot.photo !== 'default-avatar.png'
+            ? `/static/uploads/drivers/${pilot.photo}`
+            : '/static/default-avatar.png';
+
+        const name = pilot.full_name || pilot.name || '--';
+        const details = winnerDetailsText(pilot);
+
+        // Medallas según posición
+        const medalEmoji = position === 1 ? '🥇' : position === 2 ? '🥈' : '🥉';
+        const title = position === 1 ? 'CAMPEÓN' : position === 2 ? 'SUBCAMPEÓN' : 'TERCER PUESTO';
+        const bgColor = position === 1 ? 'rgba(255,215,0,0.15)' : position === 2 ? 'rgba(192,192,192,0.12)' : 'rgba(205,127,50,0.12)';
+        const borderColorFinal = position === 1 ? '#ffd700' : position === 2 ? '#c0c0c0' : '#cd7f32';
+        const textColor = position === 1 ? '#ffd700' : position === 2 ? '#c0c0c0' : '#cd7f32';
+
+        return `
+            <div style="display:flex; align-items:center; gap:1rem; padding:0.8rem 1rem; margin-bottom:0.8rem; background:${bgColor}; border-left:4px solid ${borderColorFinal}; border-radius:8px; flex-wrap:wrap;">
+                <img src="${photo}" style="width:55px; height:55px; border-radius:50%; object-fit:cover; border:3px solid ${borderColorFinal}; flex-shrink:0;" onerror="this.src='/static/default-avatar.png'">
+                <div style="flex:1; min-width:150px;">
+                    <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                        <span style="font-size:1.1rem; font-weight:bold; color:#ffffff;">${name}</span>
+                        <span style="font-size:0.7rem; color:${textColor}; font-weight:600; background:rgba(0,0,0,0.3); padding:0.1rem 0.6rem; border-radius:12px;">${title}</span>
+                    </div>
+                    <div style="font-size:0.75rem; color:#a4adbc; margin-top:0.2rem; word-break:break-word;">${details}</div>
+                </div>
+                <div style="font-size:1.5rem; flex-shrink:0;">${medalEmoji}</div>
+            </div>
+        `;
+    }
+
+    // ✅ CONSTRUIR HTML DEL MODAL
+    let html = `
+        <div style="padding:0.5rem;">
+            <h2 style="text-align:center; color:#ffd700; margin-bottom:1rem; font-size:1.2rem;">🏆 PODIO DE GANADORES</h2>
+            <div style="max-height:65vh; overflow-y:auto; padding-right:0.5rem;">
+    `;
+
+    // Ganador (1er puesto)
+    if (winner) {
+        html += createPilotRow(winner, 1);
+    }
+
+    // Segundo puesto
+    if (second) {
+        html += createPilotRow(second, 2);
+    }
+
+    // Tercer puesto
+    if (third) {
+        html += createPilotRow(third, 3);
+    }
+
+    html += `
+            </div>
+            <div style="text-align:center; margin-top:1rem; padding-top:0.8rem; border-top:1px solid #2a2f3a;">
+                <button onclick="closeWinnerModalComplete()" style="background:#e5484d; color:white; border:none; padding:0.6rem 2.5rem; border-radius:25px; cursor:pointer; font-weight:600; font-size:0.9rem; transition:background 0.2s;" onmouseover="this.style.background='#c73e42'" onmouseout="this.style.background='#e5484d'">CERRAR</button>
+            </div>
+        </div>
+    `;
+
+    // ✅ ACTUALIZAR EL MODAL
+    const modalContent = document.querySelector('.winner-modal-content');
+    if (modalContent) {
+        modalContent.innerHTML = html;
     }
 
     const modal = document.getElementById('winnerModalComplete');
     modal.style.display = 'flex';
 
+    // ✅ TIMER DE CIERRE AUTOMÁTICO
+    const displayTime = winnerConfig.displayTime || 15;
     if (winnerModalTimer) clearTimeout(winnerModalTimer);
     winnerModalTimer = setTimeout(() => {
         closeWinnerModalComplete();
-    }, 15000);
+    }, displayTime * 1000);
 
     modal.onclick = (e) => {
         if (e.target === modal) {
+            closeWinnerModalComplete();
+        }
+    };
+
+    document.onkeydown = function (e) {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
             closeWinnerModalComplete();
         }
     };
@@ -4417,27 +4932,77 @@ document.getElementById('timeSourceSelect').addEventListener('change', function 
     }
 });
 
-let currentIp = null;
+
+
+function detectIpFromUrl() {
+    try {
+        const url = new URL(window.location.href);
+        const hostname = url.hostname;
+
+        // Si no es localhost y no es IP de Docker
+        if (hostname !== 'localhost' &&
+            hostname !== '127.0.0.1' &&
+            !hostname.startsWith('172.') &&
+            !hostname.startsWith('10.') &&
+            !hostname.startsWith('169.254.')) {
+            return hostname;
+        }
+        return null;
+    } catch (e) {
+        return null;
+    }
+}
+
+
 
 async function cargarIpConexion() {
     console.log("📡 Cargando IP de conexión...");
-    if (manualIp) {
-        mostrarIpYQR(`http://${manualIp}:5000`);
+    
+    // ✅ 1. Si hay IP manual guardada, usarla
+    const savedIp = localStorage.getItem('chronit_manual_ip');
+    if (savedIp) {
+        manualIp = savedIp;
+        currentIp = savedIp;
+        mostrarIpYQR(`http://${currentIp}:5000`);
+        console.log("📌 Usando IP manual:", currentIp);
         return;
     }
+    
+    // ✅ 2. Detectar IP desde la URL (la más confiable)
+    try {
+        const url = new URL(window.location.href);
+        const hostname = url.hostname;
+        
+        // ✅ Si es una IP o localhost, usarla
+        if (hostname) {
+            currentIp = hostname;
+            mostrarIpYQR(`http://${currentIp}:5000`);
+            console.log("📌 IP detectada desde URL:", currentIp);
+            return;
+        }
+    } catch (e) {
+        console.log('No se pudo detectar IP desde URL');
+    }
+    
+    // ✅ 3. Intentar con la API (fallback)
     try {
         const res = await apiCall('/api/system/ip');
-        console.log("Respuesta IP automática:", res);
-
+        console.log("📡 Respuesta de /api/system/ip:", res);
+        
         if (res?.success && res.ips && res.ips.length > 0) {
-            const ipReal = res.ips.find(ip => !ip.startsWith('172.') && !ip.startsWith('127.'));
-            if (ipReal) {
-                currentIp = ipReal;
+            // ✅ Usar la primera IP (puede ser localhost, 172.x.x.x, 192.168.x.x, etc.)
+            const ip = res.ips[0];
+            if (ip) {
+                currentIp = ip;
                 mostrarIpYQR(`http://${currentIp}:5000`);
+                console.log("📌 IP detectada desde API:", currentIp);
                 return;
             }
         }
+        
+        // ✅ 4. Si todo falla, mostrar error con opción manual
         mostrarErrorIp();
+        
     } catch (e) {
         console.error('Error al obtener IP:', e);
         mostrarErrorIp();
@@ -4447,15 +5012,19 @@ async function cargarIpConexion() {
 function mostrarIpYQR(url) {
     const container = document.getElementById('ipListContainer');
     if (container) {
+        const isManual = localStorage.getItem('chronit_manual_ip') !== null;
+        const isLocalhost = url.includes('localhost') || url.includes('127.0.0.1');
+        
         container.innerHTML = `
-            <div style="background: #0d1218; border-radius: 8px; padding: 10px; margin-bottom: 8px;">
-                <div style="font-family: monospace; font-size: 1rem; color: #00c853; word-break: break-all;">
+            <div style="background: #0d1218; border-radius: 8px; padding: 12px; margin-bottom: 8px; border: 1px solid ${isManual ? '#34d399' : '#2a2f3a'};">
+                <div style="font-family: monospace; font-size: 1.1rem; color: ${isLocalhost ? '#ff9800' : '#00c853'}; word-break: break-all; display:flex; align-items:center; gap:8px;">
+                    <span>🌐</span>
                     ${url}
                 </div>
-                <div style="font-size: 0.7rem; color: #666; margin-top: 4px;">
-                    📱 Escanea el código QR o ingresa esta IP en tu celular
+                <div style="font-size: 0.7rem; color: #666; margin-top: 4px; display:flex; justify-content:space-between; flex-wrap:wrap;">
+                    <span>📱 ${isLocalhost ? 'Si estás en localhost, usa el botón "Configurar IP manual"' : 'Escanea el código QR o ingresa esta IP en tu celular'}</span>
+                    ${isManual ? '<span style="color:#ff9800;">📌 Usando IP manual</span>' : ''}
                 </div>
-                ${manualIp ? '<div style="font-size: 0.7rem; color: #ff9800; margin-top: 4px;">📌 Usando IP manual</div>' : ''}
             </div>
         `;
     }
@@ -4466,15 +5035,31 @@ function mostrarErrorIp() {
     const container = document.getElementById('ipListContainer');
     if (container) {
         container.innerHTML = `
-            <div style="background: #0d1218; border-radius: 8px; padding: 10px;">
-                <span style="color: #ff9800;">⚠️ No se pudo detectar la IP automáticamente</span>
-                <div style="font-size: 0.7rem; margin-top: 8px;">
-                    Haz clic en "Configurar IP manual" para ingresarla
+            <div style="background: #0d1218; border-radius: 8px; padding: 12px; border-left: 3px solid #ef7a86;">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                    <span style="font-size:1.2rem;">⚠️</span>
+                    <span style="color:#ef7a86; font-weight:600;">No se pudo detectar IP</span>
+                </div>
+                <div style="font-size:0.75rem; color:#a4adbc; line-height: 1.6;">
+                    <strong style="color:#fff;">📌 Solución:</strong>
+                    <br>
+                    1. Abre una terminal y escribe: 
+                    <code style="background:#1a1e26; padding:0.1rem 0.4rem; border-radius:4px; color:#ffd700;">hostname -I</code>
+                    <br>
+                    2. Copia la IP (ej: <strong style="color:#ffd700;">192.168.1.12</strong>)
+                    <br>
+                    3. Haz clic en <strong style="color:#3b82f6;">✏️ Configurar IP manual</strong>
                 </div>
             </div>
         `;
     }
-    document.getElementById('qrCodePlaceholder').innerHTML = '<span style="color: #888;">Configura una IP manual para ver el QR</span>';
+    document.getElementById('qrCodePlaceholder').innerHTML = `
+        <div style="color: #888; font-size:0.8rem; padding:1rem;">
+            <span style="font-size:2rem;">📱</span>
+            <br>
+            Configura una IP manual para ver el código QR
+        </div>
+    `;
 }
 
 function generarQRLocal(url) {
@@ -4482,10 +5067,11 @@ function generarQRLocal(url) {
     const qrUrl = `https://quickchart.io/qr?text=${encodeURIComponent(url)}&size=160`;
 
     qrContainer.innerHTML = `
-        <img src="${qrUrl}" width="160" height="160" alt="QR Code" style="margin: 0 auto; border-radius: 12px;">
-        <div style="font-family: monospace; font-size: 0.7rem; margin-top: 8px; word-break: break-all; color: #333;">
+        <img src="${qrUrl}" width="160" height="160" alt="QR Code" style="margin: 0 auto; border-radius: 12px; background: white; padding: 8px;">
+        <div style="font-family: monospace; font-size: 0.7rem; margin-top: 8px; word-break: break-all; color: #888;">
             ${url}
         </div>
+        <p style="font-size:0.6rem; color:#666; margin-top:4px;">📱 Escanea con tu celular</p>
     `;
 }
 
@@ -4567,7 +5153,6 @@ if (document.getElementById('refreshIpBtn')) {
     document.getElementById('refreshIpBtn').onclick = refrescarIp;
 }
 
-let manualIp = null;
 function loadManualIp() {
     const savedIp = localStorage.getItem('chronit_manual_ip');
     if (savedIp) {
@@ -4616,6 +5201,7 @@ function setupIpModal() {
             const savedIp = localStorage.getItem('chronit_manual_ip');
             if (savedIp) input.value = savedIp;
             modal.style.display = 'flex';
+            setTimeout(() => input.focus(), 100);
         };
     }
 
@@ -4623,18 +5209,44 @@ function setupIpModal() {
 
     if (saveBtn) {
         saveBtn.onclick = () => {
-            if (saveManualIp(input.value.trim())) {
-                closeModal();
+            const ip = input.value.trim();
+            const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
+            if (!ipRegex.test(ip)) {
+                showToast('❌', 'IP inválida. Ejemplo: 192.168.1.12', 'error');
+                return;
             }
+            localStorage.setItem('chronit_manual_ip', ip);
+            manualIp = ip;
+            currentIp = ip;
+            showToast('✅', `IP manual guardada: ${ip}`, 'success');
+            closeModal();
+            cargarIpConexion();
         };
     }
 
     if (clearBtn) {
         clearBtn.onclick = () => {
-            clearManualIp();
+            localStorage.removeItem('chronit_manual_ip');
+            manualIp = null;
+            currentIp = null;
+            showToast('🔄', 'Volviendo a detección automática', 'info');
             closeModal();
+            cargarIpConexion();
         };
     }
+
+    if (input) {
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (saveBtn) saveBtn.click();
+            }
+        });
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.style.display === 'flex') closeModal();
+    });
 
     modal.onclick = (e) => {
         if (e.target === modal) closeModal();
@@ -4694,7 +5306,7 @@ document.getElementById('driverSearchInput')?.addEventListener('input', function
 
 // Enrollment search - INDEPENDIENTE: solo filtra checkboxes de inscripción
 let enrollmentSearchTimer = null;
-document.getElementById('enrollmentSearch')?.addEventListener('input', function() {
+document.getElementById('enrollmentSearch')?.addEventListener('input', function () {
     clearTimeout(enrollmentSearchTimer);
     const term = this.value;
     enrollmentSearchTimer = setTimeout(() => {
@@ -4977,6 +5589,8 @@ function renderLiveLeaderboardPublicStyle(leaderboard, session, speedsMap = {}, 
             </div>
         `;
     }).join('');
+
+    applyColumnsConfig();
 }
 
 function updateLiveHeader(session) {
@@ -6005,36 +6619,93 @@ async function loadRaceHistory(searchTerm = '') {
         container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #e5484d;">Error al cargar historial</div>';
     }
 }
+
+
 function setupHistorySearch() {
     const searchInput = document.getElementById('historySearchInput');
     const searchBtn = document.getElementById('historySearchBtn');
     const clearBtn = document.getElementById('historyClearSearchBtn');
+    const pilotSearch = document.getElementById('historyPilotSearch');
+    const pilotSearchBtn = document.getElementById('historyPilotSearchBtn');
+    const pilotClearBtn = document.getElementById('historyPilotClearBtn');
 
-    if (!searchInput || !searchBtn || !clearBtn) return;
-
-    searchBtn.onclick = () => {
-        currentHistoryFilter = searchInput.value;
-        loadRaceHistory(currentHistoryFilter);
-    };
-
-    clearBtn.onclick = () => {
-        searchInput.value = '';
-        currentHistoryFilter = '';
-        loadRaceHistory('');
-    };
-
-    searchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
+    // Buscador de carreras (existente)
+    if (searchInput && searchBtn && clearBtn) {
+        searchBtn.onclick = () => {
+            // Limpiar filtro de piloto al buscar por carrera
+            if (pilotSearch) pilotSearch.value = '';
+            currentPilotFilter = null;
             currentHistoryFilter = searchInput.value;
             loadRaceHistory(currentHistoryFilter);
-        }
-    });
+        };
+
+        clearBtn.onclick = () => {
+            searchInput.value = '';
+            currentHistoryFilter = '';
+            if (pilotSearch) pilotSearch.value = '';
+            currentPilotFilter = null;
+            document.getElementById('historyPilotCount').innerText = '0 carreras';
+            loadRaceHistory('');
+        };
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                if (pilotSearch) pilotSearch.value = '';
+                currentPilotFilter = null;
+                currentHistoryFilter = searchInput.value;
+                loadRaceHistory(currentHistoryFilter);
+            }
+        });
+    }
+
+    // ✅ NUEVO: Buscador de pilotos
+    if (pilotSearch && pilotSearchBtn && pilotClearBtn) {
+        pilotSearchBtn.onclick = () => {
+            const term = pilotSearch.value.trim();
+            if (term) {
+                // Limpiar filtro de carrera
+                if (searchInput) searchInput.value = '';
+                currentHistoryFilter = '';
+                currentPilotFilter = term;
+                loadPilotHistory(term);
+            } else {
+                showToast('⚠️', 'Ingresa el nombre o ID del piloto', 'warning');
+            }
+        };
+
+        pilotClearBtn.onclick = () => {
+            pilotSearch.value = '';
+            currentPilotFilter = null;
+            document.getElementById('historyPilotCount').innerText = '0 carreras';
+            if (searchInput) searchInput.value = '';
+            currentHistoryFilter = '';
+            loadRaceHistory('');
+        };
+
+        pilotSearch.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const term = pilotSearch.value.trim();
+                if (term) {
+                    if (searchInput) searchInput.value = '';
+                    currentHistoryFilter = '';
+                    currentPilotFilter = term;
+                    loadPilotHistory(term);
+                }
+            }
+        });
+    }
 }
 
 // Modificar loadRaceHistory para aceptar filtro
 async function loadRaceHistory(searchTerm = '') {
     const container = document.getElementById('historyListContainer');
     if (!container) return;
+
+    if (currentPilotFilter) {
+        await loadPilotHistory(currentPilotFilter);
+        return;
+    }
+
 
     container.innerHTML = '<div style="text-align: center; padding: 2rem;">Cargando historial...</div>';
 
@@ -6068,21 +6739,26 @@ async function loadRaceHistory(searchTerm = '') {
             const winnerTime = race.winner_time ? formatRaceClock(race.winner_time) : '--';
 
             return `
-                <div style="border-radius: 12px; padding: 1rem; margin-bottom: 1rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-                        <div style="flex: 1;">
-                            <div style="font-weight: bold; font-size: 1.1rem; color: #ffd700;">${escapeHtml(race.circuit_name)}</div>
-                            <div style="font-size: 0.7rem; color: #888; margin-top: 0.2rem;">${modeLabel} | ${race.laps_limit} vueltas | ${race.total_drivers || 0} pilotos</div>
-                            <div style="font-size: 0.7rem; color: #666;">📅 ${race.end_time_formatted || '--'}</div>
-                            <div style="font-size: 0.7rem; color: #00c853;">🏆 ${winner} (${winnerTime})</div>
-                        </div>
-                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
-                            <button class="btn btn-sm" onclick="viewRaceDetail(${race.id})" style="background: #2196f3;">📋 Ver</button>
-                            <button class="btn btn-sm" onclick="deleteRaceHistory(${race.id}, '${escapeHtml(race.circuit_name)}')" style="background: #e5484d;">🗑️ Eliminar</button>
-                        </div>
+        <div style="border-radius: 12px; padding: 1rem; margin-bottom: 1rem; border-left: 4px solid ${race.winner_name ? '#ffd700' : '#2a2f3a'};">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <div style="flex: 1;">
+                    <div style="font-weight: bold; font-size: 1.1rem; color: #ffd700;">${escapeHtml(race.circuit_name)}</div>
+                    <div style="font-size: 0.7rem; color: #888; margin-top: 0.2rem;">
+                        ${modeLabel} | ${race.laps_limit} vueltas | ${race.total_drivers || 0} pilotos | ID: ${race.id}
+                    </div>
+                    <div style="font-size: 0.7rem; color: #666;">📅 ${race.end_time_formatted || '--'}</div>
+                    <div style="font-size: 0.8rem; color: #00c853; margin-top: 0.3rem;">
+                        🏆 Ganador: <strong style="color: #ffd700;">${winner}</strong> 
+                        ${winnerTime !== '--' ? `(${winnerTime})` : ''}
                     </div>
                 </div>
-            `;
+                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                    <button class="btn btn-sm" onclick="viewRaceDetail(${race.id})" style="background: #2196f3;">📋 Ver detalles</button>
+                    <button class="btn btn-sm" onclick="deleteRaceHistory(${race.id}, '${escapeHtml(race.circuit_name)}')" style="background: #e5484d;">🗑️ Eliminar</button>
+                </div>
+            </div>
+        </div>
+    `;
         }).join('');
 
     } catch (e) {
@@ -6434,6 +7110,369 @@ function closeDeleteModal() {
 
 
 
+async function loadPilotHistory(pilotSearchTerm) {
+    const container = document.getElementById('historyListContainer');
+    if (!container) return;
+
+    // Si no hay término de búsqueda, cargar historial normal
+    if (!pilotSearchTerm || pilotSearchTerm.trim() === '') {
+        currentPilotFilter = null;
+        await loadRaceHistory(currentHistoryFilter);
+        return;
+    }
+
+    container.innerHTML = '<div style="text-align: center; padding: 2rem;">🔍 Buscando carreras del piloto...</div>';
+
+    try {
+        // 1. Buscar pilotos que coincidan
+        const drivers = await apiCall('/api/drivers');
+        const searchTerm = pilotSearchTerm.toLowerCase().trim();
+
+        const matchedDrivers = drivers.filter(d =>
+            (d.name || '').toLowerCase().includes(searchTerm) ||
+            (d.lastname || '').toLowerCase().includes(searchTerm) ||
+            String(d.id).includes(searchTerm) ||
+            String(d.transponder_id || '').includes(searchTerm)
+        );
+
+        if (matchedDrivers.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: #ff9800;">
+                    ❌ No se encontró ningún piloto con el término "${pilotSearchTerm}"
+                </div>
+            `;
+            document.getElementById('historyPilotCount').innerText = '0 carreras';
+            return;
+        }
+
+        // 2. Obtener historial de carreras
+        const history = await apiCall('/api/race/history');
+        if (!history || history.length === 0) {
+            container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #888;">No hay carreras disponibles</div>';
+            document.getElementById('historyPilotCount').innerText = '0 carreras';
+            return;
+        }
+
+        // 3. Filtrar carreras donde el piloto participó
+        const driverIds = matchedDrivers.map(d => d.id);
+
+        // Obtener detalles de cada carrera para saber qué pilotos participaron
+        let filteredRaces = [];
+        for (const race of history) {
+            const raceDetail = await apiCall(`/api/race/history/${race.id}`);
+            if (raceDetail && raceDetail.leaderboard) {
+                const participated = raceDetail.leaderboard.some(d => driverIds.includes(d.driver_id));
+                if (participated) {
+                    // Encontrar la info del piloto en esta carrera
+                    const pilotData = raceDetail.leaderboard.find(d => driverIds.includes(d.driver_id));
+                    filteredRaces.push({
+                        ...race,
+                        pilot_position: pilotData?.position || '--',
+                        pilot_laps: pilotData?.total_laps || 0,
+                        pilot_best_lap: pilotData?.best_lap || null,
+                        pilot_total_time: pilotData?.total_time || null,
+                        pilot_name: matchedDrivers.find(d => d.id === pilotData?.driver_id)?.name || '--'
+                    });
+                }
+            }
+        }
+
+        // Guardar para mostrar en la UI
+        allPilotsHistory = filteredRaces;
+
+        // Actualizar contador
+        document.getElementById('historyPilotCount').innerText = `${filteredRaces.length} carreras`;
+
+        if (filteredRaces.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: #ff9800;">
+                    🏁 El piloto no ha participado en ninguna carrera
+                </div>
+            `;
+            return;
+        }
+
+        // 4. Mostrar resultados
+        container.innerHTML = filteredRaces.map(race => {
+            const modeLabel = race.race_mode === 'time_attack' ? '🏁 CLASIFICACIÓN' : '🏎️ CARRERA';
+            const position = race.pilot_position || '--';
+            const laps = race.pilot_laps || 0;
+            const bestLap = race.pilot_best_lap ? formatRaceClock(race.pilot_best_lap) : '--';
+            const totalTime = race.pilot_total_time ? formatRaceClock(race.pilot_total_time) : '--';
+
+            return `
+                <div style="border-radius: 12px; padding: 1rem; margin-bottom: 1rem; border-left: 4px solid ${position === 1 ? '#ffd700' : '#2a2f3a'};">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: bold; font-size: 1.1rem; color: #ffd700;">${race.circuit_name}</div>
+                            <div style="font-size: 0.7rem; color: #888; margin-top: 0.2rem;">
+                                ${modeLabel} | ${race.laps_limit} vueltas | ID: ${race.id}
+                            </div>
+                            <div style="font-size: 0.7rem; color: #666;">📅 ${race.end_time_formatted || '--'}</div>
+                            <div style="font-size: 0.8rem; color: #00c853; margin-top: 0.3rem;">
+                                🏁 Posición: <strong style="color: #ffd700;">${position}</strong> | 
+                                🏎️ Vueltas: <strong>${laps}</strong> | 
+                                ⏱️ Mejor vuelta: <strong>${bestLap}</strong> | 
+                                📊 Tiempo total: <strong>${totalTime}</strong>
+                            </div>
+                            <div style="font-size: 0.7rem; color: #888; margin-top: 0.2rem;">
+                                👤 Piloto: ${race.pilot_name}
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                            <button class="btn btn-sm" onclick="viewRaceDetail(${race.id})" style="background: #2196f3;">📋 Ver detalles</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+    } catch (e) {
+        console.error('Error cargando historial del piloto:', e);
+        container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #e5484d;">❌ Error al cargar historial del piloto</div>';
+    }
+}
+
+// Función para limpiar filtro de piloto
+function clearPilotFilter() {
+    document.getElementById('historyPilotSearch').value = '';
+    currentPilotFilter = null;
+    document.getElementById('historyPilotCount').innerText = '0 carreras';
+    loadRaceHistory(currentHistoryFilter);
+}
+
+
+
+// ============================================================
+// MODAL DE ADVERTENCIA DE CAPACIDAD DE PILOTOS
+// ============================================================
+
+const MAX_RECOMMENDED_PILOTS = 15;
+const MAX_SAFE_PILOTS = 20;
+
+function showPilotCapacityWarning(currentCount, newCount, onConfirm) {
+    const modal = document.getElementById('pilotCapacityModal');
+
+    // ✅ VERIFICAR QUE EL MODAL EXISTA
+    if (!modal) {
+        console.warn('[CAPACITY] Modal no encontrado, inscribiendo directamente');
+        if (onConfirm) onConfirm();
+        return;
+    }
+
+    // ✅ OBTENER TODOS LOS ELEMENTOS CON VERIFICACIÓN
+    const title = document.getElementById('pilotCapacityModalTitle');
+    const message = document.getElementById('pilotCapacityModalMessage');
+    const countSpan = document.getElementById('pilotCapacityModalCount');
+    const totalSpan = document.getElementById('pilotCapacityModalTotal');
+    const bar = document.getElementById('pilotCapacityModalBar');
+    const confirmBtn = document.getElementById('pilotCapacityConfirmBtn');
+    const cancelBtn = document.getElementById('pilotCapacityCancelBtn');
+
+    // ✅ VERIFICAR QUE TODOS LOS ELEMENTOS EXISTAN
+    if (!title || !message || !countSpan || !totalSpan || !bar || !confirmBtn || !cancelBtn) {
+        console.warn('[CAPACITY] Faltan elementos del modal, inscribiendo directamente');
+        if (onConfirm) onConfirm();
+        return;
+    }
+
+    const total = currentCount + newCount;
+
+    // ✅ ACTUALIZAR TEXTO
+    countSpan.textContent = newCount;
+    totalSpan.textContent = total;
+
+    // ✅ ACTUALIZAR BARRA DE CAPACIDAD
+    const percentage = Math.min(100, (total / MAX_SAFE_PILOTS) * 100);
+    bar.style.width = percentage + '%';
+
+    // ✅ CAMBIAR TÍTULO Y MENSAJE SEGÚN CANTIDAD
+    if (total >= MAX_SAFE_PILOTS) {
+        title.textContent = '⚠️ ¡DEMASIADOS PILOTOS!';
+        title.style.color = '#ef7a86';
+        message.innerHTML = `
+            Estás inscribiendo <strong style="color:#ffd700;">${newCount}</strong> piloto(s), 
+            lo que haría un total de <strong style="color:#ffd700;">${total}</strong> pilotos.
+            <br><br>
+            <span style="color:#ef7a86;">⚠️ El sistema puede saturarse con más de ${MAX_SAFE_PILOTS} pilotos.</span>
+        `;
+        confirmBtn.textContent = 'Continuar de todas formas ⚠️';
+        confirmBtn.style.background = '#e5484d';
+        confirmBtn.style.color = 'white';
+    } else {
+        title.textContent = '🟡 Cerca del límite recomendado';
+        title.style.color = '#f4c06b';
+        message.innerHTML = `
+            Estás inscribiendo <strong style="color:#ffd700;">${newCount}</strong> piloto(s), 
+            lo que haría un total de <strong style="color:#ffd700;">${total}</strong> pilotos.
+            <br><br>
+            <span style="color:#f4c06b;">🟡 Recomendado máximo: ${MAX_RECOMMENDED_PILOTS} pilotos.</span>
+        `;
+        confirmBtn.textContent = 'Continuar de todas formas';
+        confirmBtn.style.background = '#f4c06b';
+        confirmBtn.style.color = '#1a1a1a';
+    }
+
+    // ✅ MOSTRAR MODAL
+    modal.style.display = 'flex';
+
+    // ✅ EVENTOS DE LOS BOTONES
+    const closeModal = () => {
+        modal.style.display = 'none';
+        confirmBtn.onclick = null;
+        cancelBtn.onclick = null;
+    };
+
+    cancelBtn.onclick = closeModal;
+
+    confirmBtn.onclick = () => {
+        closeModal();
+        if (onConfirm) onConfirm();
+    };
+
+    // ✅ CERRAR HACIENDO CLICK FUERA
+    modal.onclick = (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    };
+
+    // ✅ CERRAR CON ESC
+    const escHandler = function (e) {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+            closeModal();
+            document.removeEventListener('keydown', escHandler);
+        }
+    };
+    document.addEventListener('keydown', escHandler);
+}
+
+// ============================================================
+// FUNCIONES DE PAGINACIÓN PARA HISTORIAL
+// ============================================================
+
+function renderPagination(totalItems, currentPage, pageSize) {
+    const container = document.getElementById('historyPaginationContainer');
+    if (!container) return;
+
+    const totalPages = Math.ceil(totalItems / pageSize) || 1;
+    const startItem = (currentPage - 1) * pageSize + 1;
+    const endItem = Math.min(currentPage * pageSize, totalItems);
+
+    // Actualizar info
+    document.getElementById('historyPageInfo').innerText = totalItems > 0 ? `${startItem}-${endItem}` : '0';
+    document.getElementById('historyTotalItems').innerText = totalItems;
+
+    // Botones anterior/siguiente
+    const prevBtn = document.getElementById('historyPagePrev');
+    const nextBtn = document.getElementById('historyPageNext');
+    if (prevBtn) prevBtn.disabled = currentPage <= 1;
+    if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+
+    // Números de página
+    const pageNumbersContainer = document.getElementById('historyPageNumbers');
+    if (!pageNumbersContainer) return;
+
+    let pagesHtml = '';
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    if (startPage > 1) {
+        pagesHtml += `<button class="btn btn-sm page-number" data-page="1" style="background: #2a2f3a; padding: 0.3rem 0.6rem; font-size: 0.7rem;">1</button>`;
+        if (startPage > 2) {
+            pagesHtml += `<span style="color: #888; font-size: 0.7rem;">...</span>`;
+        }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        const isActive = i === currentPage;
+        pagesHtml += `<button class="btn btn-sm page-number" data-page="${i}" style="background: ${isActive ? '#2196f3' : '#2a2f3a'}; padding: 0.3rem 0.6rem; font-size: 0.7rem; ${isActive ? 'font-weight: bold;' : ''}">${i}</button>`;
+    }
+
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            pagesHtml += `<span style="color: #888; font-size: 0.7rem;">...</span>`;
+        }
+        pagesHtml += `<button class="btn btn-sm page-number" data-page="${totalPages}" style="background: #2a2f3a; padding: 0.3rem 0.6rem; font-size: 0.7rem;">${totalPages}</button>`;
+    }
+
+    pageNumbersContainer.innerHTML = pagesHtml;
+
+    // Event listeners para los números de página
+    document.querySelectorAll('.page-number').forEach(btn => {
+        btn.onclick = () => {
+            const page = parseInt(btn.dataset.page);
+            if (page !== currentPage) {
+                historyCurrentPage = page;
+                renderCurrentHistoryPage();
+            }
+        };
+    });
+}
+
+function renderCurrentHistoryPage() {
+    const startIndex = (historyCurrentPage - 1) * historyPageSize;
+    const endIndex = startIndex + historyPageSize;
+    const pageData = historyFilteredData.slice(startIndex, endIndex);
+
+    renderHistoryItems(pageData);
+    renderPagination(historyFilteredData.length, historyCurrentPage, historyPageSize);
+}
+
+function renderHistoryItems(items) {
+    const container = document.getElementById('historyListContainer');
+    if (!container) return;
+
+    if (!items || items.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #888;">No hay carreras para mostrar</div>';
+        return;
+    }
+
+    container.innerHTML = items.map(race => {
+        const modeLabel = race.race_mode === 'time_attack' ? '🏁 CLASIFICACIÓN' : '🏎️ CARRERA';
+        const winner = race.winner_name ? `${race.winner_name} ${race.winner_lastname || ''}` : '--';
+        const winnerTime = race.winner_time ? formatRaceClock(race.winner_time) : '--';
+        const isPilotHistory = race.pilot_position !== undefined;
+
+        return `
+            <div style="border-radius: 12px; padding: 1rem; margin-bottom: 1rem; border-left: 4px solid ${isPilotHistory && race.pilot_position === 1 ? '#ffd700' : (race.winner_name ? '#ffd700' : '#2a2f3a')};">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: bold; font-size: 1.1rem; color: #ffd700;">${escapeHtml(race.circuit_name)}</div>
+                        <div style="font-size: 0.7rem; color: #888; margin-top: 0.2rem;">
+                            ${modeLabel} | ${race.laps_limit} vueltas | ${race.total_drivers || 0} pilotos | ID: ${race.id}
+                        </div>
+                        <div style="font-size: 0.7rem; color: #666;">📅 ${race.end_time_formatted || '--'}</div>
+                        <div style="font-size: 0.8rem; color: #00c853; margin-top: 0.3rem;">
+                            🏆 Ganador: <strong style="color: #ffd700;">${winner}</strong> 
+                            ${winnerTime !== '--' ? `(${winnerTime})` : ''}
+                        </div>
+                        ${isPilotHistory ? `
+                            <div style="font-size: 0.8rem; color: #4fc3f7; margin-top: 0.2rem;">
+                                🏁 Posición del piloto: <strong style="color: #ffd700;">${race.pilot_position}</strong> | 
+                                🏎️ Vueltas: <strong>${race.pilot_laps}</strong> | 
+                                ⏱️ Mejor vuelta: <strong>${race.pilot_best_lap ? formatRaceClock(race.pilot_best_lap) : '--'}</strong>
+                            </div>
+                            <div style="font-size: 0.7rem; color: #888; margin-top: 0.2rem;">
+                                👤 Piloto: ${race.pilot_name || '--'}
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                        <button class="btn btn-sm" onclick="viewRaceDetail(${race.id})" style="background: #2196f3;">📋 Ver detalles</button>
+                        ${!isPilotHistory ? `<button class="btn btn-sm" onclick="deleteRaceHistory(${race.id}, '${escapeHtml(race.circuit_name)}')" style="background: #e5484d;">🗑️ Eliminar</button>` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
 
 
 
@@ -6451,24 +7490,34 @@ async function showWinnerForAllModes() {
     const raceMode = normalizeRaceMode(podiumRes?.race_mode || 'position');
     currentRaceMode = raceMode;
 
-    // ✅ CLASIFICACIÓN: usa showClassificationModal()
-    if (raceMode === 'classification') {
-        const groups = podiumRes?.classification_groups;
-        if (groups) {
-            resetWinnerModalFlag();
-            showClassificationModal(groups.q1, groups.q2, groups.q3, groups.dnq);
-        }
+    // ✅ VERIFICAR SI HAY PODIO
+    if (podium.length === 0 && raceMode !== 'classification') {
+        showToast('⚠️', 'No hay ganadores para mostrar', 'warning');
         return;
     }
 
-    // ✅ TODOS LOS OTROS MODOS: usan showWinnerModalComplete()
+    // ✅ Para CLASSIFICATION: verificar que haya grupos
+    if (raceMode === 'classification') {
+        const groups = podiumRes?.classification_groups;
+        if (!groups || (!groups.q1?.length && !groups.q2?.length && !groups.q3?.length && !groups.dnq?.length)) {
+            showToast('⚠️', 'No hay datos de clasificación', 'warning');
+            return;
+        }
+
+        // ✅ MOSTRAR CLASIFICACIÓN (MANUAL = true)
+        resetWinnerModalFlag();
+        showClassificationModal(groups.q1, groups.q2, groups.q3, groups.dnq, true);
+        return;
+    }
+
+    // ✅ PARA OTROS MODOS: mostrar podium (MANUAL = true)
     if (podium.length === 0) {
         showToast('⚠️', 'No hay ganadores para mostrar', 'warning');
         return;
     }
 
     resetWinnerModalFlag();
-    showWinnerModalComplete(podium[0], podium[1], podium[2]);
+    showWinnerModalComplete(podium[0], podium[1], podium[2], true);
 }
 
 // Reemplazar el onclick del botón
@@ -6541,3 +7590,299 @@ document.getElementById('editDriverMinimalConfirm').onclick = async () => {
         showToast('❌', res?.error || 'Error al actualizar', 'error');
     }
 };
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    loadWinnerConfig();
+    setupWinnerConfigControls();
+    loadColumnsConfig();
+    setupColumnsConfigControls();
+});
+
+// ============================================================
+// CONFIGURACIÓN DE COLUMNAS DEL TABLERO
+// ============================================================
+
+const COLUMNS_CONFIG = [
+    { id: 'pos', label: 'Pos', class: 'k-col-pos', defaultDesktop: true, defaultMobile: true },
+    { id: 'vueltas', label: 'Vueltas', class: 'k-col-vueltas', defaultDesktop: true, defaultMobile: true },
+    { id: 'dif', label: 'Dif.', class: 'k-col-dif', defaultDesktop: true, defaultMobile: false },
+    { id: 'mejor', label: 'Mejor', class: 'k-col-mejor', defaultDesktop: true, defaultMobile: false },
+    { id: 'tiempo', label: 'Tiempo', class: 'k-col-tiempo', defaultDesktop: true, defaultMobile: false },
+    { id: 'ttotal', label: 'T.Total', class: 'k-col-tiempo-individual', defaultDesktop: true, defaultMobile: false },
+    { id: 'vel', label: 'Vel.', class: 'k-col-velocidad', defaultDesktop: true, defaultMobile: false },
+    { id: 'kart', label: 'Kart', class: 'k-col-kart', defaultDesktop: true, defaultMobile: false }
+];
+
+let columnsConfig = {
+    desktop: [],
+    mobile: []
+};
+
+let columnsMode = 'desktop'; // 'desktop' o 'mobile'
+
+async function loadColumnsConfig() {
+    try {
+        const token = sessionToken || localStorage.getItem('chronit_session_token');
+        if (!token) {
+            // Valores por defecto
+            columnsConfig.desktop = COLUMNS_CONFIG.filter(c => c.defaultDesktop).map(c => c.id);
+            columnsConfig.mobile = COLUMNS_CONFIG.filter(c => c.defaultMobile).map(c => c.id);
+            applyColumnsConfig();
+            return;
+        }
+
+        const response = await fetch('/api/user/preferences', {
+            headers: { 'X-Session-Token': token }
+        });
+        const data = await response.json();
+
+        if (data.success && data.preferences) {
+            try {
+                columnsConfig.desktop = JSON.parse(data.preferences.hidden_columns_desktop || '[]');
+            } catch { columnsConfig.desktop = COLUMNS_CONFIG.filter(c => c.defaultDesktop).map(c => c.id); }
+            
+            try {
+                columnsConfig.mobile = JSON.parse(data.preferences.hidden_columns_mobile || '[]');
+            } catch { columnsConfig.mobile = COLUMNS_CONFIG.filter(c => c.defaultMobile).map(c => c.id); }
+        } else {
+            columnsConfig.desktop = COLUMNS_CONFIG.filter(c => c.defaultDesktop).map(c => c.id);
+            columnsConfig.mobile = COLUMNS_CONFIG.filter(c => c.defaultMobile).map(c => c.id);
+        }
+        
+        applyColumnsConfig();
+        renderColumnsCheckboxes();
+    } catch (e) {
+        console.warn('Error cargando configuración de columnas:', e);
+        columnsConfig.desktop = COLUMNS_CONFIG.filter(c => c.defaultDesktop).map(c => c.id);
+        columnsConfig.mobile = COLUMNS_CONFIG.filter(c => c.defaultMobile).map(c => c.id);
+        applyColumnsConfig();
+        renderColumnsCheckboxes();
+    }
+}
+
+function applyColumnsConfig() {
+    const hiddenColumns = columnsMode === 'desktop' ? columnsConfig.desktop : columnsConfig.mobile;
+    
+    console.log('[COLUMNAS] Aplicando configuración - Modo:', columnsMode);
+    console.log('[COLUMNAS] Columnas ocultas:', hiddenColumns);
+    
+    // Si no hay columnas ocultas, mostrar todo y salir
+    if (!hiddenColumns || hiddenColumns.length === 0) {
+        // Mostrar todas las columnas
+        mostrarTodasLasColumnas();
+        return;
+    }
+    
+    // Aplicar a todos los paneles que usan columnas
+    const panels = ['tableroPublico', 'live'];
+    
+    panels.forEach(panelId => {
+        const panel = document.getElementById(`panel-${panelId}`);
+        if (!panel) return;
+        
+        // ✅ 1. HEADER
+        COLUMNS_CONFIG.forEach(col => {
+            const headers = panel.querySelectorAll(`.k-header .${col.class}`);
+            headers.forEach(el => {
+                if (hiddenColumns.includes(col.id)) {
+                    el.style.display = 'none';
+                } else {
+                    el.style.display = '';
+                }
+            });
+        });
+        
+        // ✅ 2. FILAS - buscar en todos los contenedores posibles
+        const selectores = ['#lista-pilotos', '#liveLeaderboardPublicStyle', '.karting-leaderboard'];
+        selectores.forEach(selector => {
+            const container = panel.querySelector(selector);
+            if (container) {
+                const rows = container.querySelectorAll('.k-row');
+                rows.forEach(row => {
+                    COLUMNS_CONFIG.forEach(col => {
+                        const cells = row.querySelectorAll(`.${col.class}`);
+                        cells.forEach(el => {
+                            if (hiddenColumns.includes(col.id)) {
+                                el.style.display = 'none';
+                            } else {
+                                el.style.display = '';
+                            }
+                        });
+                    });
+                });
+            }
+        });
+    });
+}
+
+function mostrarTodasLasColumnas() {
+    const panels = ['tableroPublico', 'live'];
+    panels.forEach(panelId => {
+        const panel = document.getElementById(`panel-${panelId}`);
+        if (!panel) return;
+        
+        // Mostrar todos los headers
+        COLUMNS_CONFIG.forEach(col => {
+            const headers = panel.querySelectorAll(`.k-header .${col.class}`);
+            headers.forEach(el => {
+                el.style.display = '';
+            });
+        });
+        
+        // Mostrar todas las celdas
+        const selectores = ['#lista-pilotos', '#liveLeaderboardPublicStyle', '.karting-leaderboard'];
+        selectores.forEach(selector => {
+            const container = panel.querySelector(selector);
+            if (container) {
+                const rows = container.querySelectorAll('.k-row');
+                rows.forEach(row => {
+                    COLUMNS_CONFIG.forEach(col => {
+                        const cells = row.querySelectorAll(`.${col.class}`);
+                        cells.forEach(el => {
+                            el.style.display = '';
+                        });
+                    });
+                });
+            }
+        });
+    });
+}
+
+function renderColumnsCheckboxes() {
+    const grid = document.getElementById('columnsCheckboxGrid');
+    if (!grid) return;
+
+    const hiddenColumns = columnsMode === 'desktop' ? columnsConfig.desktop : columnsConfig.mobile;
+
+    grid.innerHTML = COLUMNS_CONFIG.map(col => {
+        const isChecked = hiddenColumns.includes(col.id);
+        return `
+            <label style="display:flex; align-items:center; gap:0.5rem; padding:0.3rem 0.5rem; background:#0f1117; border-radius:6px; cursor:pointer; border:1px solid ${isChecked ? '#2a2f3a' : '#3b82f6'};">
+                <input type="checkbox" class="column-checkbox" data-col-id="${col.id}" 
+                       ${isChecked ? '' : 'checked'} 
+                       style="width:16px; height:16px; accent-color:#3b82f6; cursor:pointer;">
+                <span style="font-size:0.75rem; color:#e4e4e4;">${col.label}</span>
+            </label>
+        `;
+    }).join('');
+
+    // Actualizar etiqueta del modo
+    const label = document.getElementById('columnsModeLabel');
+    if (label) {
+        label.textContent = columnsMode === 'desktop' ? '(Escritorio)' : '(Móvil)';
+    }
+}
+
+function setupColumnsConfigControls() {
+    const toggle = document.getElementById('columnsModeToggle');
+    const saveBtn = document.getElementById('saveColumnsConfigBtn');
+    const selectAllBtn = document.getElementById('selectAllColumnsBtn');
+    const deselectAllBtn = document.getElementById('deselectAllColumnsBtn');
+    const statusSpan = document.getElementById('columnsConfigStatus');
+
+    // Toggle entre escritorio y móvil
+    if (toggle) {
+        toggle.addEventListener('change', function() {
+            columnsMode = this.checked ? 'mobile' : 'desktop';
+            const label = document.getElementById('columnsModeLabel');
+            if (label) {
+                label.textContent = columnsMode === 'desktop' ? '(Escritorio)' : '(Móvil)';
+            }
+            renderColumnsCheckboxes();
+        });
+    }
+
+    // Seleccionar todas
+    if (selectAllBtn) {
+        selectAllBtn.onclick = () => {
+            document.querySelectorAll('.column-checkbox').forEach(cb => {
+                cb.checked = true;
+            });
+        };
+    }
+
+    // Deseleccionar todas
+    if (deselectAllBtn) {
+        deselectAllBtn.onclick = () => {
+            document.querySelectorAll('.column-checkbox').forEach(cb => {
+                cb.checked = false;
+            });
+        };
+    }
+
+    // Guardar configuración
+    if (saveBtn) {
+        saveBtn.onclick = async () => {
+            const checkboxes = document.querySelectorAll('.column-checkbox');
+            const hidden = [];
+            checkboxes.forEach(cb => {
+                if (!cb.checked) {
+                    hidden.push(cb.dataset.colId);
+                }
+            });
+
+            const configKey = columnsMode === 'desktop' ? 'hidden_columns_desktop' : 'hidden_columns_mobile';
+            
+            if (statusSpan) {
+                statusSpan.innerText = '⏳ Guardando...';
+                statusSpan.style.color = '#ffaa00';
+            }
+
+            try {
+                const token = sessionToken || localStorage.getItem('chronit_session_token');
+                if (!token) {
+                    showToast('⚠️', 'Inicia sesión para guardar configuración', 'warning');
+                    return;
+                }
+
+                // Obtener configuración actual
+                const currentResponse = await fetch('/api/user/preferences', {
+                    headers: { 'X-Session-Token': token }
+                });
+                const currentData = await currentResponse.json();
+                
+                let prefs = {};
+                if (currentData.success && currentData.preferences) {
+                    prefs = currentData.preferences;
+                }
+
+                // Actualizar la configuración correspondiente
+                prefs[configKey] = JSON.stringify(hidden);
+
+                const response = await fetch('/api/user/preferences', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Session-Token': token
+                    },
+                    body: JSON.stringify(prefs)
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    if (statusSpan) {
+                        statusSpan.innerText = '✅ Guardado';
+                        statusSpan.style.color = '#34d399';
+                        setTimeout(() => { statusSpan.innerText = 'Listo'; }, 3000);
+                    }
+                    showToast('✅', 'Configuración guardada. Recargando página...', 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    if (statusSpan) {
+                        statusSpan.innerText = '❌ Error';
+                        statusSpan.style.color = '#ef7a86';
+                    }
+                    showToast('❌', data.error || 'Error al guardar', 'error');
+                }
+            } catch (e) {
+                console.error('Error guardando configuración:', e);
+                if (statusSpan) {
+                    statusSpan.innerText = '❌ Error';
+                    statusSpan.style.color = '#ef7a86';
+                }
+                showToast('❌', 'Error al conectar con el servidor', 'error');
+            }
+        };
+    }
+}

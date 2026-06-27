@@ -18,6 +18,7 @@ services:
       - SERIAL_PORT=${SERIAL_PORT:-/dev/ttyUSB0}
       - PYTHONUNBUFFERED=1
       - DATABASE_PATH=/app/data/chronit.db
+      - HOST_IP=${HOST_IP}
     devices:
       - "${SERIAL_PORT:-/dev/ttyUSB0}:${SERIAL_PORT:-/dev/ttyUSB0}"
     networks:
