@@ -1779,5 +1779,61 @@ def delete_user_preference_api(key):
 
 
 
+# ============================================
+# ENDPOINTS - CONFIGURACIÓN GLOBAL DE COLUMNAS (PÚBLICA)
+# ============================================
+
+@app.route('/api/columns/config', methods=['GET'])
+def get_columns_config():
+    """Obtiene la configuración global de columnas (sin autenticación)"""
+    from database import get_global_setting
+    try:
+        desktop = get_global_setting('hidden_columns_desktop')
+        mobile = get_global_setting('hidden_columns_mobile')
+        
+        # Si no hay configuración, devolver arrays vacíos (mostrar todo)
+        return jsonify({
+            'success': True,
+            'desktop': json.loads(desktop) if desktop else [],
+            'mobile': json.loads(mobile) if mobile else []
+        })
+    except Exception as e:
+        return jsonify({
+            'success': True,
+            'desktop': [],
+            'mobile': []
+        })
+
+@app.route('/api/columns/config', methods=['POST'])
+def save_columns_config():
+    """Guarda la configuración global de columnas (SOLO desarrolladores)"""
+    from database import set_global_setting
+    from users_db import verify_session
+    
+    # ✅ Verificar que el usuario sea desarrollador
+    token = request.headers.get('X-Session-Token')
+    if not token:
+        return jsonify({'success': False, 'error': 'Se requiere autenticación'}), 401
+    
+    user = verify_session(token)
+    if not user or user['role'] != 'developer':
+        return jsonify({'success': False, 'error': 'Solo desarrolladores pueden modificar esta configuración'}), 403
+    
+    data = request.get_json()
+    if not data:
+        return jsonify({'success': False, 'error': 'Datos inválidos'}), 400
+    
+    try:
+        desktop = data.get('desktop', [])
+        mobile = data.get('mobile', [])
+        
+        set_global_setting('hidden_columns_desktop', json.dumps(desktop))
+        set_global_setting('hidden_columns_mobile', json.dumps(mobile))
+        
+        return jsonify({'success': True, 'message': 'Configuración guardada'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 if __name__ == "__main__":
     start_api_server()

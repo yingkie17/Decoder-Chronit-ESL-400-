@@ -196,6 +196,21 @@ def init_db():
             )
         """)
 
+
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS columns_config (
+                id INTEGER PRIMARY KEY DEFAULT 1,
+                desktop_hidden TEXT DEFAULT '[]',  -- JSON array de columnas ocultas en escritorio
+                mobile_hidden TEXT DEFAULT '[]',   -- JSON array de columnas ocultas en móvil
+                updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+
+        conn.execute("""
+            INSERT OR IGNORE INTO columns_config (id, desktop_hidden, mobile_hidden)
+            VALUES (1, '[]', '[]')
+        """)
+
         conn.execute("""
             INSERT OR IGNORE INTO decoder_config (id, mode)
             VALUES (1, 'chronit')
@@ -205,6 +220,8 @@ def init_db():
             INSERT OR IGNORE INTO circuit_config (id, circuit_name, track_length_km)
             VALUES (1, 'Circuito Principal', 0)
         """)
+
+
         try:
             conn.execute(
                 'ALTER TABLE circuit_config ADD COLUMN track_type TEXT DEFAULT "karting"'
@@ -2153,3 +2170,53 @@ def get_user_preferences(user_id):
         for row in results:
             prefs[row["pref_key"]] = row["pref_value"]
         return prefs    
+
+def get_columns_config():
+    """Obtiene la configuración global de columnas"""
+    with get_db() as conn:
+        result = conn.execute("SELECT desktop_hidden, mobile_hidden FROM columns_config WHERE id = 1").fetchone()
+        if result:
+            try:
+                return {
+                    'desktop': json.loads(result['desktop_hidden']),
+                    'mobile': json.loads(result['mobile_hidden'])
+                }
+            except:
+                return {'desktop': [], 'mobile': []}
+        return {'desktop': [], 'mobile': []}
+
+def update_columns_config(desktop_hidden=None, mobile_hidden=None):
+    """Actualiza la configuración global de columnas"""
+    with get_db() as conn:
+        if desktop_hidden is not None:
+            conn.execute(
+                "UPDATE columns_config SET desktop_hidden = ?, updated_at = CURRENT_TIMESTAMP WHERE id = 1",
+                (json.dumps(desktop_hidden),)
+            )
+        if mobile_hidden is not None:
+            conn.execute(
+                "UPDATE columns_config SET mobile_hidden = ?, updated_at = CURRENT_TIMESTAMP WHERE id = 1",
+                (json.dumps(mobile_hidden),)
+            )
+        return True
+
+# ==================== CONFIGURACIÓN GLOBAL (SETTINGS) ====================
+
+def get_global_setting(key):
+    """Obtiene un valor de la tabla settings"""
+    with get_db() as conn:
+        result = conn.execute(
+            "SELECT value FROM settings WHERE key = ?",
+            (key,)
+        ).fetchone()
+        return result['value'] if result else None
+
+def set_global_setting(key, value):
+    """Guarda un valor en la tabla settings"""
+    with get_db() as conn:
+        conn.execute("""
+            INSERT OR REPLACE INTO settings (key, value, updated_at)
+            VALUES (?, ?, CURRENT_TIMESTAMP)
+        """, (key, value))
+        return True
+

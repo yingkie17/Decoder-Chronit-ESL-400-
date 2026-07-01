@@ -25,11 +25,16 @@ let currentHistoryFilter = '';
 let globalRaceData = null;
 let globalSessionId = null;
 let currentPilotFilter = null;
+let pilotHistoryCurrentPage = 1;
+let pilotHistoryPageSize = 12;
+let selectedPilotId = null;
 let allPilotsHistory = [];
+let pilotHistoryData = [];
 let historyCurrentPage = 1;
 let historyPageSize = 10;
 let historyTotalItems = 0;
 let historyFilteredData = [];
+
 let classificationModalTimer = null;
 let winnerConfig = {
     autoShow: true,
@@ -41,96 +46,174 @@ let currentSessionId = null;
 let classificationModalShown = false;
 let currentIp = null;
 let manualIp = null;
+let resizeTimer = null;
+let columnsConfig = {
+    desktop: [],
+    mobile: []
+};
 
+
+function toggleResponsiveMenu() {
+    const menu = document.getElementById('responsiveMenu');
+    if (!menu) return;
+    menu.classList.toggle('open');
+}
+
+
+function closeResponsiveMenu() {
+    const menu = document.getElementById('responsiveMenu');
+    if (menu) menu.classList.remove('open');
+}
+
+
+function navigateToPanel(panelName) {
+    // 1. Cerrar el menú
+    closeResponsiveMenu();
+    
+    // 2. Cambiar el panel activo
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    const targetPanel = document.getElementById(`panel-${panelName}`);
+    if (targetPanel) {
+        targetPanel.classList.add('active');
+    }
+    
+    // 3. Actualizar enlaces activos (escritorio)
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    const desktopLink = document.querySelector(`.nav-links a[data-panel="${panelName}"]`);
+    if (desktopLink) desktopLink.classList.add('active');
+    
+    // 4. Actualizar enlaces activos (móvil)
+    document.querySelectorAll('#responsiveMenu a').forEach(a => a.classList.remove('active'));
+    const mobileLink = document.querySelector(`#responsiveMenu a[data-panel="${panelName}"]`);
+    if (mobileLink) mobileLink.classList.add('active');
+    
+    // 5. Si el panel es 'system', cargar datos específicos
+    if (panelName === 'system') {
+        loadTransponderHealth();
+        loadAntennaConfig();
+        loadDbStats();
+        loadBackupsList();
+        loadTimingConfig();
+        cargarIpConexion();
+        loadPilotosBackupsList();
+    }
+    
+    // 6. Si el panel es 'drivers', cargar datos
+    if (panelName === 'drivers') {
+        loadDrivers();
+        loadTranspondersIntoSelect();
+    }
+    
+    // 7. Si el panel es 'transponders', cargar datos
+    if (panelName === 'transponders') {
+        loadTransponders();
+    }
+    
+    // 8. Si el panel es 'history', cargar historial
+    if (panelName === 'history') {
+        loadRaceHistory();
+        loadPilotHistoryList('');
+        setupHistorySearch();
+    }
+    
+    // 9. Si tenemos datos globales, actualizar paneles
+    if (globalRaceData && (panelName === 'tableroPublico' || panelName === 'live' || panelName === 'public' || panelName === 'tv')) {
+        const session = globalRaceData.session;
+        const leaderboard = globalRaceData.leaderboard;
+        const speeds = globalRaceData.speeds || {};
+        const timesMap = {};
+        
+        if (panelName === 'tableroPublico') {
+            loadTableroPublicoFromData(session, leaderboard, speeds);
+        } else if (panelName === 'live') {
+            renderLiveLeaderboardPublicStyle(leaderboard, session, speeds, timesMap);
+            updateLiveHeader(session);
+        } else if (panelName === 'public') {
+            loadPublicViewFromData(session, leaderboard, speeds);
+        } else if (panelName === 'tv') {
+            loadTvViewFromData(session, leaderboard, speeds);
+        }
+    }
+}
+
+
+// 1. Botón de hamburguesa
+document.getElementById('menuToggle')?.addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggleResponsiveMenu();
+});
+
+// 2. Botón de cierre (✕)
+document.getElementById('closeResponsiveMenuBtn')?.addEventListener('click', function(e) {
+    e.stopPropagation();
+    closeResponsiveMenu();
+});
+
+// 3. Enlaces del menú responsive - NAVEGACIÓN COMPLETA
+document.querySelectorAll('#responsiveMenu a').forEach(link => {
+    link.addEventListener('click', function() {
+        const panelName = this.getAttribute('data-panel');
+        if (panelName) {
+            navigateToPanel(panelName); // Tu función de navegación
+        }
+        closeResponsiveMenu();
+    });
+})
+
+// 4. Cerrar menú al hacer clic fuera
+document.addEventListener('click', function(e) {
+    const menu = document.getElementById('responsiveMenu');
+    const toggle = document.getElementById('menuToggle');
+    if (!menu || !toggle) return;
+    
+    if (menu.classList.contains('open')) {
+        const isClickInsideMenu = menu.contains(e.target);
+        const isClickOnToggle = toggle.contains(e.target);
+        
+        if (!isClickInsideMenu && !isClickOnToggle) {
+            closeResponsiveMenu();
+        }
+    }
+});
+
+// 5. Cerrar menú con tecla ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeResponsiveMenu();
+    }
+});
 function setupNavigation() {
-
-    const allNavLinks = document.querySelectorAll('.nav-links a, .nav-links-mobile a');
-
-    allNavLinks.forEach(link => {
-        link.addEventListener('click', function (e) {
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', function(e) {
             e.preventDefault();
             const panelName = this.getAttribute('data-panel');
-
-
-            document.querySelectorAll('.nav-links a, .nav-links-mobile a').forEach(a => a.classList.remove('active'));
-            this.classList.add('active');
-
-
-            document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
-
-
-            const targetPanel = document.getElementById(`panel-${panelName}`);
-            if (targetPanel) {
-                targetPanel.classList.add('active');
-            }
-
-
-            const mobileMenu = document.getElementById('mobileMenu');
-            if (mobileMenu && window.innerWidth <= 768) {
-                mobileMenu.style.display = 'none';
+            if (panelName) {
+                navigateToPanel(panelName);
             }
         });
     });
 }
 
-
+// Inicializar navegación
 setupNavigation();
 
-const menuToggle = document.getElementById('menuToggle');
-const mobileMenu = document.getElementById('mobileMenu');
-const closeMenu = document.getElementById('closeMenu');
 
-function openMobileMenu() {
-    mobileMenu.classList.add('show');
-}
 
-function closeMobileMenu() {
-    mobileMenu.classList.remove('show');
-}
 
-if (menuToggle) menuToggle.onclick = openMobileMenu;
-if (closeMenu) closeMenu.onclick = closeMobileMenu;
 
-document.querySelectorAll('#mobileMenu .nav-links-mobile a').forEach(link => {
-    link.addEventListener('click', () => {
-        closeMobileMenu();
-    });
+// Refrescar lista de todos los transponders
+document.getElementById('refreshAllTranspondersBtn')?.addEventListener('click', function () {
+    loadTransponders();
+    showToast('🔄', 'Lista de transponders actualizada', 'info');
 });
 
-document.addEventListener('click', function (event) {
-    if (mobileMenu && mobileMenu.classList.contains('show')) {
-        if (!mobileMenu.contains(event.target) && event.target !== menuToggle) {
-            closeMobileMenu();
-        }
-    }
+// Refrescar historial de respaldos
+document.getElementById('refreshBackupsBtn')?.addEventListener('click', function () {
+    loadBackupsList();
+    showToast('🔄', 'Historial de respaldos actualizado', 'info');
 });
 
-document.addEventListener('click', function (event) {
-    const mobileMenu = document.getElementById('mobileMenu');
-    const menuToggle = document.getElementById('menuToggle');
 
-    if (mobileMenu && mobileMenu.style.display === 'flex') {
-        if (!mobileMenu.contains(event.target) && event.target !== menuToggle) {
-            mobileMenu.style.display = 'none';
-        }
-    }
-});
-
-function closeMobileMenuOnClick() {
-    const mobileMenu = document.getElementById('mobileMenu');
-    const menuToggle = document.getElementById('menuToggle');
-
-    if (!mobileMenu) return;
-
-    document.querySelectorAll('#mobileMenu .nav-links-mobile a').forEach(link => {
-        link.addEventListener('click', () => {
-            mobileMenu.style.display = 'none';
-        });
-    });
-}
-
-
-closeMobileMenuOnClick();
 
 function formatIndividualTime(seconds) {
     if (seconds === null || seconds === undefined || isNaN(seconds)) {
@@ -581,6 +664,7 @@ document.querySelectorAll('.nav-links a').forEach(link => {
         }
         if (panelId === 'history') {
             loadRaceHistory();
+            loadPilotHistoryList(''); // Carga todos los pilotos
             setupHistorySearch();
         }
 
@@ -2058,7 +2142,7 @@ async function loadTableroPublico(preloaded = null) {
     // ✅ Llamar a la función corregida
     await loadTableroPublicoFromData(session, leaderboard, {});
 
-     applyColumnsConfig();
+    applyColumnsConfig();
 }
 
 let allDriversData = []; // Cache global para búsquedas
@@ -2782,8 +2866,6 @@ async function saveWinnerConfig() {
         if (data.success) {
             winnerConfig = config;
 
-            // ✅ ACTUALIZAR winnerShowCount para que coincida con el nuevo límite
-            // Si el límite es 0 (ilimitado), no resetear
             if (winnerConfig.showLimit > 0) {
                 winnerShowCount = 0;
             }
@@ -2791,14 +2873,13 @@ async function saveWinnerConfig() {
             if (statusSpan) {
                 statusSpan.innerText = '✅ Guardado';
                 statusSpan.style.color = '#34d399';
+                setTimeout(() => { statusSpan.innerText = 'Listo'; }, 3000);
             }
 
-            showToast('✅', 'Configuración guardada. Recargando página...', 'success');
+            // ✅ APLICAR CAMBIOS EN LA UI SIN RECARGAR
+            applyWinnerConfigUI();
 
-            // ✅ RECARGAR LA PÁGINA DESPUÉS DE 1 SEGUNDO
-            setTimeout(() => {
-                location.reload();
-            }, 1000);
+            showToast('✅', 'Configuración guardada correctamente', 'success');
 
         } else {
             if (statusSpan) {
@@ -4165,9 +4246,9 @@ async function loadBackupsList() {
                     <small>📅 ${b.created} | 💾 ${b.size_mb} MB</small>
                 </div>
                 <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-sm" onclick="openBackupInSqlite('${b.filename}')" style="background:#2196f3;">👁️ Ver</button>
-                    <button class="btn btn-sm" onclick="restoreBackup('${b.filename}')" style="background:#e5484d;">Restaurar</button>
-                    <button class="btn btn-sm" onclick="deleteBackupFile('${b.filename}')" style="background:#ff9800;">🗑️ Eliminar</button>
+                    <button class="btn btn-sm mini-btn" onclick="openBackupInSqlite('${b.filename}')" style="background:#2196f3;"> Ver</button>
+                    <button class="btn btn-sm mini-btn" onclick="restoreBackup('${b.filename}')" style="background:#e5484d;">Restaurar</button>
+                    <button class="btn btn-sm mini-btn" onclick="deleteBackupFile('${b.filename}')" style="background:#ff9800;"> Eliminar</button>
                 </div>
             </div>
         `).join('');
@@ -4407,13 +4488,30 @@ async function checkAuth() {
 
 function updateAuthUI() {
     console.log("[DEBUG] updateAuthUI() - isAuthenticated:", isAuthenticated);
+    console.log("[DEBUG] currentUser:", currentUser);
+
     const loginBtn = document.getElementById('loginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
     const userStatus = document.getElementById('userStatus');
     const adminElements = document.querySelectorAll('.admin-only');
     const devElements = document.querySelectorAll('.dev-only');
 
+    // ============================================================
+    // ELEMENTOS DEL MENÚ RESPONSIVE
+    // ============================================================
+    const loginBtnMobile = document.getElementById('loginBtnMobile');
+    const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+    const userStatusMobile = document.getElementById('userStatusMobile');
+
+    // ✅ DIAGNÓSTICO: Verificar si existen
+    console.log("[DEBUG] loginBtnMobile:", loginBtnMobile);
+    console.log("[DEBUG] logoutBtnMobile:", logoutBtnMobile);
+    console.log("[DEBUG] userStatusMobile:", userStatusMobile);
+
     if (isAuthenticated && currentUser) {
+        // ============================================================
+        // USUARIO AUTENTICADO
+        // ============================================================
         loginBtn.style.display = 'none';
         logoutBtn.style.display = 'inline-block';
         userStatus.textContent = `👤 ${currentUser.username} (${currentUser.role})`;
@@ -4421,19 +4519,62 @@ function updateAuthUI() {
 
         currentUserRole = currentUser.role;
         isDeveloperMode = (currentUser.role === 'developer');
+
+        // ✅ Mostrar elementos de administrador
         adminElements.forEach(el => {
             el.classList.remove('admin-only-hidden');
         });
 
+        // ✅ Mostrar/ocultar elementos de desarrollador
         devElements.forEach(el => {
             if (isDeveloperMode) {
                 el.style.display = 'block';
+                el.classList.add('visible');
             } else {
                 el.style.display = 'none';
+                el.classList.remove('visible');
             }
         });
 
-        updateDevModeBadge();
+        // ============================================================
+        // ACTUALIZAR MENÚ RESPONSIVE (AUTH) - USUARIO AUTENTICADO
+        // ============================================================
+        if (loginBtnMobile) {
+            loginBtnMobile.style.display = 'none';
+            console.log("[DEBUG] loginBtnMobile ocultado (autenticado)");
+        }
+        
+        if (logoutBtnMobile) {
+            logoutBtnMobile.style.display = 'block';
+            //logoutBtnMobile.textContent = `👤 ${currentUser.username} (${currentUser.role})`;
+            logoutBtnMobile.onclick = submitLogout;
+            console.log("[DEBUG] logoutBtnMobile mostrado:", logoutBtnMobile.textContent);
+        } else {
+            console.warn("[DEBUG] ⚠️ logoutBtnMobile NO EXISTE en el DOM");
+        }
+        
+        if (userStatusMobile) {
+            userStatusMobile.style.display = 'block';
+            userStatusMobile.textContent = `👤 ${currentUser.username} (${currentUser.role})`;
+            console.log("[DEBUG] userStatusMobile mostrado:", userStatusMobile.textContent);
+        } else {
+            console.warn("[DEBUG] ⚠️ userStatusMobile NO EXISTE en el DOM");
+        }
+
+        // ============================================================
+        // CONFIGURACIONES DE DESARROLLADOR (igual que antes)
+        // ============================================================
+        const columnsConfigCard = document.getElementById('columnsConfigCard');
+        if (columnsConfigCard) {
+            if (isDeveloperMode) {
+                columnsConfigCard.style.display = 'block';
+                setTimeout(() => {
+                    renderColumnsConfigTable();
+                }, 100);
+            } else {
+                columnsConfigCard.style.display = 'none';
+            }
+        }
 
         const simulationModeCard = document.getElementById('simulationModeCard');
         if (simulationModeCard) {
@@ -4459,6 +4600,7 @@ function updateAuthUI() {
                 stopConsoleAutoRefresh();
             }
         }
+
         const decoderModeCard = document.getElementById('decoderModeCard');
         if (decoderModeCard) {
             if (isDeveloperMode) {
@@ -4470,30 +4612,83 @@ function updateAuthUI() {
             }
         }
 
+        updateDevModeBadge();
+
     } else {
+        // ============================================================
+        // USUARIO NO AUTENTICADO
+        // ============================================================
         loginBtn.style.display = 'inline-block';
         logoutBtn.style.display = 'none';
         userStatus.style.display = 'none';
         isDeveloperMode = false;
         currentUserRole = null;
 
+        // ✅ Ocultar elementos de administrador
         adminElements.forEach(el => {
             el.classList.add('admin-only-hidden');
         });
 
-        // Ocultar elementos de desarrollador
+        // ✅ Ocultar elementos de desarrollador
         devElements.forEach(el => {
             el.style.display = 'none';
+            el.classList.remove('visible');
         });
+
+        // ============================================================
+        // ACTUALIZAR MENÚ RESPONSIVE (AUTH) - USUARIO NO AUTENTICADO
+        // ============================================================
+        if (loginBtnMobile) {
+            loginBtnMobile.style.display = 'block';
+            loginBtnMobile.textContent = 'Iniciar Sesión';
+            loginBtnMobile.onclick = openLoginModal;
+            console.log("[DEBUG] loginBtnMobile mostrado (no autenticado)");
+        } else {
+            console.warn("[DEBUG] ⚠️ loginBtnMobile NO EXISTE en el DOM");
+        }
+        
+        if (logoutBtnMobile) {
+            logoutBtnMobile.style.display = 'none';
+            console.log("[DEBUG] logoutBtnMobile ocultado (no autenticado)");
+        }
+        
+        if (userStatusMobile) {
+            userStatusMobile.style.display = 'none';
+            userStatusMobile.textContent = '';
+            console.log("[DEBUG] userStatusMobile ocultado (no autenticado)");
+        }
+
+        // ============================================================
+        // OCULTAR TODOS LOS PANELES DE DESARROLLADOR
+        // ============================================================
+        const columnsConfigCard = document.getElementById('columnsConfigCard');
+        if (columnsConfigCard) columnsConfigCard.style.display = 'none';
+
+        const simulationModeCard = document.getElementById('simulationModeCard');
+        if (simulationModeCard) simulationModeCard.style.display = 'none';
+
+        const devConsoleCard = document.getElementById('devConsoleCard');
+        if (devConsoleCard) {
+            devConsoleCard.style.display = 'none';
+            stopConsoleAutoRefresh();
+        }
+
+        const decoderModeCard = document.getElementById('decoderModeCard');
+        if (decoderModeCard) decoderModeCard.style.display = 'none';
 
         hideDevModeBadge();
 
+        // ============================================================
+        // REDIRIGIR A PANEL PÚBLICO SI ESTÁ EN PANEL ADMIN
+        // ============================================================
         const activePanel = document.querySelector('.panel.active');
         if (activePanel && activePanel.classList.contains('admin-only')) {
             document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+
             const publicPanel = document.getElementById('panel-tableroPublico');
             const publicLink = document.querySelector('[data-panel="tableroPublico"]');
+
             if (publicPanel) publicPanel.classList.add('active');
             if (publicLink) publicLink.classList.add('active');
         }
@@ -4679,6 +4874,7 @@ async function restoreLoginAfterReload() {
 }
 
 
+
 async function openBackupInSqlite(filename) {
     showLoader(`Preparando respaldo ${filename} para visualización...`);
 
@@ -4732,8 +4928,8 @@ async function loadPilotosBackupsList() {
                 <small>📅 ${b.created} | 💾 ${b.size_kb} KB</small>
             </div>
             <div style="display: flex; gap: 5px;">
-                <button class="btn btn-sm" onclick="restorePilotosBackup('${b.filename}')" style="background:#e5484d;">Restaurar</button>
-                <button class="btn btn-sm" onclick="deletePilotosBackup('${b.filename}')" style="background:#ff9800;">🗑️ Eliminar</button>
+                <button class="btn btn-sm mini-btn" onclick="restorePilotosBackup('${b.filename}')" style="background:#e5484d;">Restaurar</button>
+                <button class="btn btn-sm mini-btn" onclick="deletePilotosBackup('${b.filename}')" style="background:#ff9800;">Eliminar</button>
             </div>
         </div>
     `).join('');
@@ -4957,7 +5153,7 @@ function detectIpFromUrl() {
 
 async function cargarIpConexion() {
     console.log("📡 Cargando IP de conexión...");
-    
+
     // ✅ 1. Si hay IP manual guardada, usarla
     const savedIp = localStorage.getItem('chronit_manual_ip');
     if (savedIp) {
@@ -4967,12 +5163,12 @@ async function cargarIpConexion() {
         console.log("📌 Usando IP manual:", currentIp);
         return;
     }
-    
+
     // ✅ 2. Detectar IP desde la URL (la más confiable)
     try {
         const url = new URL(window.location.href);
         const hostname = url.hostname;
-        
+
         // ✅ Si es una IP o localhost, usarla
         if (hostname) {
             currentIp = hostname;
@@ -4983,12 +5179,12 @@ async function cargarIpConexion() {
     } catch (e) {
         console.log('No se pudo detectar IP desde URL');
     }
-    
+
     // ✅ 3. Intentar con la API (fallback)
     try {
         const res = await apiCall('/api/system/ip');
         console.log("📡 Respuesta de /api/system/ip:", res);
-        
+
         if (res?.success && res.ips && res.ips.length > 0) {
             // ✅ Usar la primera IP (puede ser localhost, 172.x.x.x, 192.168.x.x, etc.)
             const ip = res.ips[0];
@@ -4999,10 +5195,10 @@ async function cargarIpConexion() {
                 return;
             }
         }
-        
+
         // ✅ 4. Si todo falla, mostrar error con opción manual
         mostrarErrorIp();
-        
+
     } catch (e) {
         console.error('Error al obtener IP:', e);
         mostrarErrorIp();
@@ -5014,7 +5210,7 @@ function mostrarIpYQR(url) {
     if (container) {
         const isManual = localStorage.getItem('chronit_manual_ip') !== null;
         const isLocalhost = url.includes('localhost') || url.includes('127.0.0.1');
-        
+
         container.innerHTML = `
             <div style="background: #0d1218; border-radius: 8px; padding: 12px; margin-bottom: 8px; border: 1px solid ${isManual ? '#34d399' : '#2a2f3a'};">
                 <div style="font-family: monospace; font-size: 1.1rem; color: ${isLocalhost ? '#ff9800' : '#00c853'}; word-break: break-all; display:flex; align-items:center; gap:8px;">
@@ -7479,9 +7675,392 @@ function renderHistoryItems(items) {
 
 
 
+
+
+
+
 restoreLoginAfterReload().then(() => {
     checkAuth();
 });
+
+
+// ============================================================
+// DIAGNÓSTICO DEL MENÚ RESPONSIVE
+// ============================================================
+setTimeout(() => {
+    console.log("🔍 DIAGNÓSTICO DEL MENÚ RESPONSIVE:");
+    console.log("🔍 loginBtnMobile:", document.getElementById('loginBtnMobile'));
+    console.log("🔍 logoutBtnMobile:", document.getElementById('logoutBtnMobile'));
+    console.log("🔍 userStatusMobile:", document.getElementById('userStatusMobile'));
+    console.log("🔍 isAuthenticated:", isAuthenticated);
+    console.log("🔍 currentUser:", currentUser);
+}, 1000);
+
+
+
+
+
+async function loadPilotHistoryList(searchTerm = '') {
+    const grid = document.getElementById('historyPilotGrid');
+    if (!grid) return;
+
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #888;">🔍 Cargando pilotos...</div>';
+
+    try {
+        // Obtener todos los pilotos
+        const drivers = await apiCall('/api/drivers');
+        if (!drivers || drivers.length === 0) {
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #888;">No hay pilotos registrados</div>';
+            document.getElementById('historyPilotCount').innerText = '0 pilotos encontrados';
+            return;
+        }
+
+        // Filtrar por búsqueda
+        let filtered = drivers;
+        if (searchTerm && searchTerm.trim() !== '') {
+            const term = searchTerm.toLowerCase().trim();
+            filtered = drivers.filter(d =>
+                (d.name || '').toLowerCase().includes(term) ||
+                (d.lastname || '').toLowerCase().includes(term) ||
+                String(d.id).includes(term) ||
+                String(d.transponder_id || '').includes(term) ||
+                (d.email || '').toLowerCase().includes(term)
+            );
+        }
+
+        // Ordenar por nombre
+        filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+
+        // Guardar datos para paginación
+        pilotHistoryData = filtered;
+        document.getElementById('historyPilotCount').innerText = `${filtered.length} pilotos encontrados`;
+
+        // Paginar
+        const totalPages = Math.ceil(filtered.length / pilotHistoryPageSize);
+        const startIdx = (pilotHistoryCurrentPage - 1) * pilotHistoryPageSize;
+        const pageData = filtered.slice(startIdx, startIdx + pilotHistoryPageSize);
+
+        if (pageData.length === 0) {
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #ff9800;">No se encontraron pilotos con ese criterio</div>';
+            return;
+        }
+
+        // Obtener estadísticas de cada piloto
+        const history = await apiCall('/api/race/history');
+        const pilotStats = {};
+
+        if (history && history.length > 0) {
+            for (const race of history) {
+                const detail = await apiCall(`/api/race/history/${race.id}`);
+                if (detail && detail.leaderboard) {
+                    for (const d of detail.leaderboard) {
+                        const driverId = d.driver_id;
+                        if (!pilotStats[driverId]) {
+                            pilotStats[driverId] = { races: 0, wins: 0, bestPos: Infinity, bestLap: Infinity };
+                        }
+                        pilotStats[driverId].races++;
+                        if (d.position === 1) pilotStats[driverId].wins++;
+                        if (d.position < pilotStats[driverId].bestPos) pilotStats[driverId].bestPos = d.position;
+                        if (d.best_lap && d.best_lap < pilotStats[driverId].bestLap) {
+                            pilotStats[driverId].bestLap = d.best_lap;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Renderizar tarjetas
+        grid.innerHTML = pageData.map(driver => {
+            const stats = pilotStats[driver.id] || { races: 0, wins: 0, bestPos: '--', bestLap: '--' };
+            const photo = driver.photo && driver.photo !== 'default-avatar.png'
+                ? `/static/uploads/drivers/${driver.photo}`
+                : '/static/default-avatar.png';
+
+            const fullName = `${driver.name || ''} ${driver.lastname || ''}`.trim() || 'Sin nombre';
+            const bestPosDisplay = stats.bestPos === Infinity ? '--' : stats.bestPos;
+            const bestLapDisplay = stats.bestLap === Infinity ? '--' : formatRaceClock(stats.bestLap);
+
+            return `
+                <div class="pilot-history-card" onclick="showPilotDetail(${driver.id})" 
+                     style="background: #0f1117; border: 1px solid #2a2f3a; border-radius: 12px; padding: 1rem; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; text-align: center;"
+                     onmouseover="this.style.borderColor='#ffd700'; this.style.transform='translateY(-3px)';"
+                     onmouseout="this.style.borderColor='#2a2f3a'; this.style.transform='translateY(0)';">
+                    <img src="${photo}" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 3px solid #ffd700; margin-bottom: 0.5rem;" onerror="this.src='/static/default-avatar.png'">
+                    <div style="font-weight: 600; font-size: 1rem; color: #fff; margin-bottom: 0.2rem;">${fullName}</div>
+                    <div style="font-size: 0.7rem; color: #888;">ID: ${driver.id} ${driver.transponder_id ? `| Transp: ${driver.transponder_id}` : ''}</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; margin-top: 0.5rem; width: 100%;">
+                        <div><span style="font-size:0.6rem; color:#888;">🏁</span><br><strong style="color:#ffd700;">${stats.races}</strong></div>
+                        <div><span style="font-size:0.6rem; color:#888;">🏆</span><br><strong style="color:#ffd700;">${stats.wins}</strong></div>
+                        <div><span style="font-size:0.6rem; color:#888;">🥇</span><br><strong style="color:#ffd700;">${bestPosDisplay}</strong></div>
+                    </div>
+                    <div style="font-size:0.65rem; color:#888; margin-top:0.3rem;">⚡ Mejor vuelta: ${bestLapDisplay}</div>
+                    <div style="margin-top: 0.5rem; font-size:0.7rem; color:#2196f3;">👆 Clic para ver carreras</div>
+                </div>
+            `;
+        }).join('');
+
+        // Renderizar paginación
+        renderPilotPagination(totalPages);
+
+    } catch (e) {
+        console.error('Error cargando historial de pilotos:', e);
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #e5484d;">❌ Error al cargar pilotos</div>';
+    }
+}
+
+function renderPilotPagination(totalPages) {
+    const container = document.getElementById('historyPilotPagination');
+    if (!container) return;
+
+    if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+
+    let html = '';
+    const current = pilotHistoryCurrentPage;
+
+    // Anterior
+    html += `<button class="btn btn-sm" onclick="goToPilotPage(${current - 1})" ${current <= 1 ? 'disabled' : ''} style="background: #2a2f3a;">◀</button>`;
+
+    // Números
+    const maxVisible = 5;
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = Math.min(totalPages, start + maxVisible - 1);
+
+    if (end - start < maxVisible - 1) {
+        start = Math.max(1, end - maxVisible + 1);
+    }
+
+    if (start > 1) {
+        html += `<button class="btn btn-sm" onclick="goToPilotPage(1)" style="background: #2a2f3a;">1</button>`;
+        if (start > 2) html += `<span style="color:#888;">...</span>`;
+    }
+
+    for (let i = start; i <= end; i++) {
+        html += `<button class="btn btn-sm" onclick="goToPilotPage(${i})" style="background: ${i === current ? '#2196f3' : '#2a2f3a'}; ${i === current ? 'font-weight:bold;' : ''}">${i}</button>`;
+    }
+
+    if (end < totalPages) {
+        if (end < totalPages - 1) html += `<span style="color:#888;">...</span>`;
+        html += `<button class="btn btn-sm" onclick="goToPilotPage(${totalPages})" style="background: #2a2f3a;">${totalPages}</button>`;
+    }
+
+    // Siguiente
+    html += `<button class="btn btn-sm" onclick="goToPilotPage(${current + 1})" ${current >= totalPages ? 'disabled' : ''} style="background: #2a2f3a;">▶</button>`;
+
+    container.innerHTML = html;
+}
+
+function goToPilotPage(page) {
+    const totalPages = Math.ceil(pilotHistoryData.length / pilotHistoryPageSize);
+    if (page < 1 || page > totalPages) return;
+    pilotHistoryCurrentPage = page;
+    const searchTerm = document.getElementById('historyPilotSearch')?.value || '';
+    loadPilotHistoryList(searchTerm);
+}
+
+// ============================================================
+// DETALLE DE PILOTO (MODAL)
+// ============================================================
+
+async function showPilotDetail(driverId) {
+    const modal = document.getElementById('pilotDetailModal');
+    if (!modal) return;
+
+    modal.style.display = 'flex';
+
+    try {
+        // Obtener datos del piloto
+        const drivers = await apiCall('/api/drivers');
+        const driver = drivers?.find(d => d.id === driverId);
+        if (!driver) {
+            showToast('❌', 'Piloto no encontrado', 'error');
+            modal.style.display = 'none';
+            return;
+        }
+
+        // Actualizar header
+        const photo = driver.photo && driver.photo !== 'default-avatar.png'
+            ? `/static/uploads/drivers/${driver.photo}`
+            : '/static/default-avatar.png';
+        document.getElementById('pilotDetailPhoto').src = photo;
+        document.getElementById('pilotDetailName').innerText = `${driver.name || ''} ${driver.lastname || ''}`.trim() || 'Sin nombre';
+        document.getElementById('pilotDetailMeta').innerText = `ID: ${driver.id} | Transponder: ${driver.transponder_id || '--'}`;
+
+        // Obtener carreras del piloto
+        const history = await apiCall('/api/race/history');
+        let pilotRaces = [];
+        let totalWins = 0;
+        let bestPos = Infinity;
+        let bestLap = Infinity;
+
+        if (history && history.length > 0) {
+            for (const race of history) {
+                const detail = await apiCall(`/api/race/history/${race.id}`);
+                if (detail && detail.leaderboard) {
+                    const pilotData = detail.leaderboard.find(d => d.driver_id === driverId);
+                    if (pilotData) {
+                        pilotRaces.push({
+                            race: race,
+                            position: pilotData.position,
+                            laps: pilotData.total_laps || 0,
+                            bestLap: pilotData.best_lap,
+                            totalTime: pilotData.total_time,
+                            isWinner: pilotData.position === 1
+                        });
+                        if (pilotData.position === 1) totalWins++;
+                        if (pilotData.position < bestPos) bestPos = pilotData.position;
+                        if (pilotData.best_lap && pilotData.best_lap < bestLap) {
+                            bestLap = pilotData.best_lap;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Ordenar carreras por fecha (más reciente primero)
+        pilotRaces.sort((a, b) => {
+            const dateA = new Date(a.race.end_time || 0);
+            const dateB = new Date(b.race.end_time || 0);
+            return dateB - dateA;
+        });
+
+        // Actualizar estadísticas
+        document.getElementById('pilotDetailRaces').innerText = pilotRaces.length;
+        document.getElementById('pilotDetailWins').innerText = totalWins;
+        document.getElementById('pilotDetailBestPos').innerText = bestPos === Infinity ? '--' : bestPos;
+        document.getElementById('pilotDetailBestLap').innerText = bestLap === Infinity ? '--' : formatRaceClock(bestLap);
+
+        // Renderizar carreras
+        const listContainer = document.getElementById('pilotDetailRacesList');
+        if (pilotRaces.length === 0) {
+            listContainer.innerHTML = '<div style="text-align: center; padding: 2rem; color: #888;">Este piloto no ha participado en ninguna carrera</div>';
+        } else {
+            listContainer.innerHTML = pilotRaces.map((item, idx) => {
+                const race = item.race;
+                const date = race.end_time ? race.end_time.replace('T', ' ').slice(0, 19) : '--';
+                const winnerTag = item.isWinner ? ' 🏆' : '';
+                const posColor = item.position === 1 ? '#ffd700' : item.position === 2 ? '#c0c0c0' : item.position === 3 ? '#cd7f32' : '#fff';
+                const bestLapDisplay = item.bestLap ? formatRaceClock(item.bestLap) : '--';
+                const totalTimeDisplay = item.totalTime ? formatRaceClock(item.totalTime) : '--';
+
+                return `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.7rem; border-bottom: 1px solid #2a2f3a; flex-wrap: wrap; gap: 0.5rem;">
+                        <div style="flex: 1; min-width: 150px;">
+                            <div style="font-weight: 600; color: #fff;">${race.circuit_name || 'Carrera sin nombre'}${winnerTag}</div>
+                            <div style="font-size: 0.7rem; color: #888;">📅 ${date}</div>
+                        </div>
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+                            <div style="text-align: center;">
+                                <span style="font-size:0.6rem; color:#888;">Pos</span>
+                                <div style="font-weight: bold; color: ${posColor}; font-size: 1.1rem;">#${item.position}</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <span style="font-size:0.6rem; color:#888;">Vueltas</span>
+                                <div style="font-weight: bold; color: #fff;">${item.laps}</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <span style="font-size:0.6rem; color:#888;">Mejor Vta</span>
+                                <div style="font-weight: bold; color: #ffd700; font-family: monospace;">${bestLapDisplay}</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <span style="font-size:0.6rem; color:#888;">Tiempo Total</span>
+                                <div style="font-weight: bold; color: #fff; font-family: monospace;">${totalTimeDisplay}</div>
+                            </div>
+                            <button class="btn btn-sm" onclick="viewRaceDetail(${race.id})" style="background: #2196f3;">📋 Ver</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+    } catch (e) {
+        console.error('Error cargando detalle del piloto:', e);
+        showToast('❌', 'Error al cargar detalles del piloto', 'error');
+        modal.style.display = 'none';
+    }
+}
+
+// Cerrar modal de detalle de piloto
+document.getElementById('closePilotDetailBtn')?.addEventListener('click', () => {
+    document.getElementById('pilotDetailModal').style.display = 'none';
+});
+
+document.getElementById('pilotDetailModal')?.addEventListener('click', (e) => {
+    if (e.target === document.getElementById('pilotDetailModal')) {
+        document.getElementById('pilotDetailModal').style.display = 'none';
+    }
+});
+
+// ============================================================
+// CONFIGURACIÓN DE EVENTOS PARA HISTORIAL DE PILOTOS
+// ============================================================
+
+function setupPilotHistoryEvents() {
+    const searchInput = document.getElementById('historyPilotSearch');
+    const searchBtn = document.getElementById('historyPilotSearchBtn');
+    const clearBtn = document.getElementById('historyPilotClearBtn');
+    const refreshBtn = document.getElementById('refreshHistoryBtn');
+    const pageSizeSelect = document.getElementById('historyPilotPageSize');
+
+    if (searchBtn) {
+        searchBtn.onclick = () => {
+            pilotHistoryCurrentPage = 1;
+            loadPilotHistoryList(searchInput?.value || '');
+        };
+    }
+
+    if (clearBtn) {
+        clearBtn.onclick = () => {
+            if (searchInput) searchInput.value = '';
+            pilotHistoryCurrentPage = 1;
+            loadPilotHistoryList('');
+        };
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                pilotHistoryCurrentPage = 1;
+                loadPilotHistoryList(searchInput.value);
+            }
+        });
+    }
+
+    if (refreshBtn) {
+        refreshBtn.onclick = () => {
+            pilotHistoryCurrentPage = 1;
+            loadPilotHistoryList(searchInput?.value || '');
+            showToast('🔄', 'Historial actualizado', 'info');
+        };
+    }
+
+    if (pageSizeSelect) {
+        pageSizeSelect.onchange = () => {
+            pilotHistoryPageSize = parseInt(pageSizeSelect.value);
+            pilotHistoryCurrentPage = 1;
+            loadPilotHistoryList(searchInput?.value || '');
+        };
+    }
+}
+
+// Inicializar historial de pilotos al cargar el panel
+document.addEventListener('DOMContentLoaded', function () {
+    setupPilotHistoryEvents();
+
+    // Escuchar cuando se active el panel de historial
+    const historyLink = document.querySelector('[data-panel="history"]');
+    if (historyLink) {
+        historyLink.addEventListener('click', function () {
+            setTimeout(() => {
+                const searchTerm = document.getElementById('historyPilotSearch')?.value || '';
+                loadPilotHistoryList(searchTerm);
+            }, 300);
+        });
+    }
+});
+
 
 
 async function showWinnerForAllModes() {
@@ -7614,73 +8193,48 @@ const COLUMNS_CONFIG = [
     { id: 'kart', label: 'Kart', class: 'k-col-kart', defaultDesktop: true, defaultMobile: false }
 ];
 
-let columnsConfig = {
-    desktop: [],
-    mobile: []
-};
-
-let columnsMode = 'desktop'; // 'desktop' o 'mobile'
 
 async function loadColumnsConfig() {
     try {
-        const token = sessionToken || localStorage.getItem('chronit_session_token');
-        if (!token) {
-            // Valores por defecto
-            columnsConfig.desktop = COLUMNS_CONFIG.filter(c => c.defaultDesktop).map(c => c.id);
-            columnsConfig.mobile = COLUMNS_CONFIG.filter(c => c.defaultMobile).map(c => c.id);
-            applyColumnsConfig();
-            return;
-        }
-
-        const response = await fetch('/api/user/preferences', {
-            headers: { 'X-Session-Token': token }
-        });
-        const data = await response.json();
-
-        if (data.success && data.preferences) {
-            try {
-                columnsConfig.desktop = JSON.parse(data.preferences.hidden_columns_desktop || '[]');
-            } catch { columnsConfig.desktop = COLUMNS_CONFIG.filter(c => c.defaultDesktop).map(c => c.id); }
-            
-            try {
-                columnsConfig.mobile = JSON.parse(data.preferences.hidden_columns_mobile || '[]');
-            } catch { columnsConfig.mobile = COLUMNS_CONFIG.filter(c => c.defaultMobile).map(c => c.id); }
+        // ✅ Usar endpoint GLOBAL (sin autenticación)
+        const res = await apiCall('/api/columns/config');
+        if (res && res.success) {
+            columnsConfig.desktop = res.desktop || [];
+            columnsConfig.mobile = res.mobile || [];
         } else {
-            columnsConfig.desktop = COLUMNS_CONFIG.filter(c => c.defaultDesktop).map(c => c.id);
-            columnsConfig.mobile = COLUMNS_CONFIG.filter(c => c.defaultMobile).map(c => c.id);
+            // Fallback: mostrar todo
+            columnsConfig.desktop = [];
+            columnsConfig.mobile = [];
         }
-        
         applyColumnsConfig();
-        renderColumnsCheckboxes();
+        renderColumnsConfigTable();
     } catch (e) {
         console.warn('Error cargando configuración de columnas:', e);
-        columnsConfig.desktop = COLUMNS_CONFIG.filter(c => c.defaultDesktop).map(c => c.id);
-        columnsConfig.mobile = COLUMNS_CONFIG.filter(c => c.defaultMobile).map(c => c.id);
+        columnsConfig.desktop = [];
+        columnsConfig.mobile = [];
         applyColumnsConfig();
-        renderColumnsCheckboxes();
+        renderColumnsConfigTable();
     }
 }
 
 function applyColumnsConfig() {
-    const hiddenColumns = columnsMode === 'desktop' ? columnsConfig.desktop : columnsConfig.mobile;
-    
-    console.log('[COLUMNAS] Aplicando configuración - Modo:', columnsMode);
-    console.log('[COLUMNAS] Columnas ocultas:', hiddenColumns);
-    
-    // Si no hay columnas ocultas, mostrar todo y salir
+    // ✅ DETECTAR SI ES MÓVIL
+    const isMobile = isMobileDevice();
+    const hiddenColumns = isMobile ? columnsConfig.mobile : columnsConfig.desktop;
+
+    // Si no hay columnas ocultas, mostrar todo
     if (!hiddenColumns || hiddenColumns.length === 0) {
-        // Mostrar todas las columnas
         mostrarTodasLasColumnas();
         return;
     }
-    
+
     // Aplicar a todos los paneles que usan columnas
     const panels = ['tableroPublico', 'live'];
-    
+
     panels.forEach(panelId => {
         const panel = document.getElementById(`panel-${panelId}`);
         if (!panel) return;
-        
+
         // ✅ 1. HEADER
         COLUMNS_CONFIG.forEach(col => {
             const headers = panel.querySelectorAll(`.k-header .${col.class}`);
@@ -7692,8 +8246,8 @@ function applyColumnsConfig() {
                 }
             });
         });
-        
-        // ✅ 2. FILAS - buscar en todos los contenedores posibles
+
+        // ✅ 2. FILAS
         const selectores = ['#lista-pilotos', '#liveLeaderboardPublicStyle', '.karting-leaderboard'];
         selectores.forEach(selector => {
             const container = panel.querySelector(selector);
@@ -7706,7 +8260,15 @@ function applyColumnsConfig() {
                             if (hiddenColumns.includes(col.id)) {
                                 el.style.display = 'none';
                             } else {
-                                el.style.display = '';
+                                // ✅ IMPORTANTE: Restaurar display según el contexto
+                                if (col.id === 'ttotal' && isMobile) {
+                                    // En móvil, si está visible, usar block
+                                    el.style.display = 'block';
+                                } else if (col.id === 'ttotal') {
+                                    el.style.display = 'flex';
+                                } else {
+                                    el.style.display = '';
+                                }
                             }
                         });
                     });
@@ -7716,12 +8278,15 @@ function applyColumnsConfig() {
     });
 }
 
+
 function mostrarTodasLasColumnas() {
     const panels = ['tableroPublico', 'live'];
+    const isMobile = isMobileDevice();
+
     panels.forEach(panelId => {
         const panel = document.getElementById(`panel-${panelId}`);
         if (!panel) return;
-        
+
         // Mostrar todos los headers
         COLUMNS_CONFIG.forEach(col => {
             const headers = panel.querySelectorAll(`.k-header .${col.class}`);
@@ -7729,7 +8294,7 @@ function mostrarTodasLasColumnas() {
                 el.style.display = '';
             });
         });
-        
+
         // Mostrar todas las celdas
         const selectores = ['#lista-pilotos', '#liveLeaderboardPublicStyle', '.karting-leaderboard'];
         selectores.forEach(selector => {
@@ -7740,7 +8305,14 @@ function mostrarTodasLasColumnas() {
                     COLUMNS_CONFIG.forEach(col => {
                         const cells = row.querySelectorAll(`.${col.class}`);
                         cells.forEach(el => {
-                            el.style.display = '';
+                            // ✅ Restaurar display según el contexto
+                            if (col.id === 'ttotal' && isMobile) {
+                                el.style.display = 'block';
+                            } else if (col.id === 'ttotal') {
+                                el.style.display = 'flex';
+                            } else {
+                                el.style.display = '';
+                            }
                         });
                     });
                 });
@@ -7749,81 +8321,136 @@ function mostrarTodasLasColumnas() {
     });
 }
 
-function renderColumnsCheckboxes() {
-    const grid = document.getElementById('columnsCheckboxGrid');
-    if (!grid) return;
+function renderColumnsConfigTable() {
+    const tbody = document.getElementById('columnsConfigTableBody');
+    if (!tbody) return;
 
-    const hiddenColumns = columnsMode === 'desktop' ? columnsConfig.desktop : columnsConfig.mobile;
+    // Verificar si la card está visible
+    const configCard = document.getElementById('columnsConfigCard');
+    if (configCard && configCard.style.display === 'none') {
+        return;
+    }
 
-    grid.innerHTML = COLUMNS_CONFIG.map(col => {
-        const isChecked = hiddenColumns.includes(col.id);
+
+    // Columnas que NO son "Nombre" (siempre visible)
+    const configurableColumns = COLUMNS_CONFIG.filter(col => col.id !== 'nombre');
+
+    tbody.innerHTML = configurableColumns.map(col => {
+        const isHiddenDesktop = columnsConfig.desktop.includes(col.id);
+        const isHiddenMobile = columnsConfig.mobile.includes(col.id);
+
         return `
-            <label style="display:flex; align-items:center; gap:0.5rem; padding:0.3rem 0.5rem; background:#0f1117; border-radius:6px; cursor:pointer; border:1px solid ${isChecked ? '#2a2f3a' : '#3b82f6'};">
-                <input type="checkbox" class="column-checkbox" data-col-id="${col.id}" 
-                       ${isChecked ? '' : 'checked'} 
-                       style="width:16px; height:16px; accent-color:#3b82f6; cursor:pointer;">
-                <span style="font-size:0.75rem; color:#e4e4e4;">${col.label}</span>
-            </label>
+            <tr style="border-bottom: 1px solid #1a1e26;">
+                <td style="padding: 0.5rem 0.6rem; font-size: 0.8rem; color: #e4e4e4; font-weight: 500;">
+                    ${col.label}
+                </td>
+                <td style="padding: 0.5rem 0.6rem; text-align: center;">
+                    <label style="display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer;">
+                        <input type="checkbox" class="col-checkbox-desktop" data-col-id="${col.id}" 
+                               ${isHiddenDesktop ? '' : 'checked'}
+                               style="width: 16px; height: 16px; accent-color: #34d399; cursor: pointer;">
+                        <span style="font-size: 0.65rem; color: #34d399;">${isHiddenDesktop ? 'Oculto' : 'Visible'}</span>
+                    </label>
+                </td>
+                <td style="padding: 0.5rem 0.6rem; text-align: center;">
+                    <label style="display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer;">
+                        <input type="checkbox" class="col-checkbox-mobile" data-col-id="${col.id}" 
+                               ${isHiddenMobile ? '' : 'checked'}
+                               style="width: 16px; height: 16px; accent-color: #4fc3f7; cursor: pointer;">
+                        <span style="font-size: 0.65rem; color: #4fc3f7;">${isHiddenMobile ? 'Oculto' : 'Visible'}</span>
+                    </label>
+                </td>
+            </tr>
         `;
     }).join('');
 
-    // Actualizar etiqueta del modo
-    const label = document.getElementById('columnsModeLabel');
-    if (label) {
-        label.textContent = columnsMode === 'desktop' ? '(Escritorio)' : '(Móvil)';
-    }
+    // ✅ Agregar eventos para actualizar el texto al hacer clic
+    document.querySelectorAll('.col-checkbox-desktop').forEach(cb => {
+        cb.addEventListener('change', function () {
+            const label = this.closest('label').querySelector('span');
+            if (label) {
+                label.textContent = this.checked ? 'Visible' : 'Oculto';
+            }
+        });
+    });
+
+    document.querySelectorAll('.col-checkbox-mobile').forEach(cb => {
+        cb.addEventListener('change', function () {
+            const label = this.closest('label').querySelector('span');
+            if (label) {
+                label.textContent = this.checked ? 'Visible' : 'Oculto';
+            }
+        });
+    });
 }
 
 function setupColumnsConfigControls() {
-    const toggle = document.getElementById('columnsModeToggle');
     const saveBtn = document.getElementById('saveColumnsConfigBtn');
     const selectAllBtn = document.getElementById('selectAllColumnsBtn');
     const deselectAllBtn = document.getElementById('deselectAllColumnsBtn');
     const statusSpan = document.getElementById('columnsConfigStatus');
 
-    // Toggle entre escritorio y móvil
-    if (toggle) {
-        toggle.addEventListener('change', function() {
-            columnsMode = this.checked ? 'mobile' : 'desktop';
-            const label = document.getElementById('columnsModeLabel');
-            if (label) {
-                label.textContent = columnsMode === 'desktop' ? '(Escritorio)' : '(Móvil)';
-            }
-            renderColumnsCheckboxes();
-        });
-    }
-
-    // Seleccionar todas
+    // ============================================================
+    // 1. SELECCIONAR TODAS (Escritorio y Móvil)
+    // ============================================================
     if (selectAllBtn) {
         selectAllBtn.onclick = () => {
-            document.querySelectorAll('.column-checkbox').forEach(cb => {
+            document.querySelectorAll('.col-checkbox-desktop, .col-checkbox-mobile').forEach(cb => {
                 cb.checked = true;
             });
-        };
-    }
-
-    // Deseleccionar todas
-    if (deselectAllBtn) {
-        deselectAllBtn.onclick = () => {
-            document.querySelectorAll('.column-checkbox').forEach(cb => {
-                cb.checked = false;
+            // Actualizar textos
+            document.querySelectorAll('.col-checkbox-desktop').forEach(cb => {
+                const label = cb.closest('label').querySelector('span');
+                if (label) label.textContent = 'Visible';
+            });
+            document.querySelectorAll('.col-checkbox-mobile').forEach(cb => {
+                const label = cb.closest('label').querySelector('span');
+                if (label) label.textContent = 'Visible';
             });
         };
     }
 
-    // Guardar configuración
+    // ============================================================
+    // 2. DESELECCIONAR TODAS (Escritorio y Móvil)
+    // ============================================================
+    if (deselectAllBtn) {
+        deselectAllBtn.onclick = () => {
+            document.querySelectorAll('.col-checkbox-desktop, .col-checkbox-mobile').forEach(cb => {
+                cb.checked = false;
+            });
+            // Actualizar textos
+            document.querySelectorAll('.col-checkbox-desktop').forEach(cb => {
+                const label = cb.closest('label').querySelector('span');
+                if (label) label.textContent = 'Oculto';
+            });
+            document.querySelectorAll('.col-checkbox-mobile').forEach(cb => {
+                const label = cb.closest('label').querySelector('span');
+                if (label) label.textContent = 'Oculto';
+            });
+        };
+    }
+
+    // ============================================================
+    // 3. GUARDAR CONFIGURACIÓN
+    // ============================================================
     if (saveBtn) {
         saveBtn.onclick = async () => {
-            const checkboxes = document.querySelectorAll('.column-checkbox');
-            const hidden = [];
-            checkboxes.forEach(cb => {
+            const desktopCheckboxes = document.querySelectorAll('.col-checkbox-desktop');
+            const hiddenDesktop = [];
+            desktopCheckboxes.forEach(cb => {
                 if (!cb.checked) {
-                    hidden.push(cb.dataset.colId);
+                    hiddenDesktop.push(cb.dataset.colId);
                 }
             });
 
-            const configKey = columnsMode === 'desktop' ? 'hidden_columns_desktop' : 'hidden_columns_mobile';
-            
+            const mobileCheckboxes = document.querySelectorAll('.col-checkbox-mobile');
+            const hiddenMobile = [];
+            mobileCheckboxes.forEach(cb => {
+                if (!cb.checked) {
+                    hiddenMobile.push(cb.dataset.colId);
+                }
+            });
+
             if (statusSpan) {
                 statusSpan.innerText = '⏳ Guardando...';
                 statusSpan.style.color = '#ffaa00';
@@ -7831,46 +8458,47 @@ function setupColumnsConfigControls() {
 
             try {
                 const token = sessionToken || localStorage.getItem('chronit_session_token');
+
+                // ✅ Verificar autenticación para guardar
                 if (!token) {
-                    showToast('⚠️', 'Inicia sesión para guardar configuración', 'warning');
+                    showToast('⚠️', 'Inicia sesión como desarrollador para guardar configuración', 'warning');
+                    if (statusSpan) {
+                        statusSpan.innerText = '❌ No autorizado';
+                        statusSpan.style.color = '#ef7a86';
+                    }
                     return;
                 }
 
-                // Obtener configuración actual
-                const currentResponse = await fetch('/api/user/preferences', {
-                    headers: { 'X-Session-Token': token }
-                });
-                const currentData = await currentResponse.json();
-                
-                let prefs = {};
-                if (currentData.success && currentData.preferences) {
-                    prefs = currentData.preferences;
-                }
-
-                // Actualizar la configuración correspondiente
-                prefs[configKey] = JSON.stringify(hidden);
-
-                const response = await fetch('/api/user/preferences', {
+                // ✅ Usar endpoint GLOBAL pero con token para autorización
+                const response = await fetch('/api/columns/config', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-Session-Token': token
                     },
-                    body: JSON.stringify(prefs)
+                    body: JSON.stringify({
+                        desktop: hiddenDesktop,
+                        mobile: hiddenMobile
+                    })
                 });
+
                 const data = await response.json();
 
                 if (data.success) {
+                    columnsConfig.desktop = hiddenDesktop;
+                    columnsConfig.mobile = hiddenMobile;
+
                     if (statusSpan) {
                         statusSpan.innerText = '✅ Guardado';
                         statusSpan.style.color = '#34d399';
                         setTimeout(() => { statusSpan.innerText = 'Listo'; }, 3000);
                     }
-                    showToast('✅', 'Configuración guardada. Recargando página...', 'success');
-                    setTimeout(() => location.reload(), 1000);
+
+                    applyColumnsConfig();
+                    showToast('✅', 'Configuración guardada correctamente', 'success');
                 } else {
                     if (statusSpan) {
-                        statusSpan.innerText = '❌ Error';
+                        statusSpan.innerText = '❌ ' + (data.error || 'Error');
                         statusSpan.style.color = '#ef7a86';
                     }
                     showToast('❌', data.error || 'Error al guardar', 'error');
@@ -7885,4 +8513,56 @@ function setupColumnsConfigControls() {
             }
         };
     }
+
+    // ============================================================
+    // 4. INICIALIZACIÓN
+    // ============================================================
+
 }
+
+// ============================================================
+// DETECTAR DISPOSITIVO MÓVIL
+// ============================================================
+
+function isMobileDevice() {
+    // ✅ 1. Detectar por ancho de pantalla
+    if (window.innerWidth <= 768) {
+        return true;
+    }
+
+    // ✅ 2. Detectar por user agent
+    const ua = navigator.userAgent || navigator.vendor || window.opera;
+    if (/android|iPad|iPhone|iPod|BlackBerry|Windows Phone|webOS|Mobile/i.test(ua)) {
+        return true;
+    }
+
+    // ✅ 3. Detectar por touch events y pantalla pequeña
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+        if (window.innerWidth <= 1024) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+        // Solo aplicar si está en modo automático
+        if (!localStorage.getItem('chronit_columns_mode')) {
+            const isMobile = isMobileDevice();
+            const newMode = isMobile ? 'mobile' : 'desktop';
+            if (columnsMode !== newMode) {
+                columnsMode = newMode;
+                applyColumnsConfig();
+                const label = document.getElementById('columnsModeLabel');
+                if (label) {
+                    label.textContent = isMobile ? '(Móvil - Auto)' : '(Escritorio - Auto)';
+                }
+            }
+        }
+    }, 500);
+}
+
+);
