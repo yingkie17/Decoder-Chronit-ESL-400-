@@ -232,6 +232,10 @@ manual_lap_lock = threading.Lock()
 _RECENT_LAP_DEDUP = {}
 _DEDUP_WINDOW_SHORT = 2.0
 _DEDUP_WINDOW_LONG = 2.0
+# Ventana MUY corta para dos vueltas MANUALES seguidas: alcanza para descartar
+# un doble clic accidental, pero NO bloquea que el operador marque varias
+# vueltas seguidas cuando se pone al día con un kart.
+_DEDUP_WINDOW_MANUAL = 0.5
 
 # ===== CONTROL DE ESCUCHA DEL DECODER (toggle manual) =====
 # Cuando NO hay carrera activa, la escucha continua del decoder se puede apagar
@@ -615,20 +619,24 @@ def reset_race_state(preserve_drivers=True):
 # CONTADOR MANUAL DE VUELTAS (DEDUP 3-5s + MOTOR UNIFICADO)
 # ============================================
 
-def _dedup_lap_event(transponder_id, tiempo_total_segundos):
-    """Ventana de deduplicación 3-5s por transponder.
-    Si hay dos eventos del MISMO kart/señal casi simultáneos (manual + decoder
-    o doble click), se registra UNA SOLA vuelta: el primer evento se procesa y
-    los siguientes dentro de la ventana se ignoran (no cuentan vuelta doble).
+def _dedup_lap_event(transponder_id, tiempo_total_segundos, source="decoder"):
+    """Deduplica eventos casi simultáneos del MISMO kart.
+
+    - decoder/decoder o manual/decoder: ventana 2s (misma pasada registrada
+      dos veces, p.ej. transponder + marcado manual del mismo cruce).
+    - manual/manual: ventana corta (0.5s). Un doble clic accidental se
+      descarta, pero el operador SÍ puede marcar varias vueltas seguidas
+      cuando se pone al día con un kart.
+
     Conservamos el menor tiempo acumulado entre los eventos de la misma pasada.
     """
     now = time.time()
     prev = _RECENT_LAP_DEDUP.get(transponder_id)
     if prev is not None:
-        # Mantener anclado el inicio de la ventana al PRIMER evento de la pasada,
-        # para no extenderla indefinidamente con duplicados.
         dif = now - prev.get("event_time", now)
-        if dif < _DEDUP_WINDOW_LONG:
+        ambos_manual = (source == "manual" and prev.get("source") == "manual")
+        ventana = _DEDUP_WINDOW_MANUAL if ambos_manual else _DEDUP_WINDOW_LONG
+        if dif < ventana:
             prev_total = prev.get("tiempo_total")
             # Conservamos el menor tiempo acumulado de la misma pasada
             if (tiempo_total_segundos is not None and prev_total is not None
@@ -639,6 +647,7 @@ def _dedup_lap_event(transponder_id, tiempo_total_segundos):
     _RECENT_LAP_DEDUP[transponder_id] = {
         "event_time": now,
         "tiempo_total": tiempo_total_segundos,
+        "source": source,
     }
     return False
 
@@ -669,7 +678,7 @@ def process_lap_event(transponder_id, source, nro_vueltas_raw, tiempo_total_segu
     global PRIMERA_VEZ, VUELTA_SALIDA, VUELTAS_CARRERA, PRIMER_TIEMPO_SERVIDOR, CONTADOR_VUELTAS_INTERNO
 
     # ===== DEDUPLICACIÓN: misma señal/kart dos veces casi al mismo tiempo =====
-    if _dedup_lap_event(transponder_id, tiempo_total_segundos):
+    if _dedup_lap_event(transponder_id, tiempo_total_segundos, source):
         return None
 
     es_nuevo = add_transponder_detected(

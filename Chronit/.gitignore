@@ -40,3 +40,9 @@ next_race_laps.txt
 
 # Artefactos sueltos
 docs/_legacy/cursor.appimage
+
+# Dependencias de Node / Next.js
+node_modules/
+.next/
+dist/
+build/
