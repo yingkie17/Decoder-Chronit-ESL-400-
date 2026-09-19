@@ -1,0 +1,17 @@
+.git
+.gitignore
+README.md
+.env
+data/*.db
+data/*.flag
+data/*.txt
+data/backups/
+docs/
+tests/
+windows/
+linux/
+*.sh
+*.bat
+*.md
+*.pyc
+__pycache__

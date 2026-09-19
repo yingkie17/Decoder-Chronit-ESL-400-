@@ -1,0 +1,2508 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gokart/carrera</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <!-- CSS externo -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}?v={{ asset_version }}">
+    <!-- Card de detección de piloto (compartida con la Vista Pantalla en Pista) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/detection_card.css') }}?v={{ asset_version }}">
+</head>
+
+<body>
+
+    <!-- OVERLAY: LOADER -->
+    <div id="loaderOverlay">
+        <div class="spinner"></div>
+        <p id="loaderMessage">Procesando...</p>
+    </div>
+
+    <div class="navbar">
+        <div class="nav-brand">
+            <img src="{{ url_for('static', filename='LogoVectorizadoGoKarting.svg') }}" alt="Logo Chronit"
+                style="height: 70px;">
+        </div>
+
+        <!-- Menú de escritorio (visible solo en pantallas grandes) -->
+        <div class="nav-links nav-desktop" id="desktopMenu">
+            <a class="active" data-panel="tableroPublico">Tablero Público</a>
+            <a data-panel="live" class="admin-only"><img src="{{ url_for('static', filename='favicon.svg') }}"
+                    alt="Casco Karting" style="width: 10px; height: 10px; margin-right: 4px;">Control de Carrera</a>
+            <a data-panel="public">Paddock Live Feed</a>
+            <a data-panel="tv">Pit Wall Monitor</a>
+            <a data-panel="drivers" class="admin-only">Pilotos</a>
+            <a data-panel="transponders" class="admin-only">Transponders</a>
+            <a data-panel="events" class="admin-only">Eventos</a>
+            <a data-panel="finished" class="admin-only">🏁 Finalizadas</a>
+            <a data-panel="race-setup" class="admin-only">Carrera</a>
+            <a data-panel="history" class="admin-only">Historial</a>
+            <a data-panel="system" class="admin-only">Sistema</a>
+        </div>
+
+        <!-- Contenedor de botones (reset, login, hamburguesa) -->
+        <div class="mobile-buttons">
+            <span id="userStatus" class="admin-only desktop-only"
+                style="color: var(--muted); font-size: 0.85rem; margin: 0 10px;"></span>
+            <button id="loginBtn" class="btn desktop-only">Iniciar Sesión</button>
+            <button id="logoutBtn" class="btn desktop-only" style="display: none;">Cerrar Sesión</button>
+            <a href="/pantalla-en-pista" target="_blank" rel="noopener" class="btn" id="pantallaEnPistaBtn"
+                title="Abrir Pantalla en Pista (modo LED, sin menús)"
+                style="text-decoration: none;">📺 LED</a>
+            <button class="menu-toggle" id="menuToggle">☰</button>
+        </div>
+    </div>
+
+
+    <!-- MENÚ RESPONSIVE - VERSIÓN SIMPLIFICADA Y FUNCIONAL -->
+    <div id="responsiveMenu" class="nav-responsive">
+        <!-- Botón de cierre (X) -->
+        <div
+            style="display: flex; flex-direction: row; align-items: center; justify-content: flex-end; padding: 8px 12px; border-bottom: 1px solid #2a303c;">
+            <div id="userStatusMobile"
+                style="flex: 1; text-align: center; font-size: 0.8rem; color: #bca4a4; font-weight: 500; padding: 4px 0;">
+                👤 yingkie (developer)</div>
+            <button id="closeResponsiveMenuBtn"
+                style="background: none; border: none; color: #eceff4; font-size: 1.5rem; cursor: pointer; padding: 0 8px;">✕</button>
+        </div>
+
+
+
+        <!-- ENLACES DEL MENÚ -->
+        <div style="padding: 8px 12px;">
+            <a data-panel="tableroPublico" class="active"
+                style="display: block; padding: 10px 14px; margin-bottom: 2px; background: transparent; border: 1px solid transparent; color: #eceff4; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 500; cursor: pointer;">Tablero
+                Público</a>
+            <a data-panel="live" class="admin-only"
+                style="display: block; padding: 10px 14px; margin-bottom: 2px; background: transparent; border: 1px solid transparent; color: #eceff4; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 500; cursor: pointer;"><img
+                    src="{{ url_for('static', filename='favicon.svg') }}" alt="Casco"
+                    style="width: 12px; height: 12px; margin-right: 6px;">Control de Carrera</a>
+            <a data-panel="public"
+                style="display: block; padding: 10px 14px; margin-bottom: 2px; background: transparent; border: 1px solid transparent; color: #eceff4; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 500; cursor: pointer;">Paddock
+                Live Feed</a>
+            <a data-panel="tv"
+                style="display: block; padding: 10px 14px; margin-bottom: 2px; background: transparent; border: 1px solid transparent; color: #eceff4; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 500; cursor: pointer;">Pit
+                Wall Monitor</a>
+            <a data-panel="drivers" class="admin-only"
+                style="display: block; padding: 10px 14px; margin-bottom: 2px; background: transparent; border: 1px solid transparent; color: #eceff4; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 500; cursor: pointer;">Pilotos</a>
+            <a data-panel="transponders" class="admin-only"
+                style="display: block; padding: 10px 14px; margin-bottom: 2px; background: transparent; border: 1px solid transparent; color: #eceff4; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 500; cursor: pointer;">Transponders</a>
+            <a data-panel="events" class="admin-only"
+                style="display: block; padding: 10px 14px; margin-bottom: 2px; background: transparent; border: 1px solid transparent; color: #eceff4; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 500; cursor: pointer;">Eventos</a>
+            <a data-panel="finished" class="admin-only"
+                style="display: block; padding: 10px 14px; margin-bottom: 2px; background: transparent; border: 1px solid transparent; color: #eceff4; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 500; cursor: pointer;">🏁 Finalizadas</a>
+            <a data-panel="race-setup" class="admin-only"
+                style="display: block; padding: 10px 14px; margin-bottom: 2px; background: transparent; border: 1px solid transparent; color: #eceff4; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 500; cursor: pointer;">Carrera</a>
+            <a data-panel="history" class="admin-only"
+                style="display: block; padding: 10px 14px; margin-bottom: 2px; background: transparent; border: 1px solid transparent; color: #eceff4; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 500; cursor: pointer;">Historial</a>
+            <a data-panel="system" class="admin-only"
+                style="display: block; padding: 10px 14px; margin-bottom: 2px; background: transparent; border: 1px solid transparent; color: #eceff4; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 500; cursor: pointer;">Sistema</a>
+        </div>
+        <div class="mobile-auth-container" style="padding: 12px 12px 8px 12px; border-bottom: 1px solid #2a303c;">
+            <button id="loginBtnMobile" class="style-login-m"
+                style="display: none; background: #9b2725; color: #fff; padding: 10px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; text-align: center; border: none; width: 100%; cursor: pointer; margin-bottom: 6px;">Iniciar
+                Sesión</button>
+            <button id="logoutBtnMobile" class="style-logout-m"
+                style="display: none; background: #171a21; color: #eceff4; padding: 10px; border-radius: 8px; font-size: 0.9rem; text-align: center; border: 1px solid #2a303c; width: 100%; cursor: pointer; margin-bottom: 6px;">Cerrar
+                Sesión</button>
+        </div>
+    </div>
+
+    <!-- Modal de Login -->
+    <div id="loginModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:3000; align-items:center; justify-content:center;">
+        <div
+            style="background: var(--bg-elev-2); border: 1px solid var(--line); border-radius:20px; padding:2.5rem; width:100%; max-width:420px;">
+            <h2 style="text-align:center; margin-bottom:2rem; font-size:1.5rem;"><img
+                    src="{{ url_for('static', filename='favicon.svg') }}" alt="GO KARTING"
+                    style="width: 25px; height: 25px;"> Iniciar Sesión</h2>
+            <div style="margin-bottom:1.25rem;">
+                <label
+                    style="display:block; margin-bottom:0.5rem; color:var(--muted); font-size:0.85rem;">Usuario</label>
+                <input type="text" id="loginUsername"
+                    style="width:100%; padding:0.9rem 1.1rem; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--text); font-size:1rem;">
+            </div>
+            <div style="margin-bottom:1.75rem;">
+                <label
+                    style="display:block; margin-bottom:0.5rem; color:var(--muted); font-size:0.85rem;">Contraseña</label>
+                <input type="password" id="loginPassword"
+                    style="width:100%; padding:0.9rem 1.1rem; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--text); font-size:1rem;">
+            </div>
+            <div style="display:flex; gap:0.75rem;">
+                <button id="cancelLoginBtn" class="btn" style="flex:1;">Cancelar</button>
+                <button id="submitLoginBtn" class="btn btn-success" style="flex:1;">Ingresar</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="pilotCapacityModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(6px); z-index:3500; align-items:center; justify-content:center;">
+        <div
+            style="background: linear-gradient(145deg, #1a1f35, #0d111a); border:1px solid #2a2f3a; border-radius:20px; padding:2rem; width:100%; max-width:480px; box-shadow: 0 20px 60px rgba(0,0,0,0.7);">
+
+            <div style="text-align:center; margin-bottom:1rem;">
+                <div
+                    style="font-size:3rem; background:rgba(239,122,134,0.15); width:70px; height:70px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto; border:2px solid #ef7a86;">
+                    ⚠️
+                </div>
+            </div>
+
+            <h2 id="pilotCapacityModalTitle"
+                style="text-align:center; color:#ef7a86; margin-bottom:0.5rem; font-size:1.3rem;">
+                ¡DEMASIADOS PILOTOS!
+            </h2>
+
+            <p id="pilotCapacityModalMessage"
+                style="text-align:center; color:#a4adbc; font-size:0.95rem; line-height:1.6; margin-bottom:1.5rem;">
+                Estás inscribiendo <strong id="pilotCapacityModalCount" style="color:#ffd700;">0</strong> piloto(s), lo
+                que haría un total de <strong id="pilotCapacityModalTotal" style="color:#ffd700;">0</strong> pilotos.
+            </p>
+
+            <div
+                style="background:#0f1117; border-radius:10px; padding:1rem; margin-bottom:1.5rem; border:1px solid #2a2f3a;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                    <span style="font-size:0.75rem; color:#888;">Capacidad recomendada</span>
+                    <span style="font-size:0.75rem; color:#ffd700; font-weight:bold;">15 pilotos</span>
+                </div>
+                <div style="height:6px; background:#2a2f3a; border-radius:3px; overflow:hidden;">
+                    <div id="pilotCapacityModalBar"
+                        style="height:100%; width:0%; background:linear-gradient(90deg, #ffd700, #ef7a86); border-radius:3px; transition:width 0.5s ease;">
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem;">
+                    <span style="font-size:0.65rem; color:#666;">0</span>
+                    <span style="font-size:0.65rem; color:#ef7a86; font-weight:bold;">⚠️ SATURACIÓN</span>
+                    <span style="font-size:0.65rem; color:#666;">20+</span>
+                </div>
+            </div>
+
+            <div
+                style="background:rgba(239,122,134,0.08); border-left:3px solid #ef7a86; padding:0.8rem 1rem; border-radius:6px; margin-bottom:1.5rem;">
+                <p style="font-size:0.75rem; color:#ef7a86; margin:0; line-height:1.5;">
+                    ⚡ <strong>Posibles efectos:</strong> Retrasos en actualización, parpadeo de posiciones, lentitud del
+                    sistema.
+                </p>
+            </div>
+
+            <div style="display:flex; gap:0.8rem; flex-wrap:wrap;">
+                <button id="pilotCapacityCancelBtn"
+                    style="flex:1; padding:0.7rem; background:#2a2f3a; border:1px solid #3e4657; border-radius:10px; color:#cbd5e1; font-size:0.85rem; cursor:pointer; transition:all 0.2s;">
+                    Cancelar
+                </button>
+                <button id="pilotCapacityConfirmBtn"
+                    style="flex:1; padding:0.7rem; background:#e5484d; border:none; border-radius:10px; color:white; font-size:0.85rem; font-weight:600; cursor:pointer; transition:all 0.2s;">
+                    Continuar de todas formas
+                </button>
+            </div>
+
+            <p style="text-align:center; font-size:0.65rem; color:#666; margin-top:1rem;">
+                ⚠️ Recomendado: máximo 15 pilotos para un rendimiento óptimo
+            </p>
+        </div>
+    </div>
+
+
+
+
+    <div class="container">
+        <!--Tablero Público -->
+        <div id="panel-tableroPublico" class="panel active ">
+
+            <div class="chronit-tv-container">
+
+                <div class="tablero-header">
+                    <div class="event-tag">
+                        <span id="publicRaceNameDisplay">Go Karting Sport Bar - Carrera</span>
+                        <span id="raceStatusBadge" class="race-status-badge">Carrera Pendiente</span>
+                    </div>
+                    <div id="publicRaceModeDisplay" style="font-size:0.85rem; color:#a4adbc; margin-top:0.25rem;">--
+                    </div>
+                    <div id="publicRaceDescriptionDisplay"
+                        style="font-size:0.82rem; color:#a4adbc; margin-top:0.15rem;">--</div>
+
+                    <div class="timer-play-group">
+                        <div class="race-timer-box" id="total_time">
+                            00:00.000
+                        </div>
+
+                        <!-- ===== BOTÓN PLAY (solo admin/developer, discreto) =====
+                             Aparece únicamente cuando hay una carrera pendiente por iniciar.
+                             Se coloca justo al lado del box de tiempo.
+                             El público NO lo ve (clase admin-only). -->
+                        <button id="publicPlayRaceBtn" class="admin-only public-play-btn"
+                            title="Play - Iniciar carrera" aria-label="Iniciar carrera">
+                            ▶
+                        </button>
+                    </div>
+
+                </div>
+
+                <div class="karting-leaderboard">
+
+                    <div class="k-header">
+                        <div class="k-col-pos">Pos</div>
+                        <div class="k-col-name">Nombre </div>
+                        <div class="k-col-vueltas">Vueltas</div>
+                        <div class="k-col-dif">Dif.</div>
+                        <div class="k-col-mejor">Mejor</div>
+                        <div class="k-col-tiempo">Tiempo</div>
+                        <div class="k-col-tiempo-individual">T.Total</div>
+                        <div class="k-col-velocidad">Vel.</div>
+                        <div class="k-col-kart">Kart</div>
+                    </div>
+
+                    <div id="lista-pilotos"></div>
+
+                </div>
+
+            </div>
+
+            <!-- Botón discreto: pantalla completa (oculta los marcos del navegador) -->
+            <button id="publicFullscreenBtn" class="public-fullscreen-btn" type="button"
+                title="Pantalla completa" aria-label="Pantalla completa">⛶</button>
+        </div>
+
+        <!-- Panel En Vivo Administrativo - PANEL MAESTRO -->
+        <!-- Panel En Vivo Administrativo - PANEL MAESTRO -->
+        <div id="panel-live" class="panel admin-only">
+            <!-- Barra de control de carrera -->
+            <div class="control-bar" id="raceControlBar"
+                style="background: #0d0d0d; border-bottom: 1px solid #1f1f1f; padding: 0.75rem 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center;">
+                <button class="btn btn-success" id="startRaceBtn"
+                    style="display: inline-flex; align-items: center; gap: 8px;">
+                    <img src="{{ url_for('static', filename='favicon.svg') }}" alt="Casco Karting"
+                        style="width: 13px; height: 13px;">
+                    Iniciar Carrera
+                </button>
+                <button class="btn btn-warning" id="pauseRaceBtn" style="display:none;">Pausar</button>
+                <button class="btn btn-success" id="resumeRaceBtn" style="display:none;">Reanudar</button>
+                <button class="btn" id="repeatRaceBtn" style="display:none;">Repetir Carrera</button>
+                <button class="btn btn-warning" id="resetBoardBtn" style="display:none;">
+                    <img src="{{ url_for('static', filename='refresh2.svg') }}" alt="Resetear vistas" class="admin-only"
+                        title="Resetear tableros" style="width: 15px; height: 15px; cursor: pointer;"> Resetear Tablero
+                </button>
+                <button class="btn btn-danger" id="finishRaceBtn" style="display:none;">Finalizar</button>
+                <button class="btn btn-primary" id="showWinnerBtn" style="display:none;">🏆 Mostrar Ganadores</button>
+                <button class="btn btn-success" id="continueRaceBtn" style="display:none;">🏎️ Continuar a Carrera</button>
+                <button class="btn btn-primary" id="showClassificationBtn" style="display:none;">🏁 Mostrar
+                    Clasificación</button>
+                <button class="btn btn-info" id="openManualLapBtn">🎛️ Contador Manual</button>
+            </div>
+
+            <!-- Grid principal: 2 columnas -->
+            <div class="grid-2">
+                <!-- Columna izquierda: Tabla de posiciones -->
+                <div class="card universal-main-container">
+                    <div class="universal-box">
+                        <div class="card-header universal-header">
+                            <div class="tablero-header">
+                                <div class="event-tag">
+                                    <span id="liveRaceNameDisplay"
+                                        style="font-size: normal !important; font-style: normal;">Go Karting Sport Bar -
+                                        Carrera</span>
+                                    <span id="liveRaceStatusBadge" class="race-status-badge"
+                                        style="font-size: small !important;">Carrera Pendiente</span>
+                                </div>
+                                <div id="liveRaceModeDisplay"
+                                    style="font-size: smaller!important; font-family: Arial, Helvetica, sans-serif !important; color:#e1ecff; margin-top:0.25rem;">
+                                    --</div>
+                                <div id="liveRaceDescriptionDisplay"
+                                    style="font-size: smaller!important; font-family: Arial, Helvetica, sans-serif !important; color:#e0ecff; margin-top:0.15rem;">
+                                    --</div>
+                                <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                                    <!-- Cronómetro general (box con cambio de color) -->
+                                    <div class="race-timer-box status-pending" id="liveTotalTime">00:00.000</div>
+                                    <!-- Box de tiempo restante (amarillo) -->
+                                    <div id="timeRemainingBox" class="race-timer-box status-pending"
+                                        style="display: none;">00:00.000</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <div class="karting-leaderboard" style="padding: 0;">
+                                <div class="k-header">
+                                    <div class="k-col-pos">Pos</div>
+                                    <div class="k-col-name">Nombre</div>
+                                    <div class="k-col-vueltas">Vueltas</div>
+                                    <div class="k-col-dif">Dif.</div>
+                                    <div class="k-col-mejor">Mejor</div>
+                                    <div class="k-col-tiempo">Tiempo</div>
+                                    <div class="k-col-tiempo-individual">T.Total</div>
+                                    <div class="k-col-velocidad">Vel.</div>
+                                    <div class="k-col-kart">Kart</div>
+                                </div>
+                                <div id="liveLeaderboardPublicStyle"></div>
+                            </div>
+                        </div>
+                        <div class="refresh" id="refreshTimeLive">--</div>
+                    </div>
+                </div>
+
+                <!-- Columna derecha: Estadísticas + Detalle de vueltas -->
+                <div class="card universal-main-container">
+                    <!-- Estadísticas de carrera -->
+                    <div class="universal-box">
+                        <div class="card-header universal-header">ESTADÍSTICAS DE CARRERA</div>
+                        <div class="card-body">
+                            <div class="stat"><span>Circuito</span><span class="stat-value" id="circuitName">--</span>
+                            </div>
+                            <div class="stat"><span>Vueltas</span><span class="stat-value" id="lapsLimit">--</span>
+                            </div>
+                            <div class="stat"><span>Cronómetro</span><span class="stat-value"
+                                    id="liveRaceClock">00:00</span></div>
+                            <div class="stat"><span>Pilotos</span><span class="stat-value" id="totalDrivers">0</span>
+                            </div>
+                            <div class="stat"><span>Finalizados</span><span class="stat-value"
+                                    id="finishedDrivers">0</span></div>
+                            <div class="stat"><span>Líder actual</span><span class="stat-value"
+                                    id="liveLeaderName">--</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Detalle de vueltas -->
+                    <div class="universal-box" style="margin-top: 1.5rem;">
+                        <div class="card-header universal-header">DETALLE DE VUELTAS POR PILOTO</div>
+                        <div id="liveLapsDetail" style="max-height: 300px; overflow-y: auto; padding: 0.5rem;">
+                            <p class="muted-text" style="text-align:center;">Esperando datos de vueltas...</p>
+                        </div>
+                    </div>
+
+                    <!-- Rotador de últimas vueltas -->
+                    <div class="universal-box" style="margin-top: 1.5rem;">
+                        <div class="card-header universal-header">ÚLTIMAS VUELTAS</div>
+                        <div id="liveTvLapsRotator" style="min-height: 150px;">
+                            <p class="muted-text" style="text-align:center;">Esperando datos...</p>
+                        </div>
+                    </div>
+
+                    <!-- Botón reset vistas (dentro de la columna derecha) -->
+                    <button class="btn btn-sm admin-only" id="resetVistasBtn"
+                        style="width: 150px !important; margin-top: 1rem;">
+                        <img src="{{ url_for('static', filename='refresh2.svg') }}" alt="Resetear vistas"
+                            class="admin-only" title="Resetear tableros"
+                            style="width: 15px; height: 15px; cursor: pointer;">Resetear Tablero
+                    </button>
+                </div>
+            </div>
+            <!-- FIN DEL grid-2 -->
+        </div>
+        <!-- FIN DEL panel-live -->
+
+
+        <!-- Panel Publico -->
+        <div id="panel-public" class="panel">
+            <div class="card universal-main-container">
+                <div class="universal-box">
+                    <div class="card-header universal-header">Vista Publica - Estado General</div>
+                    <div class="card-body">
+                        <div class="race-context">
+                            Carrera actual: <strong id="publicRaceName">--</strong> |
+                            Vueltas objetivo: <strong id="publicLapsLimit">--</strong> |
+                            Modo: <strong id="publicRaceMode">--</strong>
+                        </div>
+                        <div id="publicRaceDescription" style="font-size:0.8rem; color:#a4adbc; margin-top:0.35rem;">--
+                        </div>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table style="width:100%; border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center; padding: 8px;">Pos</th>
+                                    <th style="text-align: center; padding: 8px;">Piloto</th>
+                                    <th style="text-align: center; padding: 8px;">Vtas</th>
+                                    <th style="text-align: center; padding: 8px;">Dif. Líder</th>
+                                    <th style="text-align: center; padding: 8px;">Tiempo Total</th>
+                                    <th style="text-align: center; padding: 8px;">Mejor Vta</th>
+                                    <th style="text-align: center; padding: 8px;">Última Vta</th>
+                                    <th style="text-align: center; padding: 8px;">Vel.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="publicLeaderboardBody">
+                                <tr>
+                                    <td colspan="6" style="text-align:center;padding:1.5rem;">Sin datos de carrera
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="public-grid">
+                <div class="card universal-main-container">
+                    <div class="universal-box">
+                        <div class="card-header universal-header">Detalle por Vuelta y Diferencias</div>
+                        <div class="card-body" id="publicLapsDetail">
+                            <p class="muted-text">Esperando informacion de vueltas...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card universal-main-container">
+                    <div class="universal-box">
+                        <div class="card-header universal-header">Informacion para Publico</div>
+                        <div class="card-body">
+                            <div class="stat"><span>Carrera</span><span class="stat-value"
+                                    id="publicRaceLabel">--</span>
+                            </div>
+                            <div class="stat"><span>Estado</span><span class="stat-value"
+                                    id="publicRaceStatus">--</span>
+                            </div>
+                            <div class="stat"><span>Cronometro</span><span class="stat-value"
+                                    id="publicRaceClock">00:00</span></div>
+                            <div id="timeRemainingBoxPublic" class="race-timer-box status-pending"
+                                style="display: none; background-color: #6c757d; color: #ffffff; border-color: #5a6268; margin-top: 0.5rem;">
+                                00:00.000
+                            </div>
+                            <div class="stat"><span>Pilotos en pista</span><span class="stat-value"
+                                    id="publicDriversCount">0</span></div>
+                            <div class="stat"><span>Lider actual</span><span class="stat-value"
+                                    id="publicLeaderName">--</span></div>
+                            <p style="font-size:0.72rem; color:#a4adbc; margin-top:1rem;">
+                                Esta vista es para el publico. No incluye botones de control ni acciones
+                                administrativas.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel TV / Broadcast -->
+        <div id="panel-tv" class="panel">
+
+            <div class="card universal-main-container">
+                <div class="tv-topline">
+                    <div class="tv-title" id="tvRaceTitle">Carrera en Espera</div>
+                    <div class="tv-meta">
+                        Estado: <strong id="tvRaceStatus">--</strong> |
+                        Cronometro: <strong id="tvRaceClock">00:00</strong> |
+                        <span id="tvTimeRemaining"
+                            style="display: none; background-color: #6c757d; color: #ffffff; border-color: #5a6268; border-radius: 6px; padding: 2px 10px; font-family: monospace; font-weight: 900; font-size: 0.85rem;">
+                            <span id="tvTimeRemainingValue">00:00.000</span>
+                        </span> |
+                        Hora: <strong id="tvClock">--:--:--</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tv-board">
+                <div class="card universal-main-container" style="height: fit-content;">
+                    <div class="card  universal-box">
+                        <div class="card-header universal-header">Clasificacion General</div>
+                        <div style="overflow-x: auto;">
+                            <table class="tv-table">
+                                <thead>
+                                    <tr>
+                                        <th>Pos</th>
+                                        <th>Piloto</th>
+                                        <th>Vtas</th>
+                                        <th>Total</th>
+                                        <th>Mejor</th>
+                                        <th>Vel.</th>
+                                        <th>Gap Líder</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tvLeaderboardBody">
+                                    <tr>
+                                        <td colspan="6" style="text-align:center;padding:2rem;">Esperando carrera...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="card universal-main-container" style="margin-bottom:0.9rem;">
+                        <div class="universal-box">
+                            <div class="tv-highlight" id="tvLeaderName">--</div>
+                            <div class="tv-sub" id="tvLeaderMeta">Lider actual</div>
+                            <div class="stat"><span>Pilotos activos</span><span class="stat-value"
+                                    id="tvDriversCount">0</span></div>
+                            <div class="stat"><span>Vueltas objetivo</span><span class="stat-value"
+                                    id="tvLapsLimit">--</span></div>
+                            <div class="stat"><span>Actualizacion</span><span class="stat-value"
+                                    id="tvRefreshTime">--</span></div>
+                        </div>
+                    </div>
+                    <div class="card universal-main-container">
+                        <div class="tv-laps-rotator universal-box" id="tvLapsRotator">
+                            <p class="muted-text">Esperando datos de vueltas...</p>
+                        </div>
+                        <p class="tv-note">Rotacion automatica de detalles por piloto para pantallas grandes.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+<!-- ============================================================ -->
+<!-- PANEL PILOTOS - NUEVO DISEÑO                                 -->
+<!-- ============================================================ -->
+<div id="panel-drivers" class="panel admin-only">
+    
+    <!-- ========================================================== -->
+    <!-- FILA 1: REGISTRAR PILOTO + LISTA DE PILOTOS               -->
+    <!-- ========================================================== -->
+    <div class="grid-2-drivers">
+        
+        <!-- COLUMNA IZQUIERDA: Registrar Piloto -->
+        <div class="card universal-main-container">
+            <div class="universal-box">
+                <div class="card-header universal-header">
+                    <img src="{{ url_for('static', filename='favicon.svg') }}" alt="Casco" style="width: 18px; height: 18px; vertical-align: middle;">
+                    REGISTRAR PILOTO
+                </div>
+                
+                <div class="card-body" style="padding: 0; gap: 0.6rem;">
+                    <!-- Foto centrada -->
+                    <div style="text-align:center; margin-bottom: 0.5rem;">
+                        <img id="driverPhotoPreview" src="/static/pilotcircle1.png"
+                             onclick="document.getElementById('driverPhotoFile').click()"
+                             style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #ffd700;cursor:pointer;display:block;margin:0 auto;"
+                             title="Clic para subir foto">
+                        <input type="file" id="driverPhotoFile" accept="image/*" style="display:none;">
+                        <span style="font-size:0.55rem;color:#888;">Clic para subir foto</span>
+                    </div>
+                    
+                    <!-- Campos del formulario -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem;">
+                        <div>
+                            <label style="font-size:0.65rem; color:#a4adbc;">Nombre <span style="color:#e5484d;">*</span></label>
+                            <input type="text" id="driverName" placeholder="Nombre" style="margin-top:0.1rem; font-size:0.8rem; padding:0.4rem;">
+                        </div>
+                        <div>
+                            <label style="font-size:0.65rem; color:#a4adbc;">Apellido</label>
+                            <input type="text" id="driverLastname" placeholder="Apellido" style="margin-top:0.1rem; font-size:0.8rem; padding:0.4rem;">
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 0.4rem;">
+                        <div>
+                            <label style="font-size:0.65rem; color:#a4adbc;">Carnet</label>
+                            <input type="text" id="driverCarnet" placeholder="Nro. de carnet (opcional)" style="margin-top:0.1rem; font-size:0.8rem; padding:0.4rem;">
+                        </div>
+                        <div>
+                            <label style="font-size:0.65rem; color:#a4adbc;">Transponder</label>
+                            <select id="driverTransponder" style="margin-top:0.1rem; font-size:0.8rem; padding:0.4rem;">
+                                <option value="">-- Ninguno --</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Botón para más campos -->
+                    <button type="button" id="toggleExtraFieldsBtn" 
+                            style="width:100%; padding:0.25rem; background:#2a2f3a; border:1px solid #3a3f4a; border-radius:6px; color:#a4adbc; cursor:pointer; font-size:0.65rem;">
+                        ▼ Más campos
+                    </button>
+                    
+                    <!-- Campos extra (ocultos) -->
+                    <div id="extraDriverFields" style="display:none; margin-top:0.3rem;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem;">
+                            <div>
+                                <label style="font-size:0.65rem; color:#a4adbc;">Email</label>
+                                <input type="email" id="driverEmail" placeholder="email@ejemplo.com" style="margin-top:0.1rem; font-size:0.8rem; padding:0.4rem;">
+                            </div>
+                            <div>
+                                <label style="font-size:0.65rem; color:#a4adbc;">Teléfono</label>
+                                <input type="text" id="driverPhone" placeholder="+591 77777777" style="margin-top:0.1rem; font-size:0.8rem; padding:0.4rem;">
+                            </div>
+                        </div>
+                        <div>
+                            <label style="font-size:0.65rem; color:#a4adbc;">Edad</label>
+                            <input type="number" id="driverAge" placeholder="Edad" min="5" max="99" style="margin-top:0.1rem; font-size:0.8rem; padding:0.4rem;">
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" id="saveDriverBtn" style="width:100%; padding:0.5rem; font-size:0.85rem;">
+                        💾 GUARDAR PILOTO
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- COLUMNA DERECHA: Lista de Pilotos -->
+        <div class="card universal-main-container">
+            <div class="universal-box">
+                <div class="card-header universal-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>📋 LISTA DE PILOTOS</span>
+                    <button id="refreshAllPilotsBtn" class="btn btn-sm" style="background: #2196f3; padding: 0.2rem 0.6rem;">
+                        🔄
+                    </button>
+                </div>
+                
+                <div class="card-body" style="padding: 0; gap: 0.5rem;">
+                    <!-- Buscador -->
+                    <input type="text" id="driverSearchInput" 
+                           placeholder="🔍 Buscar por nombre, email, carnet, teléfono..."
+                           style="width:100%; padding:0.4rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:6px; color:white; font-size:0.8rem;">
+                    
+                    <!-- Tabla de pilotos -->
+                    <div style="overflow-x: auto; max-height: 280px; overflow-y: auto;">
+                        <table style="font-size:0.75rem;">
+                            <thead>
+                                <tr>
+                                    <th style="padding: 0.3rem;">Foto</th>
+                                    <th style="padding: 0.3rem;">Nombre</th>
+                                    <th style="padding: 0.3rem;">Kart</th>
+                                    <th style="padding: 0.3rem;">Transp.</th>
+                                    <th style="padding: 0.3rem;">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="driversList">
+                                <tr><td colspan="5" style="text-align:center;padding:1rem;">Cargando pilotos...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Botones de acción -->
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button class="btn btn-sm" id="clearTranspondersBtn" style="background:#e5484d; font-size:0.7rem; padding:0.3rem 0.6rem;">
+                            🗑️ Desvincular transponders
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ========================================================== -->
+    <!-- FILA 2: INSCRIBIR A CARRERA + PILOTOS INSCRITOS           -->
+    <!-- ========================================================== -->
+    <div class="grid-2-drivers" style="margin-top: 1.2rem;">
+        
+        <!-- COLUMNA IZQUIERDA: Inscribir a Carrera -->
+        <div class="card universal-main-container">
+            <div class="universal-box">
+                <div class="card-header universal-header">
+                    🏁 INSCRIBIR A CARRERA
+                </div>
+                
+                <div class="card-body" style="padding: 0; gap: 0.5rem;">
+                    <!-- Información de la carrera -->
+                    <div class="race-context" style="padding: 0.4rem 0.6rem; font-size:0.75rem;">
+                        <div>Carrera: <strong id="raceNameForEnrollment" style="color:#2196f3;">--</strong></div>
+                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.2rem;">
+                            <span style="background:#ff980020; color:#ff9800; padding:0.1rem 0.5rem; border-radius:8px; font-size:0.65rem; font-weight:bold;" id="raceModeForEnrollment">--</span>
+                            <span id="raceDescForEnrollment" style="font-size:0.6rem; color:#a4adbc;">--</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Buscador de pilotos para inscribir -->
+                    <input type="text" id="enrollmentSearch" 
+                           placeholder="🔍 Buscar piloto para inscribir..."
+                           style="width:100%; padding:0.4rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:6px; color:white; font-size:0.8rem;">
+                    
+                    <!-- Checkboxes de pilotos -->
+                    <div id="enrollmentCheckboxList" 
+                         style="max-height: 180px; overflow-y: auto; background:#0f1117; border:1px solid #2a2f3a; border-radius:6px; padding:0.3rem;">
+                        <span style="font-size:0.65rem; color:#888;">Cargando pilotos...</span>
+                    </div>
+                    
+                    <!-- Botones -->
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button class="btn btn-primary" id="addDriverToRaceBtn" style="flex:1; padding:0.4rem; font-size:0.8rem;">
+                            ✅ INSCRIBIR SELECCIONADOS
+                        </button>
+                        <button id="refreshAllPilotsBtn2" class="btn btn-sm" style="background: #2196f3; padding: 0.3rem 0.8rem;">
+                            🔄
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- COLUMNA DERECHA: Pilotos Inscritos -->
+        <div class="card universal-main-container">
+            <div class="universal-box">
+                <div class="card-header universal-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>🏁 PILOTOS INSCRITOS <span id="inscritosCount" style="color:#ffd700; font-size:1.1rem;">0</span></span>
+                    <button id="unenrollAllBtn" class="btn btn-sm" style="background:#e5484d; padding:0.2rem 0.6rem; font-size:0.65rem;">
+                        🗑️ Desinscribir Todos
+                    </button>
+                </div>
+                
+                <div class="card-body" style="padding: 0;">
+                    <div style="overflow-x: auto; max-height: 200px; overflow-y: auto;">
+                        <table style="font-size:0.75rem;">
+                            <thead>
+                                <tr>
+                                    <th style="padding: 0.3rem; text-align:center;">#</th>
+                                    <th style="padding: 0.3rem;">Piloto</th>
+                                    <th style="padding: 0.3rem; text-align:center;">Kart</th>
+                                    <th style="padding: 0.3rem;">Transponder</th>
+                                    <th style="padding: 0.3rem;">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="raceDriversList">
+                                <tr><td colspan="5" style="text-align:center;padding:1rem;">Sin pilotos inscritos</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ========================================================== -->
+    <!-- FILA 3: KARTS EN PISTA (NUEVO)                            -->
+    <!-- ========================================================== -->
+    <div class="card universal-main-container" style="margin-top: 1.2rem;">
+        <div class="universal-box">
+            <div class="card-header universal-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>🏎️ KARTS EN PISTA</span>
+                <div style="display: flex; gap: 0.3rem;">
+                    <button id="refreshKartsBtnPilotos" class="btn btn-sm" style="background: #2196f3; padding: 0.2rem 0.6rem;">
+                        🔄
+                    </button>
+                    <button id="initKartsBtnPilotos" class="btn btn-sm" style="background: #ff9800; padding: 0.2rem 0.6rem; font-size:0.65rem;">
+                        🏗️ Inicializar
+                    </button>
+                    <button id="showAllKartsBtn" class="btn btn-sm" style="background: #2a2f3a; padding: 0.2rem 0.6rem; font-size:0.65rem;">
+                        📋 Ver todos
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Leyenda de estados -->
+            <div style="display: flex; gap: 1rem; font-size: 0.65rem; color: #a4adbc; flex-wrap: wrap; padding: 0.3rem 0;">
+                <span>🟢 <span style="color: #63d297;">Disponible</span></span>
+                <span>🟡 <span style="color: #f4c06b;">En Pista</span></span>
+                <span>🔴 <span style="color: #ef7a86;">Mantenimiento</span></span>
+                <span>📡 <span style="color: #ffd700;">Con transponder</span></span>
+            </div>
+            
+            <!-- Grid de karts -->
+            <div id="kartsGridPilotos" 
+                 style="display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 0.5rem; max-height: 250px; overflow-y: auto; padding: 0.3rem;">
+                <div style="grid-column: 1/-1; text-align: center; padding: 1rem; color: #888; font-size: 0.75rem;">
+                    Cargando karts...
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+<!-- FIN PANEL PILOTOS -->
+
+        
+
+        <!-- Panel Transponders -->
+        <div id="panel-transponders" class="panel admin-only">
+            <div class="card universal-main-container">
+                <div class="universal-grid">
+                    <div class="universal-box" style="width: 100%; height: fit-content;">
+                        <div class="card-header universal-header">Agregar Transponder Manualmente</div>
+
+                        <label for="newLapsLimit">Código de Transponder:</label>
+                        <input type="number" id="manualTransponderId" placeholder="Código"
+                            style="width:100%; margin-top:0.5rem;">
+                        <label for="newLapsLimit">Número de Kart:</label>
+                        <input type="text" id="manualTransponderKart" placeholder="Número de Kart (ej: 44)"
+                            style="width:100%; margin-top:0.5rem;">
+                        <label for="newLapsLimit">Descripción:</label>
+                        <input type="text" id="manualTransponderDesc"
+                            placeholder="Marca, Módelo, año etc...(ej: BMW, F1, 2023)"
+                            style="width:100%; margin-top:0.5rem;">
+                        <button class="btn btn-primary" id="addTransponderBtn"
+                            style="width:100%; margin-top:0.5rem;">Agregar</button>
+                        <button class="btn btn-secondary" id="cancelEditTransponderBtn"
+                            style="width:100%; margin-top:0.5rem; display:none;">Cancelar edición</button>
+
+                    </div>
+
+
+
+                    <div class="universal-box margintop1-5" style="width: 100%;">
+                        <div class="card-header universal-header">Deteción automatica de Transpoders</div>
+
+                        <div class="card-body">
+
+                            <div style="max-width: 100%; overflow-y: auto; max-height: 200px; margin-bottom: 0.5rem; ">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>KART</th>
+                                            <th>DESCRIPCIÓN</th>
+                                            <th>Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="detectedTranspondersList"></tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                        <button class="btn btn-sm" id="refreshTranspondersBtn"
+                            style="width:fit-content; padding: 0.6rem; background: #2196f3; display: flex; align-items: center; gap: 8px;">
+                            <img src="{{ url_for('static', filename='refresh2.svg') }}" alt="Resetear vistas"
+                                class="admin-only" title="Resetear vistas"
+                                style="width: 15px; height: 15px; cursor: pointer;"> Refrescar
+                            Detección</button>
+
+                        <!-- ===== TOGGLE DE ESCUCHA CONTINUA DEL DECODER ===== -->
+                        <div id="decoderListenControl" style="margin-top:0.9rem; padding-top:0.9rem; border-top:1px solid #2a2f3a;">
+                            <button class="btn btn-sm" id="decoderListenToggle"
+                                style="width:100%; padding:0.6rem; font-size:0.75rem; display:flex; align-items:center; justify-content:center; gap:0.4rem;">
+                                ⏸️ Desactivar escucha
+                            </button>
+                            <p style="margin:0.45rem 0 0 0; font-size:0.68rem; color:#8b93a7; line-height:1.4;">
+                                <strong>Escucha continua:</strong> cuando no hay carrera activa podés apagarla para que el decoder
+                                no llene el buffer. <em>Durante una carrera la escucha es obligatoria y el botón se oculta.</em>
+                            </p>
+                            <p id="decoderListenStatus" style="margin:0.3rem 0 0 0; font-size:0.68rem; color:#7ee08a;">
+                                🟢 Escucha activa
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <!-- end of grid -->
+                <div class="universal-box margintop1-5"
+                    style="max-height: 400px; overflow-y: auto; height: fit-content;">
+                    <div class="card-header universal-header"
+                        style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Todos los Transponders</span>
+                        <button id="refreshAllTranspondersBtn" class="btn btn-sm"
+                            style="background: #2196f3; padding: 0.2rem 0.8rem;">
+                            <img src="{{ url_for('static', filename='refresh2.svg') }}"
+                                style="width: 14px; height: 14px; vertical-align: middle;"> Refrescar
+                        </button>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>KART</th>
+                                    <th>DESCRIPCIÓN</th>
+                                    <th>Asignado a</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allTranspondersList"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!-- end of grid -->
+        </div>
+
+
+        <!-- Panel Configuración de Carrera -->
+        <div id="panel-race-setup" class="panel admin-only">
+            <div class="grid-2">
+
+                <div class="card universal-main-container">
+
+                    <!-- Contenedor Grid Principal: Separa la tarjeta en 2 Grandes Columnas (Izquierda y Derecha) -->
+                    <div class="new-race-container-grid" ;>
+
+                        <!-- ================= COLUMNA IZQUIERDA: CREAR CARRERA ================= -->
+                        <div class="universal-box">
+
+                            <div class="card-header universal-header">
+                                CREAR NUEVA CARRERA / CIRCUITO
+                            </div>
+
+                            <div class="card-body">
+                                <div>
+                                    <label for="newCircuitName" style="display:block; margin-bottom:0.5rem;">🏆
+                                        Título de evento carrera/circuito:</label>
+                                    <input type="text" id="newCircuitName" placeholder="Nombre del Circuito"
+                                        style="width:100%; padding:0.7rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white;">
+                                </div>
+
+                                <div style="display: flex; gap: 1rem;">
+                                    <div style="flex: 2;">
+                                        <label for="newRaceMode" style="display:block; margin-bottom:0.5rem;">Modo
+                                            de
+                                            Carrera:</label>
+                                        <select id="newRaceMode" onchange="toggleTimeLimitInput()"
+                                            style="width:100%; padding:0.7rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white;">
+                                            <option value="position">🏎️ CARRERA (primero en terminar)</option>
+                                            <option value="time_attack">⏱️ TIME ATTACK (menor tiempo total,
+                                                obligatorio completar vueltas)</option>
+                                            <option value="classification">🏁 CLASIFICACIÓN (mejor vuelta con tiempo
+                                                límite)
+                                            </option>
+                                            <option value="qualifying_laps">🏁 CLASIFICACIÓN POR VUELTAS (mejor tiempo, límite de vueltas, vuelta de salida)</option>
+                                            <option value="endurance">🏆 ENDURANCE (más vueltas en tiempo límite)
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <!-- ✅ CONTENEDOR DE VUELTAS (con ID) -->
+                                    <div id="lapsLimitContainer" style="flex: 1;">
+                                        <label for="newLapsLimit"
+                                            style="display:block; margin-bottom:0.5rem;">Vueltas:</label>
+                                        <input type="number" id="newLapsLimit" value="7" placeholder="Vueltas"
+                                            style="width:100%; padding:0.7rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white; text-align: center;">
+                                    </div>
+                                </div>
+
+
+                                <!-- ✅ TIME LIMIT / ENDURANCE / CLASSIFICATION CONTAINER -->
+                                <div id="timeLimitContainer" style="display:none; margin-top: 0.5rem;">
+                                    <label for="timeLimitMinutes"
+                                        style="display:block; margin-bottom:0.3rem; font-size:0.8rem;">⏱️ Duración
+                                        (minutos):</label>
+                                    <input type="number" id="timeLimitMinutes" min="1" max="60" value="5"
+                                        style="width:100%; padding:0.6rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white; text-align: center;">
+                                    <p style="font-size:0.65rem; color:#888; margin-top:0.3rem;">La carrera
+                                        terminará
+                                        automáticamente al cumplirse este tiempo</p>
+                                </div>
+
+                                <!-- ✅ ENDURANCE CONTAINER -->
+                                <div id="enduranceContainer" style="display:none; margin-top: 0.5rem;">
+                                    <label for="enduranceMinutes"
+                                        style="display:block; margin-bottom:0.3rem; font-size:0.8rem;">⏱️ Duración
+                                        (minutos):</label>
+                                    <input type="number" id="enduranceMinutes" min="3" max="30" value="10"
+                                        style="width:100%; padding:0.6rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white; text-align: center;">
+                                    <p style="font-size:0.65rem; color:#888; margin-top:0.3rem;">La carrera
+                                        terminará
+                                        automáticamente al cumplirse este tiempo</p>
+                                </div>
+
+                                <div style="margin-top: auto; padding-top: 1rem; display:flex; gap:0.5rem;">
+                                    <button class="btn btn-primary" id="createNewRaceBtn"
+                                        style="flex:2; padding: 0.8rem; font-weight: bold;">
+                                        CREAR NUEVA CARRERA
+                                    </button>
+                                    <button class="btn" id="editRaceBtn"
+                                        style="flex:1; padding: 0.8rem; font-weight: bold; background:#2a2f3a;"
+                                        title="Editar la carrera actual (solo si aún no se inició)">
+                                        ✏️ EDITAR
+                                    </button>
+                                </div>
+                                <div style="margin-top: 0.5rem;">
+                                    <button class="btn" id="cancelEditRaceBtn"
+                                        style="display:none; width:100%; padding: 0.5rem; background:#e5484d; font-size:0.75rem;">
+                                        CANCELAR EDICIÓN
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- ================= COLUMNA DERECHA: CONFIGURACIÓN DE PISTA ================= -->
+                        <div class="universal-box margintop1-5">
+                            <div class="card-header universal-header">
+                                <span>CONFIGURACIÓN DE PISTA</span>
+                                <span class="badge" id="trackConfigStatus"></span>
+                            </div>
+
+                            <div class="card-body"
+                                style="padding: 0; display: flex; flex-direction: column; gap: 1rem;">
+
+                                <div>
+                                    <label style="display:block; margin-bottom:0.5rem;">Tipo de pista</label>
+                                    <select id="trackTypeSelect"
+                                        style="width:100%; padding:0.8rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white;">
+                                        <option value="karting">🏎️ Karting - Pista cerrada</option>
+                                        <option value="motocross">🏍️ Motocross - Tierra, saltos</option>
+                                        <option value="moto_rally">🏁 Moto Rally - Mixto</option>
+                                        <option value="autodromo">🏎️ Autódromo - Alta velocidad</option>
+                                        <option value="enduro">🌲 Enduro - Terreno variado</option>
+                                        <option value="circuito_callejero">🏙️ Circuito Callejero</option>
+                                        <option value="custom">📏 Personalizado - Otro tipo</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label style="display:block; margin-bottom:0.3rem;">Largo de pista
+                                        (kilómetros)</label>
+                                    <div style="display: flex; gap: 1rem; align-items: center;">
+                                        <input type="range" id="trackLengthSlider" min="0" max="50" step="0.1"
+                                            value="0.33" style="flex:1;">
+                                        <input type="number" id="trackLengthValue" value="0.33" step="0.1"
+                                            style="width: 75px; text-align: center; background:#0f1117; border:1px solid #2a2f3a; color:white; border-radius:6px; padding: 0.5rem;">
+                                        <span style="font-size:0.8rem;">km</span>
+                                    </div>
+                                    <p class="hint" id="trackLengthHint" style="font-size: 0.75rem; color: #666;">
+                                        Karting: 1.2km | MotoGP: 4.5km</p>
+                                </div>
+
+                                <div style="margin-top: 0.1rem; display: flex; width: 50%;">
+                                    <button class="btn" id="saveTrackConfigBtn"
+                                        style="flex:1;max-width: 100%; padding:0.8rem; background:#3b82f6; color:white; cursor:pointer;">
+                                        GUARDAR CONFIGURACIÓN
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="universal-box margintop1-5">
+                            <div class="card-header"
+                                style="padding: 0 0 1rem 0; border-bottom: 1px solid #2a2f3a; background: transparent; font-weight: bold;">
+                                Configuración de Cuenta Regresiva para Salida
+                            </div>
+                            <div class="card-body">
+                                <p style="font-size:0.75rem; color:#888; margin-bottom:1rem;">
+                                    Ajusta la duración y el ritmo de la cuenta regresiva antes de iniciar la
+                                    carrera.
+                                </p>
+
+                                <!-- Duración total -->
+                                <div class="config-row">
+                                    <label>⏰ Duración total <strong
+                                            style="font-size:0.7rem; color: whitesmoke;">(segundos)</strong></label>
+                                    <div style="display: flex; gap: 1rem; align-items: center;">
+                                        <input type="range" id="countdownDurationSlider" min="3" max="20" step="1"
+                                            value="10" style="flex:1;">
+                                        <input type="number" id="countdownDuration" value="10" min="3" max="20" step="1"
+                                            style="width: 70px; text-align: center;">
+
+                                    </div>
+                                    <p class="hint">Tiempo total desde que se presiona "Iniciar" hasta que arranca
+                                        la
+                                        carrera</p>
+                                </div>
+
+                                <!-- Velocidad de descuento -->
+                                <div class="config-row" style="margin-top: 1rem;">
+                                    <label>⚡ Ritmo del conteo</label>
+                                    <div style="display: flex; gap: 1rem; align-items: center;">
+                                        <span style="font-size:0.7rem;">Lento</span>
+                                        <input type="range" id="countdownSpeedSlider" min="0.3" max="2" step="0.05"
+                                            value="1" style="flex:1;">
+                                        <span style="font-size:0.7rem;">Rápido</span>
+                                    </div>
+                                    <p class="hint" id="speedHint">Cada número se mostrará durante 1.0 segundo</p>
+                                </div>
+
+                                <button class="btn" id="saveCountdownConfigBtn"
+                                    style="flex:1; width: 60%; padding:0.8rem; background:#3b82f6; color:white; cursor:pointer;">
+                                    GUARDAR CONFIGURACIÓN</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <!-- Card: Configuración de Fuente de Tiempo -->
+                <div class="card universal-main-container" style="padding: 1.5rem; height: fit-content;">
+                    <div class="universal-box">
+                        <div class="card-header"
+                            style="padding: 0 0 1rem 0; border-bottom: 1px solid #2a2f3a; background: transparent; font-weight: bold;">
+                            CONFIGURACIÓN DE CRONOMETRAJE
+                            <span class="badge" id="timingConfigStatus" style="margin-left: 1rem;"></span>
+                        </div>
+
+                        <div class="card-body">
+                            <p style="font-size:0.75rem; color:#888; margin-bottom:1rem;">
+                                Selecciona la fuente de tiempo para calcular vueltas y tiempos totales.
+                            </p>
+
+                            <div class="config-row" style="max-width: 100%; overflow: hidden;">
+                                <label style="display: block; margin-bottom: 5px;">📡 Fuente de tiempo</label>
+                                <select id="timeSourceSelect"
+                                    style="width: 100%; margin-bottom: 0.5rem; padding: 8px; border-radius: 4px;">
+                                    <option value="server">🖥️ Servidor (Recomendado)</option>
+                                    <option value="decoder">🔧 Decoder ESL-400</option>
+                                </select>
+                                <p class="hint" id="timeSourceHint"
+                                    style="font-size: 0.85rem; color: #666; line-height: 1.2;">
+                                    <strong>Servidor:</strong> Filtra señales fantasmas y ofrece máxima precisión.
+                                </p>
+                            </div>
+
+                            <div class="config-row" id="minLapTimeRow" style="margin-top: 1rem;">
+                                <label>🛡️ Tiempo mínimo por vuelta (segundos) - SOLO para modo Servidor</label>
+                                <div style="display: flex; gap: 1rem; align-items: center;">
+                                    <input type="range" id="minLapTimeSlider" min="2" max="15" step="0.5" value="5.0"
+                                        style="flex:1;">
+                                    <input type="number" id="minLapTimeValue" value="5.0" step="0.5"
+                                        style="width: 70px; text-align: center;">
+                                </div>
+                                <p class="hint">Vuelta más rápida que este valor será ignorada (evita señales
+                                    fantasmas)
+                                </p>
+                            </div>
+
+                            <button class="btn" id="saveTimingConfigBtn"
+                                style="flex:1;max-width: 100%; padding:0.8rem; background:#3b82f6; color:white; cursor:pointer;">
+                                GUARDAR CONFIGURACIÓN</button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Panel Historial de Carreras -->
+        <div id="panel-history" class="panel admin-only">
+            <div class="card universal-main-container">
+                <div class="universal-box">
+                    <div class="card-header universal-header">
+                        <span>🏁 HISTORIAL DE PILOTOS</span>
+                        <button id="refreshHistoryBtn" class="btn"
+                            style="background: #2196f3; float: right; display: flex; align-items: center; gap: 6px;">
+                            <img src="{{ url_for('static', filename='refresh2.svg') }}"
+                                style="width: 14px; height: 14px;">
+                            Refrescar
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <!-- Buscador de Pilotos -->
+                        <div style="margin-bottom: 1rem;">
+                            <label style="font-size:0.7rem; color:#888; display:block; margin-bottom:0.3rem;">🔍 Buscar
+                                piloto por nombre o ID:</label>
+                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                <input type="text" id="historyPilotSearch" placeholder="Ej: Juan Pérez o ID 5..."
+                                    style="flex: 1; min-width: 200px; padding: 0.7rem; background: #0f1117; border: 1px solid #2a2f3a; border-radius: 8px; color: white;">
+                                <button id="historyPilotSearchBtn" class="btn"
+                                    style="background: #2196f3; padding: 0 1.5rem;">Buscar</button>
+                                <button id="historyPilotClearBtn" class="btn"
+                                    style="background: #e5484d; padding: 0 1.5rem;">Limpiar</button>
+                            </div>
+                        </div>
+
+                        <!-- Contador de resultados -->
+                        <div
+                            style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                            <span id="historyPilotCount" style="color:#ffd700; font-weight:bold;">0 pilotos
+                                encontrados</span>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <label style="font-size:0.7rem; color:#888;">Mostrar:</label>
+                                <select id="historyPilotPageSize"
+                                    style="width: 60px; padding: 0.3rem; background: #0f1117; border: 1px solid #2a2f3a; border-radius: 6px; color: white; font-size: 0.7rem;">
+                                    <option value="6">6</option>
+                                    <option value="12" selected>12</option>
+                                    <option value="24">24</option>
+                                    <option value="48">48</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Contenedor de pilotos (Grid de tarjetas) -->
+                        <div id="historyPilotGrid"
+                            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; max-height: 500px; overflow-y: auto; padding: 0.5rem;">
+                            <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: #888;">
+                                🔍 Busca un piloto para ver su historial
+                            </div>
+                        </div>
+
+                        <!-- Paginación -->
+                        <div id="historyPilotPagination"
+                            style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap;">
+                            <!-- Se genera desde JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal de Detalle de Piloto -->
+            <div id="pilotDetailModal"
+                style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:5000; align-items:center; justify-content:center; overflow-y:auto; padding: 2rem;">
+                <div
+                    style="background: #1a1e26; border-radius:16px; width:100%; max-width: 900px; margin: auto; overflow: hidden; border: 1px solid #2a2f3a;">
+                    <!-- Header -->
+                    <div
+                        style="padding:1.2rem 1.5rem; border-bottom:1px solid #2a2f3a; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <img id="pilotDetailPhoto" src="/static/default-avatar.png"
+                                style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+                            <div>
+                                <h3 id="pilotDetailName" style="margin:0; font-size:1.2rem; color:#ffd700;">--</h3>
+                                <p id="pilotDetailMeta" style="margin:0.2rem 0 0; font-size:0.7rem; color:#888;">ID: --
+                                    | Transponder: --</p>
+                            </div>
+                        </div>
+                        <button id="closePilotDetailBtn"
+                            style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">✕</button>
+                    </div>
+
+                    <!-- Estadísticas del piloto -->
+                    <div
+                        style="padding:1rem 1.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.5rem; background: #0f1117;">
+                        <div style="text-align: center;"><span style="color:#888; font-size:0.7rem;">🏁
+                                Carreras</span><br><strong id="pilotDetailRaces" style="color:#ffd700;">0</strong></div>
+                        <div style="text-align: center;"><span style="color:#888; font-size:0.7rem;">🏆
+                                Victorias</span><br><strong id="pilotDetailWins" style="color:#ffd700;">0</strong></div>
+                        <div style="text-align: center;"><span style="color:#888; font-size:0.7rem;">🥇 Mejor
+                                Posición</span><br><strong id="pilotDetailBestPos" style="color:#ffd700;">--</strong>
+                        </div>
+                        <div style="text-align: center;"><span style="color:#888; font-size:0.7rem;">⚡ Mejor
+                                Vuelta</span><br><strong id="pilotDetailBestLap" style="color:#ffd700;">--</strong>
+                        </div>
+                    </div>
+
+                    <!-- Lista de carreras del piloto -->
+                    <div style="padding:1.5rem; max-height: 400px; overflow-y: auto;">
+                        <h4 style="margin-bottom: 1rem; color: #a4adbc;">📊 CARRERAS DISPUTADAS</h4>
+                        <div id="pilotDetailRacesList">
+                            <div style="text-align: center; padding: 2rem; color: #888;">Cargando carreras...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Detalle de Carrera -->
+        <div id="raceDetailModal"
+            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:5000; align-items:center; justify-content:center; overflow-y: auto; padding: 2rem;">
+            <div
+                style="background: #1a1e26; border-radius:16px; width:100%; max-width: 900px; margin: auto; overflow: hidden;">
+
+                <div
+                    style="padding:1.2rem 1.5rem; border-bottom:1px solid #2a2f3a; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h3 id="detailRaceName" style="margin:0; font-size:1.2rem; color:#ffd700;">--</h3>
+                        <p id="detailRaceMeta" style="margin:0.3rem 0 0; font-size:0.7rem; color:#888;">--</p>
+                    </div>
+                    <button id="closeDetailModalBtn"
+                        style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">✕</button>
+                </div>
+
+
+
+                <div style="padding:1.5rem;">
+                    <!-- Resumen de la carrera -->
+                    <div
+                        style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; background: #0f1117; padding: 1rem; border-radius: 12px;">
+                        <div><span style="color:#888;">📅 Fecha:</span> <strong id="detailDate">--</strong></div>
+                        <div><span style="color:#888;">🏁 Vueltas:</span> <strong id="detailLaps">--</strong></div>
+                        <div><span style="color:#888;">🎯 Modo:</span> <strong id="detailMode">--</strong></div>
+                        <div><span style="color:#888;">⏱️ Duración:</span> <strong id="detailDuration">--</strong>
+                        </div>
+                        <div><span style="color:#888;">🏆 Ganador:</span> <strong id="detailWinner"
+                                style="color:#ffd700;">--</strong></div>
+                        <div><span style="color:#888;">⏱️ Tiempo ganador:</span> <strong
+                                id="detailWinnerTime">--</strong></div>
+                    </div>
+
+                    <!-- Tabla de pilotos -->
+                    <div style="margin-bottom: 1rem;">
+                        <h4 style="margin-bottom: 0.5rem;">🏎️ CLASIFICACIÓN FINAL</h4>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: #0f1117;">
+                                        <th style="padding: 0.5rem;">Pos</th>
+                                        <th style="padding: 0.5rem;">Piloto</th>
+                                        <th style="padding: 0.5rem;">Kart</th>
+                                        <th style="padding: 0.5rem;">Vueltas</th>
+                                        <th style="padding: 0.5rem;">Tiempo Total</th>
+                                        <th style="padding: 0.5rem;">Mejor Vuelta</th>
+                                        <th style="padding: 0.5rem;">Vel. Media</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="detailLeaderboardBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Detalle de vueltas por piloto (acordeón) -->
+                    <div>
+                        <h4 style="margin-bottom: 0.5rem;">📊 DETALLE DE VUELTAS</h4>
+                        <div id="detailLapsAccordion"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Panel Sistema -->
+        <div id="panel-system" class="panel admin-only">
+
+            <!-- ===== CARD ESTADO DE CONEXIÓN (online / offline) ===== -->
+            <div class="card" id="connectivityCard"
+                style="margin-bottom: 1.2rem; border-left: 4px solid #3b82f6;">
+                <div class="card-header universal-header compact-header">
+                    <span class="compact-header-title">📶 ESTADO DE CONEXIÓN DEL SISTEMA</span>
+                    <span class="badge" id="connectivityModeBadge"
+                        style="background:#2a2f3a; color:#9aa3b5; padding:0.2rem 0.8rem; border-radius:20px; font-size:0.7rem; font-weight:600;">Comprobando...</span>
+                </div>
+                <div class="card-body" style="padding: 0.9rem 1.1rem;">
+                    <div style="display:flex; align-items:center; gap:0.9rem; flex-wrap:wrap;">
+                        <div style="display:flex; align-items:center; gap:0.6rem;">
+                            <span id="connectivityDot"
+                                style="width:14px; height:14px; border-radius:50%; background:#e5484d; display:inline-block; box-shadow:0 0 0 4px rgba(229,72,77,0.15);"></span>
+                            <span style="font-size:0.85rem; color:#e4e4e4; font-weight:600;">Servidor Core</span>
+                            <span id="connectivityServer" style="font-size:0.8rem; color:#8892b0;">—</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:0.6rem;">
+                            <span id="connectivityPgDot"
+                                style="width:14px; height:14px; border-radius:50%; background:#e5484d; display:inline-block; box-shadow:0 0 0 4px rgba(229,72,77,0.15);"></span>
+                            <span style="font-size:0.85rem; color:#e4e4e4; font-weight:600;">PostgreSQL</span>
+                            <span id="connectivityPg" style="font-size:0.8rem; color:#8892b0;">—</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:0.6rem; margin-left:auto;">
+                            <span id="connectivityLastCheck" style="font-size:0.7rem; color:#64748b;"></span>
+                            <button class="btn btn-sm" id="refreshConnectivityBtn"
+                                style="background:#2196f3; color:#fff; padding:0.25rem 0.7rem; font-size:0.7rem;">🔄 Actualizar</button>
+                        </div>
+                    </div>
+                    <p id="connectivityMessage" style="margin:0.7rem 0 0 0; font-size:0.78rem; color:#8b93a7; line-height:1.45;">
+                        Comprobando conexión con PostgreSQL...
+                    </p>
+                    <div style="display:flex; align-items:center; gap:0.8rem; flex-wrap:wrap; margin-top:0.9rem; padding-top:0.9rem; border-top:1px solid #2a2f3a;">
+                        <span style="font-size:0.82rem; color:#e4e4e4; font-weight:600;">🗄️ Fuente de datos del módulo</span>
+                        <select id="dataSourceSelect"
+                            style="padding:0.35rem 0.6rem; background:#1a1e26; border:1px solid #2a2f3a; border-radius:6px; color:#fff; font-size:0.8rem;">
+                            <option value="local">Local (SQLite)</option>
+                            <option value="postgres">PostgreSQL centralizada</option>
+                        </select>
+                        <span id="dataSourceHint" style="font-size:0.72rem; color:#64748b;"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+
+                <!-- ===== COLUMNA DERECHA: Configuración de Ventanas de Resultados ===== -->
+                <div class="card universal-main-container">
+                    <div class="universal-box">
+
+                        <div class="card-header universal-header compact-header">
+                            <span class="compact-header-title">🏆 CONFIGURACIÓN DE VENTANAS DE RESULTADOS</span>
+                            <span class="badge" id="winnerConfigStatus"
+                                style="background: #2a2f3a; color: #888; padding: 0.2rem 0.8rem; border-radius: 20px; font-size: 0.65rem;">Listo</span>
+                        </div>
+
+                        <div class="card-body" style="padding: 0;">
+                            <p class="compact-description"
+                                style="font-size:0.75rem; color:#8892b0; margin-bottom:1.2rem; line-height:1.4;">
+                                Controla cómo y cuándo se muestran las ventanas de ganadores y clasificación al
+                                finalizar una carrera.
+                            </p>
+
+                            <!-- Mostrar automáticamente -->
+                            <div class="config-row compact-config-row"
+                                style="margin-bottom:1rem; background:#0f1117; padding:0.8rem; border-radius:6px; border:1px solid #2a2f3a;">
+                                <div class="row-flex"
+                                    style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+                                    <div class="label-group" style="display:flex; align-items:center; gap:0.8rem;">
+                                        <span class="row-label"
+                                            style="font-size:0.82rem; color:#e4e4e4; font-weight:500;">Mostrar
+                                            automáticamente</span>
+                                        <label class="switch"
+                                            style="width:42px; height:22px; display:inline-block; position:relative;">
+                                            <input type="checkbox" id="winnerAutoShowToggle" checked>
+                                            <span class="slider round"
+                                                style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#3b82f6; transition:.4s; border-radius:22px;"></span>
+                                        </label>
+                                    </div>
+                                    <span id="winnerAutoShowStatus"
+                                        style="font-size:0.72rem; font-weight:500; color:#34d399;">Activado</span>
+                                </div>
+                                <p class="hint"
+                                    style="font-size:0.68rem; color:#64748b; margin-top:0.4rem; margin-bottom:0;">Si
+                                    está desactivado, solo se mostrará al presionar el botón "Mostrar Ganadores"</p>
+                            </div>
+
+                            <!-- Límite de veces -->
+                            <div class="config-row compact-config-row"
+                                style="margin-bottom:1rem; background:#0f1117; padding:0.8rem; border-radius:6px; border:1px solid #2a2f3a;">
+                                <label class="row-label-block"
+                                    style="font-size:0.82rem; color:#e4e4e4; font-weight:500; display:block; margin-bottom:0.5rem;">Límite
+                                    de veces por sesión</label>
+                                <div class="inputs-group"
+                                    style="display:flex; gap:0.8rem; align-items:center; flex-wrap:wrap;">
+                                    <input type="range" id="winnerShowLimitSlider" min="0" max="999" step="1" value="1">
+                                    <input type="number" id="winnerShowLimitValue" value="1" min="0" max="999">
+                                        style="width:55px; text-align:center; padding:0.25rem; background:#1a1e26; border:1px solid #2a2f3a; border-radius:4px; color:#ffffff; font-size:0.8rem; font-weight:600; outline:none;">
+                                </div>
+                                <p class="hint"
+                                    style="font-size:0.68rem; color:#64748b; margin-top:0.4rem; margin-bottom:0;">Se
+                                    mostrará 1 vez por sesión</p>
+                            </div>
+
+                            <!-- Tiempo de visualización -->
+                            <div class="config-row compact-config-row"
+                                style="margin-bottom:1rem; background:#0f1117; padding:0.8rem; border-radius:6px; border:1px solid #2a2f3a;">
+                                <label class="row-label-block"
+                                    style="font-size:0.82rem; color:#e4e4e4; font-weight:500; display:block; margin-bottom:0.5rem;">Tiempo
+                                    de visualización</label>
+                                <div class="inputs-group"
+                                    style="display:flex; gap:0.8rem; align-items:center; flex-wrap:wrap;">
+                                    <input type="range" id="winnerDisplayTimeSlider" min="5" max="60" step="1"
+                                        value="15"
+                                        style="flex:1; min-width:120px; -webkit-appearance:none; appearance:none; background:#2a2f3a; height:4px; border-radius:2px; outline:none;">
+                                    <div class="unit-group" style="display:flex; align-items:center; gap:0.4rem;">
+                                        <input type="number" id="winnerDisplayTimeValue" value="15" min="5" max="60"
+                                            style="width:55px; text-align:center; padding:0.25rem; background:#1a1e26; border:1px solid #2a2f3a; border-radius:4px; color:#ffffff; font-size:0.8rem; font-weight:600; outline:none;">
+                                        <span class="unit-text" style="font-size:0.72rem; color:#64748b;">seg</span>
+                                    </div>
+                                </div>
+                                <p class="hint"
+                                    style="font-size:0.68rem; color:#64748b; margin-top:0.4rem; margin-bottom:0;">Se
+                                    mostrará 15 segundos (normal)</p>
+                            </div>
+
+                            <!-- Vista previa -->
+                            <div class="compact-preview-box"
+                                style="display:flex; align-items:center; justify-content:space-between; gap:0.5rem; background:#141820; padding:0.6rem 0.8rem; border-radius:6px; margin-bottom:1.2rem; border:1px dashed #2a2f3a; flex-wrap:wrap;">
+                                <div class="preview-label-group" style="display:flex; align-items:center; gap:0.5rem;">
+                                    <span class="preview-title" style="font-size:0.72rem; color:#8892b0;">Vista
+                                        previa:</span>
+                                    <span class="preview-subtitle" style="font-size:0.65rem; color:#64748b;">(tiempo
+                                        activa)</span>
+                                </div>
+                                <div id="winnerPreviewTimer" class="preview-badge"
+                                    style="font-family:monospace; font-size:0.95rem; font-weight:600; color:#3b82f6; background:#0f1117; padding:0.15rem 0.6rem; border-radius:4px; border:1px solid #2a2f3a;">
+                                    15s</div>
+                            </div>
+                            <button class="btn" id="resetWinnerConfigBtn" style="background: #e5484d; color: white;">
+                                🔄 Restablecer valores predeterminados
+                            </button>
+
+                            <button class="btn btn-primary btn-save-sobrio" id="saveWinnerConfigBtn"
+                                style="width:100%; padding:0.65rem; background:#2a2f3a; border:1px solid #3e4657; border-radius:6px; color:#ffffff; font-weight:500; font-size:0.8rem; cursor:pointer; transition:all 0.2s ease-in-out;">
+                                💾 GUARDAR CONFIGURACIÓN
+                            </button>
+
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== COLUMNA IZQUIERDA: Configuración del Decoder ===== -->
+                <div id="decoderModeCard" class="card universal-main-container dev-only" style="display:none;">
+                    <div class="universal-box">
+                        <div class="card-header universal-header">
+                            🔧 CONFIGURACIÓN DEL DECODER ESL-400
+                        </br>
+                            <span class="badge" id="decoderModeStatus" style="margin-left: 1rem;"></span>
+                        </div>
+                        <div class="card-body">
+                            <p style="font-size:0.75rem; color:#888; margin-bottom: 1rem;">
+                                Selecciona el modo de operación del decoder ESL-400.
+                                <strong>Importante:</strong> Al cambiar el modo, el formato de los datos cambia.
+                            </p>
+
+                            <div class="config-row">
+                                <label style="display:block; margin-bottom:0.5rem;">📟 Modo del decoder</label>
+                                <select id="decoderModeSelect"
+                                    style="width:100%; padding:0.7rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white;">
+                                    <option value="chronit">🏁 CHRONIT - Modo estándar (actual)</option>
+                                    <option value="a120">⚡ A-120 - Modo avanzado</option>
+                                    <option value="a20">🔋 A-20 - Modo económico</option>
+                                    <option value="fr01">🏎️ FR-01 - Modo rally</option>
+                                </select>
+                                <p class="hint" id="decoderModeHint"
+                                    style="font-size:0.65rem; color:#666; margin-top:0.3rem;">
+                                    CHRONIT: Formato estándar con tiempo en HH:MM:SS.mmm
+                                </p>
+                            </div>
+
+                            <div class="config-row" style="margin-top:1rem;">
+                                <label style="font-size:0.75rem; color:#888; display:block; margin-bottom:0.3rem;">🔐
+                                    Información del protocolo</label>
+                                <input type="text" id="decoderProtocolInfo" readonly
+                                    style="width:100%; padding:0.5rem; background:#1a1e26; border:1px solid #2a2f3a; border-radius:8px; color:#aaa; font-family:monospace; font-size:0.75rem;">
+                            </div>
+
+                            <button class="btn btn-primary" id="saveDecoderModeBtn"
+                                style="width:100%; margin-top:1rem; background:#3b82f6;">
+                                💾 APLICAR MODO
+                            </button>
+
+                            <div id="decoderModeWarning"
+                                style="margin-top:1rem; padding:0.5rem; background:#e5484d20; border-left:3px solid #e5484d; border-radius:4px; display:none; font-size:0.75rem; color:#e5484d;">
+                                ⚠️ Al cambiar el modo, el sistema interpretará los datos del decoder en el nuevo
+                                formato.
+                            </div>
+                        </div>
+                    </div>
+                <div class="universal-box margintop1-5">
+                    <div class="card-header universal-header">
+                            🔧 CONFIGURACIÓN DE PRIORIDAD DE LECTURA SERIAL RAW Y FILTROS DE SEÑAL
+                              <span class="badge" id="decoderModeStatus" style="margin-left: 1rem;"></span>
+                        </div>
+
+                  
+            <div class="config-row" style=" padding-top: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label style="font-size:0.7rem; color:#aaa;"><span style="font-weight: bold; color:#fffb00;">Tiempo Máximo Recomendado 5 segundos</span> ⏱️ Tiempo de refresco del caché (segundos) </label>
+                    
+                    <span id="cacheConfigStatus" style="font-size:0.7rem; color:#34d399; font-weight:bold;">✅ 5s</span>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <input type="range" id="cacheRefreshSlider" min="1" max="30" step="1" value="5" style="flex:1; -webkit-appearance: none; appearance: none; background: #2a2f3a; height: 4px; border-radius: 2px; outline: none;">
+                    <input type="number" id="cacheRefreshValue" value="5" min="1" max="30" style="width: 70px; text-align: center; background:#0f1117; border:1px solid #2a2f3a; border-radius:6px; color:white; padding:0.3rem; font-size:0.9rem; font-weight:bold;">
+                    <span style="font-size:0.8rem; color:#888;">seg</span>
+                </div>
+                <p class="hint" style="font-size:0.65rem; color:#888; margin-top:0.3rem;">
+                    ⚡ Tiempo entre actualizaciones de configuración. 
+                    <strong style="color:#ffd700;">1-2s</strong> = máxima sensibilidad (más consultas BD) | 
+                    <strong style="color:#ffd700;">5s</strong> = balance ideal | 
+                    <strong style="color:#ffd700;">10-30s</strong> = máximo rendimiento
+                </p>
+                <button class="btn btn-primary" id="saveCacheConfigBtn" style="width:100%; margin-top:0.5rem; background:#3b82f6; padding:0.7rem; border-radius:8px; font-weight:600;">
+                    💾 GUARDAR CONFIGURACIÓN DE CACHÉ
+                </button>
+            </div>
+
+                </div>
+
+
+                </div>
+
+                <!-- ============================================================ -->
+                <!-- CONFIGURACIÓN DE COLUMNAS DEL TABLERO -->
+                <!-- ============================================================ -->
+                <div class="card universal-main-container dev-only" id="columnsConfigCard" style="display:none;">
+                    <div class="universal-box">
+                        <div class="card-header universal-header"
+                            style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>📊 CONFIGURACIÓN DE COLUMNAS DEL TABLERO</span>
+                            <span class="badge" id="columnsConfigStatus"
+                                style="background: #2a2f3a; color: #888; padding: 0.2rem 0.8rem; border-radius: 20px; font-size: 0.65rem;">Listo</span>
+                        </div>
+                        <div class="card-body">
+                            <p style="font-size:0.75rem; color:#8892b0; margin-bottom:1.2rem; line-height:1.4;">
+                                Selecciona qué columnas quieres ver en el tablero de carrera.
+                                <br>
+                                <span style="color:#ff9800;">💡 La columna "Nombre" siempre está visible.</span>
+                                <br>
+                                <span style="color:#34d399;">🖥️ Escritorio</span> | <span style="color:#4fc3f7;">📱
+                                    Móvil</span> | <span style="color:#f59e0b;">🏁 Pista</span>
+                            </p>
+
+                            <!-- Tabla de columnas con tres checkboxes por columna -->
+                            <div style="overflow-x: auto; margin-bottom: 1.5rem;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <thead>
+                                        <tr style="background: #0f1117; border-bottom: 2px solid #2a2f3a;">
+                                            <th
+                                                style="padding: 0.6rem; text-align: left; font-size: 0.75rem; color: #888;">
+                                                Columna</th>
+                                            <th
+                                                style="padding: 0.6rem; text-align: center; font-size: 0.75rem; color: #34d399;">
+                                                🖥️ Escritorio</th>
+                                            <th
+                                                style="padding: 0.6rem; text-align: center; font-size: 0.75rem; color: #4fc3f7;">
+                                                📱 Móvil</th>
+                                            <th
+                                                style="padding: 0.6rem; text-align: center; font-size: 0.75rem; color: #f59e0b;">
+                                                🏁 Pista</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="columnsConfigTableBody">
+                                        <!-- Se genera desde JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Botones -->
+                            <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+                                <button class="btn" id="selectAllColumnsBtn"
+                                    style="background: #2a2f3a; flex:1;">Seleccionar todas</button>
+                                <button class="btn" id="deselectAllColumnsBtn"
+                                    style="background: #2a2f3a; flex:1;">Deseleccionar todas</button>
+                                <button class="btn btn-primary" id="saveColumnsConfigBtn"
+                                    style="background:#3b82f6; flex:2;">💾 GUARDAR CONFIGURACIÓN</button>
+                            </div>
+
+                            <p style="text-align:center; font-size:0.65rem; color:#666; margin-top:1rem;">
+                                ⚠️ Los cambios se aplican al instante sin recargar la página
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- ===== FIN DE LAS DOS COLUMNAS ===== -->
+
+
+            <div class="card universal-main-container margintop1-5">
+                <div class="universal-box" style=" height: 400px; overflow-y: scroll; overflow-x:auto;">
+                    <div class="card-header universal-header">Salud y Desgaste de Transponders</div>
+                    <div class="card-body">
+                        <p style="font-size:0.74rem; color:#a4adbc; margin-bottom:0.75rem;">
+                            Estado estimado por uso acumulado de vueltas detectadas. Reinicia el desgaste cuando
+                            cambias
+                            un
+                            transponder a otro auto.
+                        </p>
+                        <div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Asignado</th>
+                                        <th>Transponder</th>
+                                        <th>Decoder</th>
+                                        <th>Intensidad (3h)</th>
+                                        <th>Última señal</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transponderHealthBody">
+                                    <tr>
+                                        <td colspan="8" style="text-align:center;padding:1.5rem;">Esperando datos...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Mantenimiento de Base de Datos -->
+            <div class="grid-2">
+                <div class="card universal-main-container margintop1-5">
+                    <div class="universal-box">
+                        <div class="card-header universal-header">
+                            MANTENIMIENTO DE BASE DE DATOS
+                            <span class="badge admin-only" id="dbSizeBadge"></span>
+                        </div>
+
+                        <!-- Usamos la nueva clase aquí -->
+                        <div class="grid-mantenimiento-db">
+
+                            <!-- Bloque 1: Acciones Críticas -->
+                            <div class="mantenimiento-seccion margintop1">
+                                <span class="section-title">Acciones Críticas</span>
+                                <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                                    <button class="btn btn-primary" id="backupBtn"> Crear Respaldo General</button>
+                                    <button class="btn btn-warning" id="softResetBtn">Sweep Limpieza Segura</button>
+                                    <button class="btn btn-danger" id="safeHardResetBtn"> Reinicio Total</button>
+                                </div>
+                                <div>
+                                    <div
+                                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                        <span class="section-title">Historial de Respaldos</span>
+                                        <button id="refreshBackupsBtn" class="btn btn-sm"
+                                            style="background: #2196f3; padding: 0.2rem 0.8rem;">
+                                            <img src="{{ url_for('static', filename='refresh2.svg') }}"
+                                                style="width: 14px; height: 14px; vertical-align: middle;"> Refrescar
+                                        </button>
+                                    </div>
+                                    <div id="backupsList" class="scroll-area">
+                                        <p class="muted-text">Cargando respaldos...</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bloque 2: Respaldos de Pilotos -->
+                            <div class="mantenimiento-seccion margintop1">
+                                <!-- HEADER con título y botón de refresh -->
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                    <span class="section-title">Respaldo de Transponders / Pilotos</span>
+                                    <button id="refreshPilotosBackupsBtn" class="btn btn-sm"
+                                        style="background: #2196f3; padding: 0.2rem 0.8rem;">
+                                        <img src="{{ url_for('static', filename='refresh2.svg') }}"
+                                            style="width: 14px; height: 14px; vertical-align: middle;"> Refrescar
+                                    </button>
+                                </div>
+
+                                <!-- Botones de Guardar/Restaurar -->
+                                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                    <button class="btn btn-primary" id="backupPilotosBtn"
+                                        style="flex:1;">Guardar</button>
+                                    <button class="btn btn-warning" id="restorePilotosBtn"
+                                        style="flex:1;">Restaurar</button>
+                                </div>
+
+                                <!-- Lista de respaldos -->
+                                <div id="pilotosBackupsList" class="scroll-area">
+                                    <p class="muted-text">No existen respaldos disponibles</p>
+                                </div>
+                            </div>
+
+                            <!-- Bloque 3: Estadísticas -->
+                            <div class="mantenimiento-seccion margintop1">
+                                <span class="section-title">Estadísticas del Sistema</span>
+                                <div id="dbStats" style="border: 1px solid #3f3f3f; padding: 1rem; border-radius: 8px;">
+                                    <div class="stats-row"><span>Pilotos</span> <strong id="statDrivers">--</strong>
+                                    </div>
+                                    <div class="stats-row"><span>Transponders</span> <strong
+                                            id="statTransponders">--</strong></div>
+                                    <div class="stats-row"><span>Carreras</span> <strong id="statSessions">--</strong>
+                                    </div>
+                                    <div class="stats-row"><span>Vueltas</span> <strong id="statLaps">--</strong></div>
+                                    <div class="stats-row"><span>Tamaño</span> <strong id="statSize">-- MB</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <!-- Bloque 4: Historial (Este se acomodará abajo o al lado según el ancho) -->
+
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card: Estado de Hardwre -->
+                <div class="card universal-main-container"
+                    style="width: 100%; max-width: 450px; align-items: center; align-content: center">
+                    <!-- Card: IP de Conexión -->
+                    <div class="universal-box">
+                        <div class="card-header universal-header">
+                            IP DE CONEXIÓN PARA CELULARES
+                        </div>
+                        <!-- Botón para abrir modal de IP manual -->
+                        <button id="openIpModalBtn" class="btn btn-sm"
+                            style="background: #2196f3; margin-bottom: 0.5rem;">
+                            ✏️ Configurar IP manual
+                        </button>
+                        <div class="card-body">
+                            <p style="font-size:0.75rem; color:#888; margin-bottom:0.5rem;">
+                                Para poder abrir en otro monitor/pantalla, copia la IP en tu navegador web.
+                            </p>
+
+                            <div id="ipListContainer">
+                                <div class="ip-item"
+                                    style="background: #0d1218; border-radius: 8px; padding: 10px; margin-bottom: 10px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="color: #aaa;">Cargando IPs...</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                                <button class="btn btn-sm" id="copyIpBtn" style="background: #2196f3;">📋 Copiar
+                                    IP</button>
+                                <button class="btn btn-sm" id="refreshIpBtn"><img
+                                        src="{{ url_for('static', filename='refresh2.svg') }}" alt="Resetear vistas"
+                                        class="admin-only" title="Resetear vistas"
+                                        style="width: 15px; height: 15px; cursor: pointer;"> Refrescar</button>
+                            </div>
+
+                            <div id="qrCodeContainer"
+                                style="margin-top: 1rem; text-align: center; background: white; padding: 15px; border-radius: 12px;">
+                                <div id="qrCodePlaceholder" style="min-height: 120px;">
+                                    <span style="color: #888;">Cargando QR...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="universal-box margintop1-5">
+                        <div class="card-header universal-header">Estado del Hardware</div>
+                        <div class="card-body">
+                            <div class="usb-status"
+                                style="margin-bottom:1rem; padding:1rem; background:#111; border-radius:8px;">
+                                <div class="usb-led" id="usbLed"></div>
+                                <span id="usbText" style="font-size:1rem; font-weight:600;">Verificando...</span>
+                            </div>
+                            <p style="font-size:0.75rem; color:#888; margin-bottom:1rem;">
+                                Utilice el botón inferior para desconectar el transponder de forma segura.
+                                Esto detendrá los servicios internos y protegerá el hardware antes de ser retirado.
+                            </p>
+                            <button class="btn btn-danger" id="resetUsbBtn"
+                                style="width:100%; padding:0.8rem; font-weight:600;">Desconexion Segura del
+                                Decoder</button>
+
+                            <div style="margin-top:2rem; padding-top:1rem; border-top:1px solid #333;">
+                                <h4 style="color:#e5484d; margin-bottom:0.5rem; font-size:0.8rem;">ZONA DE PELIGRO
+                                </h4>
+                                <p style="font-size:0.7rem; color:#888; margin-bottom:1rem;">
+                                    Si el tablero está bloqueado o quieres limpiar todos los pilotos y vueltas de la
+                                    sesión
+                                    actual:
+                                </p>
+                                <button class="btn" id="hardResetBtn"
+                                    style="width:100%; border-color:#e5484d; color:#e5484d;">Reinicio Forzado
+                                    Total</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <!-- Card: Consola en Tiempo Real -->
+                <div id="devConsoleCard" class="card universal-main-container dev-only" style="display: none;">
+                    <div class="card-header universal-header"
+                        style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>🖥️ CONSOLA DEL SERVIDOR (TIEMPO REAL)</span>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button id="clearLogsBtn" class="btn btn-sm"
+                                style="background: #ff9800; padding: 0.3rem 0.8rem;">
+                                🗑️ Limpiar
+                            </button>
+                            <button id="exportLogsBtn" class="btn btn-sm"
+                                style="background: #2196f3; padding: 0.3rem 0.8rem;">
+                                📥 Exportar
+                            </button>
+                            <button id="refreshLogsBtn" class="btn btn-sm"
+                                style="background: #00c853; padding: 0.3rem 0.8rem;">
+                                🔄 Refrescar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <div id="consoleLogsContainer"
+                            style="background: #0a0a0a; color: #00ff00; font-family: 'Courier New', monospace; font-size: 0.75rem; padding: 1rem; height: 400px; overflow-y: auto; border-radius: 8px; margin: 0;">
+                            <div style="color: #888; text-align: center; padding: 2rem;">
+                                Cargando logs del servidor...
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer"
+                        style="padding: 0.5rem 1rem; border-top: 1px solid #2a2f3a; font-size: 0.7rem; color: #666;">
+                        <span>🟢 Actualización automática cada 3 segundos</span>
+                        <span style="float: right;">📌 Solo visible para usuarios desarrolladores</span>
+                    </div>
+                </div>
+
+
+                <!-- Card: Modo Simulación (Desarrollador) -->
+                <div class="card dev-only universal-main-container" id="simulationModeCard" style="display:none;">
+                    <div class="universal-box">
+                        <div class="card-header universal-header">
+                            🎮 MODO SIMULACIÓN
+                            <span class="badge" id="simulationModeStatus" style="margin-left: 1rem;"></span>
+                        </div>
+                        <div class="card-body">
+                            <p style="font-size:0.75rem; color:#888; margin-bottom:1rem;">
+                                Activa el modo simulación para probar el sistema sin necesidad de tener el decoder
+                                ESL-400
+                                conectado.
+                                Las vueltas se generarán automáticamente con datos de prueba.
+                            </p>
+
+                            <div
+                                style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <span style="font-size:0.9rem;">🔴 Hardware Real</span>
+                                    <label class="switch">
+                                        <input type="checkbox" id="simulationModeToggle">
+                                        <span class="slider round"></span>
+                                    </label>
+                                    <span style="font-size:0.9rem;">🎮 Simulación</span>
+                                </div>
+                                <button id="generateTestLapsBtn" class="btn btn-sm"
+                                    style="background:#2196f3; display: none;">
+                                    🧪 Generar vueltas de prueba
+                                </button>
+                            </div>
+
+                            <div id="simulationWarning"
+                                style="margin-top:1rem; padding:0.5rem; background:#ff980020; border-left:3px solid #ff9800; border-radius:4px; display:none;">
+                                ⚠️ Modo simulación activo. Las vueltas se generan automáticamente sin decoder físico.
+                            </div>
+
+                            <div id="simulationSpeedControl" style="margin-top: 1rem; display: none;">
+                                <label style="font-size:0.8rem; color:#aaa;">⚡ Velocidad de simulación</label>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                                    <span style="font-size:0.9rem;">Más lento (5s)</span>
+                                    <span style="font-size:0.9rem;">Más rápido (0.2s)</span>
+                                </div>
+                                <input type="range" id="simulationSpeedSlider" min="0" max="100" step="1" value="50"
+                                    style="width: 50%;; margin-top: 0.3rem;">
+                                <div style="display: flex; justify-content: center; margin-top: 0.3rem;">
+                                    <span id="simulationSpeedValue" style="color:#ff9800; font-weight:bold;">0.5s</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+            <div class="grid-2">
+
+
+                <div class="card universal-main-container margintop1-5">
+                    <div class="universal-box">
+                        <div class="card-header universal-header">Monitor de Senales en Tiempo Real</div>
+                        <div style="overflow-x: auto; max-height: 400px;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>H/L</th>
+                                        <th>TIEMPO</th>
+                                        <th>VTAS FIS.</th>
+                                        <th>VISTO</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="signalsBody">
+                                    <tr>
+                                        <td colspan="5" style="text-align:center; padding:2rem;">Esperando
+                                            señales...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="card universal-main-container">
+                    <div class="universal-box">
+                        <div class="card-header universal-header">
+                            CONFIGURACIÓN DE ANTENA
+
+                            <span class="badge" id="antennaConfigStatus" style="margin-left: 1rem;"></span>
+                        </div>
+                        <div class="card-body">
+                            <p style="font-size:0.75rem; color:#888; margin-bottom:1rem;">
+                                Ajusta estos parámetros para evitar detecciones falsas por rebotes o señales
+                                lejanas.
+                            </p>
+
+                            <div class="config-row">
+                                <label>🔽 Umbral mínimo de señal (H)</label>
+                                <div style="display: flex; gap: 1rem; align-items: center;">
+                                    <input type="range" id="minSignalSlider" min="0" max="255" value="5"
+                                        style="flex:1;">
+                                    <input type="number" id="minSignalValue" value="10"
+                                        style="width: 60px; text-align: center;">
+                                </div>
+                                <p class="hint">Ignorar señales por debajo de este valor (evita transponders
+                                    lejanos)
+                                </p>
+                            </div>
+
+                            <div class="config-row" style="margin-top: 1rem;">
+                                <label>⏱️ Tiempo entre detecciones (segundos)</label>
+                                <div style="display: flex; gap: 1rem; align-items: center;">
+                                    <input type="range" id="filterTimeSlider" min="0.3" max="1.5" step="0.05"
+                                        value="0.5" style="flex:1;">
+                                    <input type="number" id="filterTimeValue" value="0.5" step="0.05"
+                                        style="width: 70px; text-align: center;">
+                                </div>
+                                <p class="hint">El mismo transponder no puede ser detectado más de una vez en este
+                                    tiempo
+                                </p>
+                            </div>
+
+                            <button class="btn btn-primary" id="saveAntennaConfigBtn"
+                                style="width:100%; margin-top:1rem;">
+                                GUARDAR CONFIGURACIÓN</button>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- Card: Configuración de Ventanas de Resultados -->
+
+
+
+            </div>
+            <!--End of grid-2-->
+
+
+
+
+
+        </div>
+
+    </div>
+
+
+
+    <div id="modal" class="modal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center; overflow-y:auto; padding:1rem;">
+        <div class="modal-content"
+            style="background:#0d0d0d; border:1px solid #333; border-radius:12px; padding:1.5rem; max-width:520px; width:100%; max-height:90vh; overflow-y:auto; margin:auto;">
+            <h3 id="modalTitle">Confirmar</h3>
+            <p id="modalMessage">¿Estás seguro?</p>
+            <div class="modal-buttons" style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1rem;">
+                <button class="btn" id="modalCancel">Cancelar</button>
+                <button class="btn btn-primary" id="modalConfirm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ganador -->
+    <div id="winnerModalComplete" class="winner-modal" style="display:none;">
+        <div class="winner-modal-content" style="max-width: 500px;">
+
+            <div style="margin: 10px 0; padding: 10px; background: rgba(255,215,0,0.1); border-radius: 20px;">
+                <div style="font-size: 0.9rem; color: #ffd700;"><img src="/static/golden.svg" alt="Oro"
+                        style=" height: 19px; width: auto; vertical-align: middle;padding: 0px 5px 0px 5px"> CAMPEÓN
+                </div>
+                <div id="modalWinnerName" style="font-size: 1.3rem; font-weight: bold; color: white;">--</div>
+                <div id="modalWinnerTime" style="font-size: 1rem; color: #ffd700;">--</div>
+            </div>
+
+            <div id="modalSecondContainer"
+                style="margin: 15px 0; padding: 10px; background: rgba(192,192,192,0.1); border-radius: 15px; display: none;">
+                <div style="font-size: 0.9rem; color: #c0c0c0;"><img src="/static/silver.svg" alt="Plata"
+                        style=" height: 19px; width: auto; vertical-align: middle;padding: 0px 5px 0px 5px">
+                    SUBCAMPEÓN
+                </div>
+                <div id="modalSecondName" style="font-size: 1.3rem; font-weight: bold; color: white;">--</div>
+                <div id="modalSecondTime" style="font-size: 1rem; color: #ccc;">--</div>
+            </div>
+
+            <div id="modalThirdContainer"
+                style="margin: 15px 0; padding: 10px; background: rgba(205,127,50,0.1); border-radius: 15px; display: none;">
+                <div style="font-size: 0.9rem; color: #cd7f32;"><img src="/static/bronze.svg" alt="Bronce"
+                        style=" height: 19px; width: auto; vertical-align: middle;padding: 0px 5px 0px 5px"> TERCER
+                    PUESTO</div>
+                <div id="modalThirdName" style="font-size: 1.3rem; font-weight: bold; color: white;">--</div>
+                <div id="modalThirdTime" style="font-size: 1rem; color: #ccc;">--</div>
+            </div>
+
+            <button onclick="closeWinnerModalComplete()"
+                style="background: #e5484d; color: white; border: none; padding: 12px 30px; border-radius: 30px; cursor: pointer; margin-top: 10px;">CERRAR</button>
+        </div>
+    </div>
+
+<!-- Modal para Continuar a Carrera -->
+<div id="continueRaceModal" style="display:none; position:fixed; inset:0; background:linear-gradient(rgba(0,0,0,0.70), rgba(0,0,0,0.82)), url('/static/backgroundjpeg.jpeg') center/cover no-repeat; z-index:5000; align-items:center; justify-content:center;">
+    <div style="background: var(--bg-elev-2); border: 1px solid var(--line); border-radius:20px; padding:2rem; width:100%; max-width:450px;">
+        <h3 style="text-align:center; margin-bottom:1.5rem;">🏁 CONTINUAR A CARRERA</h3>
+        <div style="margin-bottom:1rem;">
+            <label style="display:block; margin-bottom:0.3rem; color:var(--muted); font-size:0.85rem;">Nombre de la Carrera</label>
+            <input type="text" id="continueRaceName" placeholder="Ej: Carrera Final" style="width:100%; padding:0.8rem; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--text);">
+        </div>
+        <div style="margin-bottom:1.5rem;">
+            <label style="display:block; margin-bottom:0.3rem; color:var(--muted); font-size:0.85rem;">Número de Vueltas</label>
+            <input type="number" id="continueRaceLaps" value="10" min="1" max="999" style="width:100%; padding:0.8rem; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--text);">
+        </div>
+        <div style="display:flex; gap:0.75rem;">
+            <button id="cancelContinueRaceBtn" class="btn" style="flex:1;">Cancelar</button>
+            <button id="confirmContinueRaceBtn" class="btn btn-success" style="flex:1;">Crear y Continuar</button>
+        </div>
+    </div>
+</div>
+
+    <!-- Modal para confirmación con texto -->
+    <div id="confirmTextModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:3500; align-items:center; justify-content:center;">
+        <div
+            style="background: var(--bg-elev-2); border: 1px solid var(--line); border-radius:20px; padding:2rem; width:100%; max-width:450px;">
+            <h3 id="confirmTextModalTitle" style="margin-bottom:1rem; color:#e5484d;">⚠️ REINICIO TOTAL</h3>
+            <p id="confirmTextModalMessage" style="margin-bottom:1rem; color:var(--muted); font-size:0.9rem;">Para
+                confirmar, escribe "BORRAR TODO":</p>
+            <input type="text" id="confirmTextModalInput" placeholder="Escribe BORRAR TODO"
+                style="width:100%; padding:0.8rem; margin-bottom:1.5rem; background:#0d1218; border:1px solid #2a3240; border-radius:8px; color:white;">
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button class="btn" id="confirmTextModalCancel">Cancelar</button>
+                <button class="btn btn-danger" id="confirmTextModalConfirm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+    <!-- OVERLAY: CUENTA REGRESIVA -->
+    <div id="countdownOverlay">
+        <div class="countdown-content">
+            <div class="countdown-label">SALIDA EN</div>
+            <div id="countdownNumber" class="countdown-number">10</div>
+            <div id="countdownHint" class="countdown-hint">PREPÁRENSE</div>
+        </div>
+    </div>
+
+
+    <!-- SPLASH DE INICIO DE CARRERA (GLOBAL) - Solo intro -->
+    <div id="raceStartSplash" class="race-start-splash">
+        <div class="splash-content">
+            <img src="{{ url_for('static', filename='LogoVectorizadoGoKarting.svg') }}" alt="Chronit"
+                style="width: 120px; margin-bottom: 20px;">
+            <div style="font-size:1.2rem; color:#ffd700; letter-spacing:2px; text-transform:uppercase;">🏁 CARRERA
+                INICIADA 🏁</div>
+            <div id="splashRaceName" style="font-size:2rem; font-weight:800; color:white; margin:15px 0;">--</div>
+            <div id="splashLapsLimit" style="font-size:1.2rem; color:#00c853; margin-bottom:20px;">Vueltas: --</div>
+            <div style="font-size:0.9rem; color:#888;">Preparando cuenta regresiva...</div>
+        </div>
+    </div>
+
+    <!-- Modal Minimalista para Editar Transponder -->
+    <div id="editTransponderFullModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(4px); z-index:4000; align-items:center; justify-content:center;">
+        <div style="background: #1a1e26; border-radius:16px; width:100%; max-width:420px; padding:0; overflow:hidden;">
+
+            <div style="padding:1.2rem 1.5rem; border-bottom:1px solid #2a2f3a;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.2rem;">✏️</span>
+                    <h3 style="margin:0; font-size:1rem; font-weight:600; color:#e4e4e4;">EDITAR TRANSPONDER</h3>
+                </div>
+            </div>
+
+            <div style="padding:1.5rem;">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:0.7rem; color:#9ca3af; margin-bottom:0.3rem;">ID
+                        TRANSPONDER</label>
+                    <input type="number" id="editModalTransponderId"
+                        style="width:100%; padding:0.7rem 1rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white; font-size:0.9rem;">
+                </div>
+
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:0.7rem; color:#9ca3af; margin-bottom:0.3rem;">NÚMERO DE
+                        KART</label>
+                    <input type="text" id="editModalKartId" placeholder="Ej: 44"
+                        style="width:100%; padding:0.7rem 1rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white; font-size:0.9rem;">
+                </div>
+
+                <div style="margin-bottom:1.5rem;">
+                    <label
+                        style="display:block; font-size:0.7rem; color:#9ca3af; margin-bottom:0.3rem;">DESCRIPCIÓN</label>
+                    <input type="text" id="editModalDesc" placeholder="Ej: Chasis rojo"
+                        style="width:100%; padding:0.7rem 1rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white; font-size:0.9rem;">
+                </div>
+
+                <div style="display:flex; gap:0.75rem;">
+                    <button id="editModalCancelBtn"
+                        style="flex:1; padding:0.7rem; background:#2a2f3a; border:none; border-radius:8px; color:#cbd5e1; font-size:0.8rem; cursor:pointer;">Cancelar</button>
+                    <button id="editModalConfirmBtn"
+                        style="flex:1; padding:0.7rem; background:#3b82f6; border:none; border-radius:8px; color:white; font-size:0.8rem; font-weight:600; cursor:pointer;">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Minimalista para Editar Piloto -->
+    <div id="editDriverMinimalModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(4px); z-index:4000; align-items:center; justify-content:center;">
+        <div style="background: #1a1e26; border-radius:16px; width:100%; max-width:420px; padding:0; overflow:hidden;">
+
+            <div style="padding:1.2rem 1.5rem; border-bottom:1px solid #2a2f3a;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.2rem;  border: 5px solid red !important;">👤</span>
+                    <h3 style="margin:0; font-size:1rem; font-weight:600; color:#e4e4e4;">EDITAR PILOTO</h3>
+                </div>
+            </div>
+
+            <div style="padding:1.5rem">
+                <div style="margin-bottom:1rem; ">
+                    <label style="display:block; font-size:0.7rem; color:#9ca3af; margin-bottom:0.3rem;">NOMBRE</label>
+                    <input type="text" id="editDriverNameInput" placeholder="Nombre"
+                        style="width:100%; padding:0.75rem 1rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white; font-size:0.9rem;">
+                </div>
+
+                <div style="margin-bottom:1rem;">
+                    <label
+                        style="display:block; font-size:0.7rem; color:#9ca3af; margin-bottom:0.3rem;">APELLIDO</label>
+                    <input type="text" id="editDriverLastnameInput" placeholder="Apellido"
+                        style="width:100%; padding:0.75rem 1rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white; font-size:0.9rem;">
+                </div>
+
+                <div style="margin-bottom:1.5rem;">
+                    <label style="display:block; font-size:0.7rem; color:#9ca3af; margin-bottom:0.3rem;">ID
+                        TRANSPONDER</label>
+                    <input type="number" id="editDriverTransponderInput" placeholder="ID Transponder"
+                        style="width:100%; padding:0.75rem 1rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white; font-size:0.9rem;">
+                </div>
+
+                <div style="display:flex; gap:0.75rem;">
+                    <button id="editDriverMinimalCancel"
+                        style="flex:1; padding:0.7rem; background:#2a2f3a; border:none; border-radius:8px; color:#cbd5e1; font-size:0.8rem; cursor:pointer;">
+                        Cancelar
+                    </button>
+                    <button id="editDriverMinimalConfirm"
+                        style="flex:1; padding:0.7rem; background:#3b82f6; border:none; border-radius:8px; color:white; font-size:0.8rem; font-weight:600; cursor:pointer;">
+                        Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal para ingresar IP manual -->
+    <div id="ipManualModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:4000; align-items:center; justify-content:center;">
+        <div style="background: #1a1e26; border-radius:16px; width:100%; max-width:420px; padding:0; overflow:hidden;">
+
+            <div style="padding:1.2rem 1.5rem; border-bottom:1px solid #2a2f3a;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.2rem;">🌐</span>
+                    <h3 style="margin:0; font-size:1rem; font-weight:600; color:#e4e4e4;">IP MANUAL</h3>
+                </div>
+            </div>
+
+            <div style="padding:1.5rem;">
+                <p style="margin-bottom:1rem; color:#cbd5e1; font-size:0.85rem;">
+                    Ingresa la IP de tu laptop en la red WiFi (ej: 192.168.1.12)
+                </p>
+
+                <input type="text" id="manualIpInput" placeholder="Ej: 192.168.1.12"
+                    style="width:100%; padding:0.75rem; background:#0f1117; border:1px solid #2a2f3a; border-radius:10px; color:white; font-size:0.9rem; margin-bottom:1.5rem;">
+
+                <div style="display:flex; gap:0.75rem;">
+                    <button id="cancelIpModalBtn"
+                        style="flex:1; padding:0.7rem; background:#2a2f3a; border:none; border-radius:8px; color:#cbd5e1; font-size:0.8rem; cursor:pointer;">
+                        Cancelar
+                    </button>
+                    <button id="saveIpModalBtn"
+                        style="flex:1; padding:0.7rem; background:#3b82f6; border:none; border-radius:8px; color:white; font-size:0.8rem; font-weight:600; cursor:pointer;">
+                        Guardar
+                    </button>
+                </div>
+
+                <button id="clearManualIpBtn"
+                    style="width:100%; margin-top:1rem; padding:0.5rem; background:transparent; border:1px solid #e5484d; border-radius:8px; color:#e5484d; font-size:0.7rem; cursor:pointer;">
+                    🗑️ Usar detección automática
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal para Resetear Tablero -->
+    <div id="resetBoardConfirmModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(4px); z-index:4000; align-items:center; justify-content:center;">
+        <div style="background: #1a1e26; border-radius:16px; width:100%; max-width:420px; padding:0; overflow:hidden;">
+
+            <div style="padding:1.2rem 1.5rem; border-bottom:1px solid #2a2f3a;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.2rem;">🔄</span>
+                    <h3 style="margin:0; font-size:1rem; font-weight:600; color:#e4e4e4;">RESETEAR TABLERO</h3>
+                </div>
+            </div>
+
+            <div style="padding:1.5rem;">
+                <p style="margin-bottom:1.5rem; color:#cbd5e1; font-size:0.9rem; line-height:1.4;">
+                    ¿Estás seguro de que deseas resetear el tablero?
+                </p>
+
+                <div
+                    style="background:#0f1117; border-radius:10px; padding:0.8rem; margin-bottom:1.5rem; border-left:3px solid #e5484d;">
+                    <p style="margin:0; font-size:0.8rem; color:#e5484d;">
+                        ⚠️ Esta acción eliminará los pilotos inscritos, las vueltas y la carrera completa.
+                    </p>
+                </div>
+
+                <div style="display:flex; gap:0.75rem;">
+                    <button id="resetBoardCancelBtn"
+                        style="flex:1; padding:0.7rem; background:#2a2f3a; border:none; border-radius:8px; color:#cbd5e1; font-size:0.8rem; cursor:pointer;">
+                        Cancelar
+                    </button>
+                    <button id="resetBoardConfirmActionBtn"
+                        style="flex:1; padding:0.7rem; background:#e5484d; border:none; border-radius:8px; color:white; font-size:0.8rem; font-weight:600; cursor:pointer;">
+                        Resetear
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== PANEL LATERAL: CONTADOR MANUAL DE VUELTAS ===== -->
+    <div id="manualLapModal"
+        style="display:none; position:fixed; top:0; right:0; bottom:0; width:30%; min-width:260px; max-width:430px; background:#15181f; border-left:1px solid #2a2f3a; z-index:6200; box-shadow:-8px 0 24px rgba(0,0,0,0.55); transform:translateX(100%); transition:transform 0.25s ease;">
+        <div
+            style="display:flex; flex-direction:column; height:100%; max-height:100vh; overflow:hidden;">
+            <div style="padding:0.9rem 1rem; border-bottom:1px solid #2a2f3a;">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:1rem;">🎛️</span>
+                        <h3 style="margin:0; font-size:0.9rem; font-weight:600; color:#e4e4e4;">CONTADOR MANUAL</h3>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <button id="manualLapPopupBtn" title="Abrir en una ventana aparte"
+                            style="background:#22262f; border:1px solid #333a47; border-radius:8px; padding:0.3rem 0.5rem; color:#cbd5e1; font-size:0.72rem; cursor:pointer; line-height:1;">🚪 Ventana</button>
+                        <button id="manualLapCloseBtn"
+                            style="background:#2a2f3a; border:none; border-radius:8px; width:30px; height:30px; color:#cbd5e1; font-size:1rem; cursor:pointer; line-height:1;">✕</button>
+                    </div>
+                </div>
+                <p id="manualLapStatusLine"
+                    style="margin:0.5rem 0 0; font-size:0.72rem; color:#8b93a7; line-height:1.35;">
+                    Tocá un kart para marcar 1 vuelta. Si el decoder lo detecta al mismo tiempo, se ignora el duplicado.
+                </p>
+            </div>
+            <div id="manualLapGrid"
+                style="flex:1; padding:0.9rem 1rem; overflow-y:auto; display:grid; grid-template-columns:repeat(3, 1fr); gap:0.6rem; align-content:start;">
+            </div>
+            <div style="padding:0.7rem 1rem; border-top:1px solid #2a2f3a; display:flex; align-items:center; justify-content:space-between; gap:0.8rem;">
+                <div id="manualLapCount" style="font-size:0.72rem; color:#8b93a7;"></div>
+                <button id="manualLapRefreshBtn"
+                    style="padding:0.45rem 0.8rem; background:#22262f; border:1px solid #333a47; border-radius:8px; color:#cbd5e1; font-size:0.72rem; cursor:pointer;">🔄 Actualizar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== VISTA COMPLETA: CONTADOR DE CARRERA (rol contador) ===== -->
+    <div id="contadorView" style="display:none; position:fixed; inset:0; background:#0d0f14; z-index:6500; flex-direction:column;">
+        <div style="background:#15181f; border-bottom:1px solid #2a2f3a; padding:0.9rem 1.2rem; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:1.3rem;">🎛️</span>
+                <h2 style="margin:0; font-size:1.05rem; font-weight:600; color:#e4e4e4;">CONTADOR DE CARRERA</h2>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span id="contadorUserLabel" style="color:#9aa3b5; font-size:0.82rem;"></span>
+                <button id="contadorLogoutBtn" style="padding:0.5rem 0.9rem; background:#2a2f3a; border:1px solid #3a4254; border-radius:8px; color:#cbd5e1; font-size:0.78rem; cursor:pointer;">🚪 Cerrar Sesión</button>
+            </div>
+        </div>
+        <div style="background:#111318; border-bottom:1px solid #22262f; padding:0.7rem 1.2rem;">
+            <p id="contadorStatusLine" style="margin:0; font-size:0.8rem; color:#8b93a7; line-height:1.45;">
+                Tocá un kart para marcar 1 vuelta. La <strong style="color:#4caf50;">primera detección es SALIDA/LARGADA</strong> (no cuenta vuelta) y se muestra en verde para confirmar que la marcaste.
+            </p>
+        </div>
+        <div id="contadorGrid" style="flex:1; padding:1.2rem; overflow-y:auto; display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:0.9rem; align-content:start;"></div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ==== PANEL DE EVENTOS (control de carrera / ecosistema) ==== -->
+    <!-- ============================================================ -->
+    <div id="panel-events" class="panel admin-only">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.8rem; margin-bottom:1rem;">
+            <h2 style="margin:0; font-size:1.3rem; color:#eceff4; display:flex; align-items:center; gap:0.5rem;">📅 Gestión de Eventos</h2>
+            <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+                <button id="refreshEventsBtn" class="btn btn-sm" style="background:#2a2f3a; color:#cbd5e1;">🔄 Actualizar</button>
+                <button id="createEventBtn" class="btn btn-sm" style="background:#2196f3; color:#fff;">➕ Crear Evento</button>
+            </div>
+        </div>
+
+        <!-- Filtros de estado (las carreras finalizadas tienen su propia página) -->
+        <div id="eventsFilterBar" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.1rem;">
+            <button class="btn btn-sm ev-filter active" data-evfilter="pending" style="background:#3b82f6; color:#fff;">⏳ Pendientes</button>
+            <button class="btn btn-sm ev-filter" data-evfilter="active" style="background:#2a2f3a; color:#cbd5e1;">▶️ Activos</button>
+        </div>
+
+        <p id="eventsEmptyMsg" style="display:none; color:#8b93a7; font-size:0.9rem; padding:1rem 0 0 0.2rem;">No hay eventos en este estado.</p>
+        <div id="eventsGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:1rem;"></div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ==== PANEL: CARRERAS FINALIZADAS (historial dedicado) ==== -->
+    <!-- ============================================================ -->
+    <div id="panel-finished" class="panel admin-only">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.8rem; margin-bottom:1rem;">
+            <h2 style="margin:0; font-size:1.3rem; color:#eceff4; display:flex; align-items:center; gap:0.5rem;">🏁 Carreras Finalizadas</h2>
+            <div style="display:flex; gap:0.6rem; flex-wrap:wrap; align-items:center;">
+                <input id="finishedSearchInput" type="text" placeholder="🔎 Buscar por nombre o código…"
+                    style="padding:0.45rem 0.7rem; background:#1a1e26; border:1px solid #2a2f3a; border-radius:6px; color:#fff; font-size:0.82rem; min-width:220px;">
+                <button id="refreshFinishedBtn" class="btn btn-sm" style="background:#2a2f3a; color:#cbd5e1;">🔄 Actualizar</button>
+            </div>
+        </div>
+
+        <p style="color:#8b93a7; font-size:0.82rem; margin:0 0 0.9rem 0;">
+            Historial de carreras terminadas. Esta vista está separada de las carreras pendientes y activas.
+        </p>
+
+        <p id="finishedEmptyMsg" style="display:none; color:#8b93a7; font-size:0.9rem; padding:1rem 0 0 0.2rem;">No hay carreras finalizadas.</p>
+        <div id="finishedRacesGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:1rem;"></div>
+    </div>
+
+
+    <!-- ============================================================ -->
+    <!-- ==== MODAL: CREAR EVENTO ==== -->
+    <!-- ============================================================ -->
+    <div id="createEventModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1001; justify-content:center; align-items:center; overflow-y:auto; padding:1rem;">
+        <div class="modal-content" style="background:#0d0d0d; border:1px solid #333; border-radius:12px; padding:1.5rem; max-width:560px; width:100%; max-height:90vh; overflow-y:auto; margin:auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <h3 style="margin:0; color:#eceff4;">➕ Crear Evento</h3>
+                <button onclick="closeCreateEventModal()" style="background:none; border:none; color:#9aa3b5; font-size:1.4rem; cursor:pointer;">✕</button>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.7rem;">
+                <div style="grid-column:1 / -1;">
+                    <label style="display:block; font-size:0.78rem; color:#8892b0; margin-bottom:0.3rem;">Nombre del evento *</label>
+                    <input id="ce_name" type="text" placeholder="Ej: Gran Premio Nocturno" style="width:100%; padding:0.5rem; background:#1a1e26; border:1px solid #2a2f3a; border-radius:6px; color:#fff; font-size:0.85rem;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.78rem; color:#8892b0; margin-bottom:0.3rem;">Modo de carrera</label>
+                    <select id="ce_race_mode" style="width:100%; padding:0.5rem; background:#1a1e26; border:1px solid #2a2f3a; border-radius:6px; color:#fff; font-size:0.85rem;">
+                        <option value="position">Posición (verde/burgundy)</option>
+                        <option value="endurance">Endurance (tiempo)</option>
+                        <option value="classification">Clasificación (tiempo)</option>
+                        <option value="qualifying_laps">Clasificación por vueltas</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.78rem; color:#8892b0; margin-bottom:0.3rem;">Vueltas</label>
+                    <input id="ce_laps" type="number" value="10" min="1" style="width:100%; padding:0.5rem; background:#1a1e26; border:1px solid #2a2f3a; border-radius:6px; color:#fff; font-size:0.85rem;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.78rem; color:#8892b0; margin-bottom:0.3rem;">Duración (min, 0 = ilimitado)</label>
+                    <input id="ce_time" type="number" value="0" min="0" style="width:100%; padding:0.5rem; background:#1a1e26; border:1px solid #2a2f3a; border-radius:6px; color:#fff; font-size:0.85rem;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.78rem; color:#8892b0; margin-bottom:0.3rem;">Origen de pilotos</label>
+                    <select id="ce_mode" style="width:100%; padding:0.5rem; background:#1a1e26; border:1px solid #2a2f3a; border-radius:6px; color:#fff; font-size:0.85rem;">
+                        <option value="gestionada">Gestionada (PostgreSQL / tickets)</option>
+                        <option value="rapida">Rápida (local SQLite)</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.78rem; color:#8892b0; margin-bottom:0.3rem;">Fecha</label>
+                    <input id="ce_date" type="date" style="width:100%; padding:0.5rem; background:#1a1e26; border:1px solid #2a2f3a; border-radius:6px; color:#fff; font-size:0.85rem;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.78rem; color:#8892b0; margin-bottom:0.3rem;">Hora</label>
+                    <input id="ce_timeofday" type="time" style="width:100%; padding:0.5rem; background:#1a1e26; border:1px solid #2a2f3a; border-radius:6px; color:#fff; font-size:0.85rem;">
+                </div>
+            </div>
+            <div style="display:flex; gap:0.7rem; justify-content:flex-end; margin-top:1.2rem;">
+                <button class="btn" onclick="closeCreateEventModal()" style="background:#2a2f3a; color:#cbd5e1;">Cancelar</button>
+                <button class="btn btn-primary" id="saveCreateEventBtn" style="background:#3b82f6; color:#fff;">💾 Crear Evento</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============================================================ -->
+    <!-- ==== MODAL: DETALLE DE EVENTO (pilotos, karts, estados) ==== -->
+    <!-- ============================================================ -->
+    <div id="eventDetailModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1001; justify-content:center; align-items:center; overflow-y:auto; padding:1rem;">
+        <div class="modal-content" style="background:#0d0d0d; border:1px solid #333; border-radius:12px; padding:1.5rem; max-width:980px; width:100%; max-height:92vh; overflow-y:auto; margin:auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem; flex-wrap:wrap; gap:0.5rem;">
+                <h3 id="ed_title" style="margin:0; color:#eceff4; font-size:1.1rem;">Evento</h3>
+                <div style="display:flex; align-items:center; gap:0.6rem;">
+                    <span id="ed_statusBadge" class="badge" style="background:#2a2f3a; color:#cbd5e1; padding:0.25rem 0.8rem; border-radius:20px; font-size:0.7rem;">—</span>
+                    <button onclick="closeEventDetailModal()" style="background:none; border:none; color:#9aa3b5; font-size:1.4rem; cursor:pointer;">✕</button>
+                </div>
+            </div>
+
+            <!-- Configuración del evento -->
+            <div style="background:#111318; border:1px solid #22262f; border-radius:8px; padding:0.9rem; margin-bottom:1rem;">
+                <p style="margin:0 0 0.5rem 0; font-size:0.8rem; color:#9aa3b5; font-weight:600;">⚙️ CONFIGURACIÓN</p>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px,1fr)); gap:0.6rem;">
+                    <div>
+                        <label style="display:block; font-size:0.72rem; color:#8892b0; margin-bottom:0.2rem;">Modo</label>
+                        <select id="ed_race_mode" style="width:100%; padding:0.4rem; background:#1a1e26; border:1px solid #2a2f3a; border-radius:6px; color:#fff; font-size:0.8rem;">
+                            <option value="position">Posición</option>
+                            <option value="endurance">Endurance</option>
+                            <option value="classification">Clasificación</option>
+                            <option value="qualifying_laps">Clas. por vueltas</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:0.72rem; color:#8892b0; margin-bottom:0.2rem;">Vueltas</label>
+                        <input id="ed_laps" type="number" min="0" style="width:100%; padding:0.4rem; background:#1a1e26; border:1px solid #2a2f3a; border-radius:6px; color:#fff; font-size:0.8rem;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:0.72rem; color:#8892b0; margin-bottom:0.2rem;">Duración (min)</label>
+                        <input id="ed_time" type="number" min="0" style="width:100%; padding:0.4rem; background:#1a1e26; border:1px solid #2a2f3a; border-radius:6px; color:#fff; font-size:0.8rem;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:0.72rem; color:#8892b0; margin-bottom:0.2rem;">Origen</label>
+                        <select id="ed_mode" style="width:100%; padding:0.4rem; background:#1a1e26; border:1px solid #2a2f3a; border-radius:6px; color:#fff; font-size:0.8rem;">
+                            <option value="gestionada">Gestionada</option>
+                            <option value="rapida">Rápida</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display:flex; gap:0.6rem; margin-top:0.8rem; flex-wrap:wrap;">
+                    <button class="btn btn-sm" id="ed_saveConfigBtn" style="background:#2a2f3a; color:#cbd5e1;">💾 Guardar config</button>
+                    <button class="btn btn-sm" id="ed_setupBtn" style="background:#8b5cf6; color:#fff;">🧩 Configurar carrera</button>
+                    <button class="btn btn-sm" id="ed_callAllBtn" style="background:#f59e0b; color:#fff;">📣 Llamar a todos</button>
+                    <button class="btn btn-sm" id="ed_readyAllBtn" style="background:#06b6d4; color:#fff;">✅ Marcar todos listos</button>
+                    <button class="btn btn-sm" id="ed_delBtn" style="background:#7a1f1f; color:#fff;">🗑️ Eliminar</button>
+                </div>
+            </div>
+
+            <!-- Lista de pilotos -->
+            <p style="margin:0 0 0.5rem 0; font-size:0.8rem; color:#9aa3b5; font-weight:600;">👥 PILOTOS DEL EVENTO <span id="ed_driverCount" style="color:#64748b; font-weight:400;"></span></p>
+            <div id="ed_driverList" style="display:flex; flex-direction:column; gap:0.5rem;"></div>
+        </div>
+    </div>
+
+
+    <!-- JavaScript externo -->
+    <script src="{{ url_for('static', filename='js/socket.io.min.js') }}?v={{ asset_version }}"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}?v={{ asset_version }}"></script>
+
+</body>
+
+</html>

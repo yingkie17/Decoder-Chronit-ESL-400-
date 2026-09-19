@@ -1,0 +1,8 @@
+# Ver vueltas actuales en tiempo real
+docker exec -it hardware-1 sqlite3 /app/data/chronit.db "SELECT * FROM laps ORDER BY id DESC LIMIT 10;"
+
+# Reiniciar solo la carrera (sin reiniciar todo el sistema)
+docker exec -it hardware-1 python -c "import main; main.RACE_ACTIVE=False; main.DRIVERS_FINISHED.clear()"
+
+# Ver pilotos inscritos en carrera actual
+docker exec -it hardware-1 sqlite3 /app/data/chronit.db "SELECT d.name, d.lastname, rd.transponder_id FROM race_drivers rd JOIN drivers d ON rd.driver_id = d.id;"

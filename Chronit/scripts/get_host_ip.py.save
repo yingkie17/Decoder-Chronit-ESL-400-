@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+import subprocess
+import re
+import sys
+
+def get_wifi_ip():
+    # Intento 1: Obtener la IP mediante la interfaz 'wlo1'
+    try:
+        result = subprocess.run(['ip', 'addr', 'show', 'wlo1'], capture_output=True, text=True)
+        match = re.search(r'inet (\d+\.\d+\.\d+\.\d+)/', result.stdout)
+        if match:
+            return match.group(1)
+    except Exception:
+        pass
+    
+    # Intento 2: Buscar una IP privada mediante 'hostname -I'
+    try:
+        result = subprocess.run(['hostname', '-I'], capture_output=True, text=True)
+        ips = result.stdout.strip().split()
+        for ip in ips:
+            # Filtra rangos de IP locales comunes (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
+            if ip.startswith('192.168.') or ip.startswith('10.') or ip.startswith('172.'):
+                return ip
+    except Exception:
+        pass
+
+    return None
+
+if __name__ == '__main__':
+    ip = get_wifi_ip()
+    if ip:
+        print(f"IP encontrada: {ip}")
+    else:
+        print("No se pudo obtener la IP.")
+        sys.exit(1)

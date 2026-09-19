@@ -1,0 +1,96 @@
+# =============================================================================
+# CHRONIT ECOSYSTEM — Overlay TLS (OPCIONAL)
+# -----------------------------------------------------------------------------
+# Añade un borde nginx que termina TLS y retira la publicación HTTP directa de
+# todos los servicios: en este modo el ÚNICO acceso desde el host es HTTPS a
+# través del borde. El tráfico interno del ecosistema sigue por la red de
+# Docker (aislada).
+#
+# Uso:
+#   docker compose -f docker-compose.yml -f docker-compose.tls.yml up -d --build
+#
+#   Sistema de tickets : https://<host>:3000   (API https://<host>:4000)
+#   Web del piloto     : https://<host>:3001
+#   Panel contable      : https://<host>:3002   (API https://<host>:4100)
+#   CRM                 : https://<host>:3003   (API https://<host>:4200)
+#
+# El certificado:
+#   * Producción: coloca un certificado VÁLIDO (Let's Encrypt/CA interna) en
+#     services/edge/certs/server.crt + server.key y el borde lo usa tal cual.
+#   * Desarrollo: si no existen, el borde genera uno autofirmado al arrancar
+#     (el navegador avisará hasta instalar uno válido).
+#
+# Para volver al modo HTTP de desarrollo:
+#   docker compose -f docker-compose.yml up -d
+# =============================================================================
+name: chronit-ecosystem-v2
+
+services:
+  # ---------------------------------------------------------------------------
+  # Borde TLS: único punto de entrada desde el host.
+  # ---------------------------------------------------------------------------
+  edge:
+    build:
+      context: ./services/edge
+      dockerfile: Dockerfile
+    container_name: chronit-edge
+    restart: unless-stopped
+    ports:
+      - "3000:3000"   # tickets-frontend
+      - "3001:3001"   # web-client
+      - "3002:3002"   # contabilidad-frontend
+      - "3003:3003"   # crm-frontend
+      - "4000:4000"   # tickets-backend
+      - "4100:4100"   # contabilidad-backend
+      - "4200:4200"   # crm-backend
+    environment:
+      # Nombre/IP que llevará el certificado autofirmado.
+      TLS_CN: ${TLS_CN:-localhost}
+      TLS_IP: ${TLS_IP:-127.0.0.1}
+    volumes:
+      # Permite montar un certificado propio (Let's Encrypt, CA interna…).
+      - ./services/edge/certs:/etc/nginx/certs
+    depends_on:
+      - tickets-frontend
+      - web-client
+      - contabilidad-frontend
+      - crm-frontend
+      - tickets-backend
+      - contabilidad-backend
+      - crm-backend
+    networks:
+      - chronit-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ---------------------------------------------------------------------------
+  # A partir de aquí: se retira la publicación HTTP directa (!reset) para que
+  # todo el tráfico del host pase por el borde TLS.
+  # ---------------------------------------------------------------------------
+
+  tickets-backend:
+    environment:
+      # La sesión sólo viaja por HTTPS.
+      COOKIE_SECURE: "true"
+    ports: !reset []
+
+  contabilidad-backend:
+    ports: !reset []
+
+  crm-backend:
+    ports: !reset []
+
+  tickets-frontend:
+    ports: !reset []
+
+  web-client:
+    ports: !reset []
+
+  contabilidad-frontend:
+    ports: !reset []
+
+  crm-frontend:
+    ports: !reset []

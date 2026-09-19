@@ -1,0 +1,794 @@
+/* ============================================================
+   PANTALLA EN PISTA
+   ------------------------------------------------------------
+   Vista limpia (sin menús ni barra de usuario) pensada para
+   pantallas LED grandes (ej. 2 m x 1 m). Reutiliza dashboard.css
+   para conservar el diseño visual y solo escala tipografías,
+   fotos, filas y columnas con vw/vh/clamp() para que se lean
+   desde lejos.
+   ============================================================ */
+
+html,
+body.pantalla-pista {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: #05070a;
+    overflow: hidden;
+}
+
+body.pantalla-pista .chronit-tv-container {
+    min-height: 100vh;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ------------------------- CABECERA ------------------------- */
+body.pantalla-pista .tablero-header {
+    flex-wrap: wrap;
+    gap: clamp(4px, 0.8vh, 18px) clamp(10px, 1.4vw, 44px);
+    padding: clamp(8px, 1.6vh, 32px) clamp(12px, 2vw, 60px);
+}
+
+body.pantalla-pista .event-tag {
+    font-size: clamp(1rem, 3vw, 3.8rem);
+    display: flex;
+    align-items: center;
+    gap: clamp(8px, 1vw, 24px);
+    flex-wrap: wrap;
+}
+
+body.pantalla-pista .race-status-badge {
+    font-size: clamp(0.6rem, 1.1vw, 1.7rem);
+    padding: clamp(4px, 0.7vh, 15px) clamp(10px, 1.1vw, 30px);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+body.pantalla-pista .race-status-badge.status-active {
+    color: #00e676;
+    background: rgba(0, 199, 83, 0.18);
+}
+
+body.pantalla-pista .race-status-badge.status-paused {
+    color: #ffffff;
+    background: #ff9800;
+}
+
+body.pantalla-pista .race-status-badge.status-completed {
+    color: #48e58f;
+    background: rgba(72, 229, 143, 0.15);
+}
+
+body.pantalla-pista #publicRaceModeDisplay {
+    font-size: clamp(0.65rem, 1.2vw, 1.9rem) !important;
+    margin-top: 0 !important;
+}
+
+body.pantalla-pista #publicRaceDescriptionDisplay {
+    font-size: clamp(0.6rem, 1.05vw, 1.7rem) !important;
+    margin-top: 0 !important;
+    flex-basis: 100%;
+}
+
+body.pantalla-pista .race-timer-box {
+    font-size: clamp(1rem, 2.6vw, 3.6rem);
+    min-width: clamp(120px, 13vw, 360px);
+    padding: clamp(4px, 0.8vh, 18px) clamp(10px, 1.2vw, 36px);
+}
+
+/* --------------------------- TABLA --------------------------- */
+body.pantalla-pista .karting-leaderboard {
+    flex: 1 1 auto;
+    padding: clamp(6px, 1vh, 24px) clamp(8px, 1.4vw, 36px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+body.pantalla-pista .k-header {
+    font-size: clamp(0.6rem, 1.2vw, 2rem);
+    padding: clamp(4px, 0.7vh, 18px) 0;
+}
+
+body.pantalla-pista #lista-pilotos {
+    flex: 1 1 auto;
+    overflow: hidden;
+}
+
+body.pantalla-pista .k-row {
+    padding: clamp(3px, 0.7vh, 18px) 0;
+    margin-bottom: clamp(2px, 0.5vh, 12px);
+}
+
+body.pantalla-pista .k-col-pos {
+    width: clamp(40px, 5vw, 150px);
+    font-size: clamp(0.9rem, 2vw, 3rem);
+}
+
+body.pantalla-pista .k-col-vueltas,
+body.pantalla-pista .k-col-dif,
+body.pantalla-pista .k-col-mejor,
+body.pantalla-pista .k-col-tiempo,
+body.pantalla-pista .k-col-tiempo-individual {
+    width: clamp(70px, 9vw, 260px);
+    font-size: clamp(0.7rem, 1.5vw, 2.2rem);
+}
+
+body.pantalla-pista .k-col-velocidad {
+    width: auto;
+    min-width: clamp(70px, 9vw, 260px);
+    font-size: clamp(0.7rem, 1.5vw, 2.2rem);
+}
+
+body.pantalla-pista .k-col-kart {
+    width: clamp(50px, 6vw, 160px);
+}
+
+body.pantalla-pista .driver-photo-leaderboard {
+    width: clamp(28px, 4vw, 115px);
+    height: clamp(28px, 4vw, 115px);
+    border-width: clamp(2px, 0.25vw, 7px);
+    margin-right: clamp(6px, 0.8vw, 24px);
+}
+
+body.pantalla-pista .driver-name {
+    font-size: clamp(0.85rem, 2.1vw, 3.2rem);
+}
+
+body.pantalla-pista .time-box {
+    font-size: clamp(0.65rem, 1.35vw, 2.1rem);
+    min-width: clamp(60px, 6vw, 180px);
+    padding: clamp(3px, 0.5vh, 13px) clamp(6px, 0.8vw, 22px);
+}
+
+body.pantalla-pista .kart-circle {
+    width: clamp(34px, 4.6vw, 125px);
+    height: clamp(34px, 4.6vw, 125px);
+    font-size: clamp(0.75rem, 1.6vw, 2.3rem);
+}
+
+/* ============================================================
+   VISTAS (Tabla / Podio / Grupos)
+   ============================================================ */
+body.pantalla-pista .pista-view {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: pistaFade 0.45s ease;
+}
+
+@keyframes pistaFade {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+body.pantalla-pista .pista-view-title {
+    text-align: center;
+    font-weight: 900;
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #ffffff;
+    padding: clamp(6px, 1.4vh, 26px) 0 clamp(4px, 0.8vh, 16px);
+    font-size: clamp(1.3rem, 3vw, 4rem);
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
+}
+
+body.pantalla-pista .pista-empty {
+    margin: auto;
+    color: #a4adbc;
+    font-size: clamp(0.9rem, 1.6vw, 2.2rem);
+    text-align: center;
+    padding: clamp(12px, 3vh, 60px);
+}
+
+/* ============================================================
+   PODIO
+   ============================================================ */
+body.pantalla-pista .pista-podium {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: clamp(10px, 3vw, 90px);
+    padding: clamp(10px, 2vh, 40px) clamp(12px, 3vw, 80px) clamp(20px, 4vh, 70px);
+}
+
+body.pantalla-pista .podium-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    width: clamp(120px, 20vw, 520px);
+    text-align: center;
+}
+
+body.pantalla-pista .podium-medal {
+    font-size: clamp(1.6rem, 4vw, 5.5rem);
+    line-height: 1;
+    margin-bottom: clamp(2px, 0.6vh, 14px);
+    filter: drop-shadow(0 0 18px rgba(255, 200, 0, 0.35));
+}
+
+body.pantalla-pista .podium-photo {
+    width: clamp(70px, 11vw, 300px);
+    height: clamp(70px, 11vw, 300px);
+    object-fit: cover;
+    border-radius: 50%;
+    border: clamp(2px, 0.3vw, 8px) solid rgba(255, 255, 255, 0.85);
+    background: #1d212a;
+}
+
+body.pantalla-pista .podium-slot.p1 .podium-photo {
+    border-color: #ffd54a;
+    box-shadow: 0 0 60px rgba(255, 213, 74, 0.55);
+}
+
+body.pantalla-pista .podium-slot.p2 .podium-photo {
+    border-color: #cfd8e3;
+    box-shadow: 0 0 45px rgba(207, 216, 227, 0.45);
+}
+
+body.pantalla-pista .podium-slot.p3 .podium-photo {
+    border-color: #e29a5a;
+    box-shadow: 0 0 45px rgba(226, 154, 90, 0.45);
+}
+
+body.pantalla-pista .podium-name {
+    margin-top: clamp(4px, 0.8vh, 18px);
+    font-size: clamp(0.85rem, 2vw, 3rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+body.pantalla-pista .podium-stat {
+    margin-top: clamp(1px, 0.3vh, 8px);
+    font-size: clamp(0.65rem, 1.3vw, 1.9rem);
+    color: #f4c06b;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+}
+
+body.pantalla-pista .podium-base {
+    margin-top: clamp(6px, 1.2vh, 26px);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 900;
+    border-radius: clamp(4px, 0.6vw, 14px) clamp(4px, 0.6vw, 14px) 0 0;
+    font-size: clamp(1.2rem, 3vw, 4.5rem);
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+body.pantalla-pista .podium-slot.p1 .podium-base { height: clamp(70px, 13vh, 200px); }
+body.pantalla-pista .podium-slot.p2 .podium-base { height: clamp(50px, 9vh, 150px); }
+body.pantalla-pista .podium-slot.p3 .podium-base { height: clamp(40px, 7vh, 120px); }
+
+/* ============================================================
+   CLASIFICACIÓN POR GRUPOS
+   ============================================================ */
+body.pantalla-pista .pista-groups {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(8px, 1.6vh, 28px) clamp(10px, 1.6vw, 34px);
+    padding: clamp(6px, 1.2vh, 26px) clamp(12px, 2.4vw, 60px) clamp(12px, 2.4vh, 50px);
+    overflow: hidden;
+}
+
+body.pantalla-pista .group-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    border-radius: clamp(6px, 0.8vw, 18px);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: clamp(4px, 0.5vw, 14px) solid var(--accent-2);
+    overflow: hidden;
+}
+
+body.pantalla-pista .group-card.g-q1 { border-left-color: #ffd54a; }
+body.pantalla-pista .group-card.g-q2 { border-left-color: #cfd8e3; }
+body.pantalla-pista .group-card.g-q3 { border-left-color: #e29a5a; }
+body.pantalla-pista .group-card.g-dnq { border-left-color: #ef7a86; }
+
+body.pantalla-pista .group-title {
+    padding: clamp(4px, 0.7vh, 16px) clamp(8px, 1vw, 28px);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: clamp(0.8rem, 1.6vw, 2.3rem);
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.25);
+}
+
+body.pantalla-pista .group-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    padding: clamp(2px, 0.4vh, 10px) clamp(6px, 0.8vw, 22px);
+}
+
+body.pantalla-pista .group-row {
+    display: flex;
+    align-items: center;
+    gap: clamp(6px, 0.8vw, 20px);
+    padding: clamp(2px, 0.5vh, 12px) 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body.pantalla-pista .group-pos {
+    width: clamp(24px, 2.6vw, 70px);
+    text-align: center;
+    font-weight: 900;
+    color: #f4c06b;
+    font-size: clamp(0.75rem, 1.5vw, 2.1rem);
+}
+
+body.pantalla-pista .group-name {
+    flex: 1 1 auto;
+    color: #eceff4;
+    font-size: clamp(0.75rem, 1.5vw, 2.1rem);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body.pantalla-pista .group-laps {
+    color: #a4adbc;
+    font-family: 'Courier New', monospace;
+    font-size: clamp(0.7rem, 1.3vw, 1.9rem);
+}
+
+body.pantalla-pista .group-empty {
+    color: #6b7280;
+    text-align: center;
+    padding: clamp(4px, 1vh, 16px);
+    font-size: clamp(0.7rem, 1.3vw, 1.9rem);
+}
+
+/* ============================================================
+   CONTROLES DISCRETOS (se aclaran al pasar el mouse)
+   ============================================================ */
+body.pantalla-pista .pista-controls {
+    position: fixed;
+    right: clamp(8px, 1.2vw, 26px);
+    bottom: clamp(8px, 1.2vw, 26px);
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    gap: clamp(4px, 0.5vw, 12px);
+    padding: clamp(4px, 0.5vw, 12px) clamp(6px, 0.7vw, 16px);
+    border-radius: 999px;
+    background: rgba(10, 12, 16, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    opacity: 0.12;
+    transition: opacity 0.25s ease;
+}
+
+body.pantalla-pista .pista-controls:hover,
+body.pantalla-pista .pista-controls:focus-within {
+    opacity: 1;
+}
+
+body.pantalla-pista .pista-ctl-btn {
+    width: clamp(30px, 3vw, 74px);
+    height: clamp(30px, 3vw, 74px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+    cursor: pointer;
+    font-size: clamp(0.8rem, 1.5vw, 2rem);
+    line-height: 1;
+    transition: background 0.2s ease, transform 0.15s ease, border-color 0.2s ease;
+}
+
+body.pantalla-pista .pista-ctl-btn:hover {
+    background: rgba(255, 255, 255, 0.16);
+    transform: scale(1.06);
+}
+
+body.pantalla-pista .pista-ctl-btn.is-active {
+    background: #9b2725;
+    border-color: #e5484d;
+    box-shadow: 0 0 18px rgba(229, 72, 77, 0.5);
+}
+
+body.pantalla-pista .pista-ctl-sep {
+    width: 1px;
+    height: clamp(20px, 2.4vw, 46px);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================================
+   OVERLAY DE CUENTA REGRESIVA
+   Mismo diseño que el contador de "Control de Carrera".
+   ============================================================ */
+body.pantalla-pista #pistaCountdownOverlay {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background:
+        radial-gradient(circle at 50% 42%, rgba(229, 72, 77, 0.20), transparent 58%),
+        linear-gradient(rgba(4, 6, 10, 0.90), rgba(4, 6, 10, 0.97)),
+        url('/static/backgroundjpeg.jpeg') center / cover no-repeat;
+    backdrop-filter: blur(8px);
+}
+
+body.pantalla-pista .pista-countdown-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    animation: fadeInScale 0.2s ease-out;
+}
+
+body.pantalla-pista .pista-countdown-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.4rem, 1.6vw, 1.1rem);
+    font-family: "Space Grotesk", "Segoe UI", sans-serif;
+    font-size: clamp(1rem, 2.4vw, 2.2rem);
+    font-weight: 600;
+    letter-spacing: 0.5em;
+    text-indent: 0.5em;
+    text-transform: uppercase;
+    color: #9aa4b2;
+    margin-bottom: 0.5rem;
+}
+
+body.pantalla-pista .pista-countdown-label::before,
+body.pantalla-pista .pista-countdown-label::after {
+    content: "";
+    width: clamp(36px, 12vw, 150px);
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, transparent, rgba(154, 164, 178, 0.75));
+}
+
+body.pantalla-pista .pista-countdown-label::after {
+    background: linear-gradient(90deg, rgba(154, 164, 178, 0.75), transparent);
+}
+
+body.pantalla-pista #pistaCountdownNumber {
+    font-family: "Orbitron", "Space Grotesk", "Segoe UI", sans-serif;
+    font-size: clamp(9rem, 24vw, 22rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: #e5484d;
+    margin: 0.25rem 0;
+    text-shadow: 0 0 30px rgba(229, 72, 77, 0.55), 0 0 90px rgba(229, 72, 77, 0.35);
+    transition: transform 0.1s ease, color 0.15s ease, text-shadow 0.15s ease;
+    animation: countdownPulse 1s ease-in-out infinite;
+}
+
+body.pantalla-pista #pistaCountdownHint {
+    font-family: "Space Grotesk", "Segoe UI", sans-serif;
+    font-size: clamp(1rem, 2.4vw, 2.2rem);
+    font-weight: 600;
+    letter-spacing: 0.35em;
+    text-indent: 0.35em;
+    text-transform: uppercase;
+    color: #dfe4ea;
+    margin-top: 1.1rem;
+}
+
+/* ============================================================
+   SPLASH: CARRERA FINALIZADA ¡PARE!
+   Mismo lenguaje visual que el contador de "Control de Carrera",
+   con paleta roja de alerta y banderas de karting (meta/parada).
+   ============================================================ */
+body.pantalla-pista #pistaFinishOverlay {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background:
+        radial-gradient(circle at 50% 45%, rgba(229, 72, 77, 0.42), transparent 62%),
+        linear-gradient(rgba(26, 4, 6, 0.93), rgba(10, 2, 3, 0.98)),
+        url('/static/backgroundjpeg.jpeg') center / cover no-repeat;
+    backdrop-filter: blur(8px);
+}
+
+body.pantalla-pista .pista-finish-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 clamp(1rem, 4vw, 5rem);
+    animation: fadeInScale 0.25s ease-out;
+}
+
+body.pantalla-pista .pista-finish-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.8rem, 2.4vw, 3rem);
+    margin-bottom: clamp(0.4rem, 1.4vh, 1.6rem);
+}
+
+body.pantalla-pista .pista-finish-flag {
+    width: clamp(52px, 11vw, 240px);
+    height: auto;
+    flex: 0 0 auto;
+    filter: drop-shadow(0 0 20px rgba(229, 72, 77, 0.6));
+}
+
+body.pantalla-pista .pista-finish-flag.is-mirror {
+    transform: scaleX(-1);
+}
+
+body.pantalla-pista .pista-finish-label {
+    font-family: "Space Grotesk", "Segoe UI", sans-serif;
+    font-size: clamp(1rem, 2.6vw, 2.5rem);
+    font-weight: 700;
+    letter-spacing: 0.4em;
+    text-indent: 0.4em;
+    text-transform: uppercase;
+    color: #ff9a9e;
+    text-shadow: 0 0 24px rgba(229, 72, 77, 0.55);
+    white-space: nowrap;
+}
+
+body.pantalla-pista .pista-finish-title {
+    font-family: "Orbitron", "Space Grotesk", "Segoe UI", sans-serif;
+    font-size: clamp(4.5rem, 17vw, 18rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    color: #e5484d;
+    margin: 0.2rem 0 0;
+    text-shadow: 0 0 30px rgba(229, 72, 77, 0.65), 0 0 90px rgba(229, 72, 77, 0.4);
+    animation: countdownPulse 1s ease-in-out infinite;
+}
+
+body.pantalla-pista .pista-finish-hint {
+    font-family: "Space Grotesk", "Segoe UI", sans-serif;
+    font-size: clamp(0.9rem, 2.2vw, 2rem);
+    font-weight: 600;
+    letter-spacing: 0.35em;
+    text-indent: 0.35em;
+    text-transform: uppercase;
+    color: #ffd0d2;
+    margin-top: 1.1rem;
+}
+
+/* ============================================================
+   MODO LED OPTIMIZADO  (nitidez máxima en pantalla LED)
+   ------------------------------------------------------------
+   Las pantallas LED se ven "sucias"/borrosas cuando el navegador
+   dibuja desenfoques, degradados o líneas finas: la rejilla de
+   píxeles y el controlador del panel no los reproducen igual que
+   un monitor. Aquí se reemplazan por:
+     * colores PLANOS de alto contraste (sin degradados),
+     * SIN text-shadow / box-shadow / backdrop-filter / blur,
+     * tipografía más grande,
+     * bordes gruesos y sólidos.
+   Todo va prefijado con body.pantalla-pista para NO afectar al
+   resto del dashboard.
+   ============================================================ */
+
+/* --- Render de texto nítido (antialias en escala de grises) --- */
+body.pantalla-pista {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Cabecera: color plano en vez de degradado --- */
+body.pantalla-pista .tablero-header {
+    background: #b62d31;
+    border-bottom: clamp(2px, 0.3vh, 6px) solid #ffcfcf;
+}
+
+/* --- Sombras de texto: en LED se ven como manchas --- */
+body.pantalla-pista .pista-view-title,
+body.pantalla-pista .podium-base,
+body.pantalla-pista .kart-circle,
+body.pantalla-pista .event-tag {
+    text-shadow: none !important;
+}
+
+/* --- Tipografía algo más grande en la tabla (sin desbordar columnas) --- */
+body.pantalla-pista .event-tag {
+    font-size: clamp(1.15rem, 3.2vw, 4rem);
+}
+
+body.pantalla-pista .k-header {
+    font-size: clamp(0.75rem, 1.35vw, 2.2rem);
+    color: #ffffff;
+}
+
+body.pantalla-pista .k-col-pos {
+    font-size: clamp(1rem, 2.2vw, 3.3rem);
+}
+
+body.pantalla-pista .k-col-vueltas,
+body.pantalla-pista .k-col-dif,
+body.pantalla-pista .k-col-mejor,
+body.pantalla-pista .k-col-tiempo,
+body.pantalla-pista .k-col-tiempo-individual,
+body.pantalla-pista .k-col-velocidad {
+    font-size: clamp(0.75rem, 1.6vw, 2.3rem);
+}
+
+body.pantalla-pista .driver-name {
+    font-size: clamp(0.95rem, 2.35vw, 3.6rem);
+}
+
+body.pantalla-pista .time-box {
+    font-size: clamp(0.75rem, 1.55vw, 2.3rem);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+}
+
+/* La unidad "km/h" viene con font-size fijo en el HTML: forzamos escala LED */
+body.pantalla-pista .k-col-velocidad .time-box span {
+    font-size: clamp(0.55rem, 0.95vw, 1.3rem) !important;
+}
+
+/* --- Cajas de tiempo: sólidas y con borde grueso --- */
+body.pantalla-pista .box-black {
+    background: #000000;
+    color: #ffffff;
+    border: clamp(1px, 0.15vw, 4px) solid #6b7280;
+}
+
+body.pantalla-pista .box-gold {
+    background: #ffd400;
+    color: #000000;
+}
+
+/* --- Filas: fondo y separador más marcados --- */
+body.pantalla-pista .k-row {
+    background: rgba(255, 255, 255, 0.10);
+    border-bottom: clamp(1px, 0.12vw, 3px) solid rgba(255, 255, 255, 0.28);
+}
+
+body.pantalla-pista .k-row.row-first {
+    background: rgba(255, 212, 0, 0.18);
+    border-bottom-color: #ffd400;
+}
+
+/* --- Etiqueta de estado con colores planos --- */
+body.pantalla-pista .race-status-badge {
+    background: rgba(255, 255, 255, 0.10);
+}
+
+body.pantalla-pista .race-status-badge.status-active {
+    background: #007a33;
+    color: #ffffff;
+}
+
+body.pantalla-pista .race-status-badge.status-paused {
+    background: #b26a00;
+    color: #ffffff;
+}
+
+body.pantalla-pista .race-status-badge.status-completed {
+    background: #0a5c37;
+    color: #ffffff;
+}
+
+/* --- Textos secundarios de cabecera con más contraste --- */
+body.pantalla-pista #publicRaceModeDisplay {
+    color: #d7dde6;
+}
+
+body.pantalla-pista #publicRaceDescriptionDisplay {
+    color: #b9c2cf;
+}
+
+/* La línea de progreso es un degradado de 3px: en LED no se lee bien */
+body.pantalla-pista .progress-line {
+    display: none !important;
+}
+
+/* --- Podio: sin resplandores (blur), bordes gruesos y bases planas --- */
+body.pantalla-pista .podium-medal {
+    filter: none;
+}
+
+body.pantalla-pista .podium-photo {
+    border-width: clamp(3px, 0.5vw, 12px);
+}
+
+body.pantalla-pista .podium-slot.p1 .podium-photo,
+body.pantalla-pista .podium-slot.p2 .podium-photo,
+body.pantalla-pista .podium-slot.p3 .podium-photo {
+    box-shadow: none;
+}
+
+body.pantalla-pista .podium-slot.p1 .podium-base { background: #ffd400 !important; color: #000000 !important; }
+body.pantalla-pista .podium-slot.p2 .podium-base { background: #c7d2df !important; color: #000000 !important; }
+body.pantalla-pista .podium-slot.p3 .podium-base { background: #d98b4a !important; color: #000000 !important; }
+
+/* --- Grupos: bordes gruesos y alto contraste --- */
+body.pantalla-pista .group-card {
+    background: #12161d;
+    border: clamp(2px, 0.2vw, 5px) solid rgba(255, 255, 255, 0.25);
+    border-left-width: clamp(6px, 0.8vw, 20px);
+}
+
+body.pantalla-pista .group-title {
+    background: #000000;
+    color: #ffffff;
+}
+
+body.pantalla-pista .group-row {
+    border-bottom: clamp(1px, 0.12vw, 3px) solid rgba(255, 255, 255, 0.20);
+}
+
+body.pantalla-pista .group-laps {
+    color: #ffffff;
+}
+
+/* --- Overlay de cuenta regresiva: se conserva el diseño del control de
+       carrera (resplandor rojo). En LED se prescinde sólo del desenfoque. --- */
+body.pantalla-pista #pistaCountdownOverlay {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+body.pantalla-pista #pistaCountdownNumber {
+    font-size: clamp(9rem, 26vw, 40rem);
+}
+
+/* --- Splash de fin de carrera: se conserva el diseño (resplandor rojo);
+       en LED se prescinde sólo del desenfoque y de la sombra de las banderas. --- */
+body.pantalla-pista #pistaFinishOverlay {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+body.pantalla-pista .pista-finish-flag {
+    filter: none;
+    width: clamp(60px, 13vw, 300px);
+}
+
+body.pantalla-pista .pista-finish-title {
+    font-size: clamp(5rem, 19vw, 22rem);
+}
+
+/* --- Controles discretos: se mantienen pero con un poco más de visibilidad --- */
+body.pantalla-pista .pista-controls {
+    opacity: 0.25;
+}
+
+body.pantalla-pista .pista-ctl-btn.is-active {
+    box-shadow: none;
+}

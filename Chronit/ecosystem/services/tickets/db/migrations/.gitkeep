@@ -1,0 +1,2 @@
+# Migraciones de base de datos del sistema de Tickets (PostgreSQL)
+# Los archivos de migración (ej: 0001_usuarios.sql) se añaden en la fase de modelos.

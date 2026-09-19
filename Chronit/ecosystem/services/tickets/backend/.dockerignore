@@ -1,0 +1,8 @@
+# Dependencias
+node_modules
+*.log
+
+# Entorno
+.env
+.env.*
+!.env.example

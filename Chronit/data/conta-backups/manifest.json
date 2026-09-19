@@ -1,0 +1,89 @@
+{
+  "respaldos": [
+    {
+      "archivo": "chronit_2026-09-19_2026-09-19T06-46-13-248Z.dump.gpg",
+      "ruta": "/app/backups/chronit_2026-09-19_2026-09-19T06-46-13-248Z.dump.gpg",
+      "fecha": "2026-09-19T06:46:14.132Z",
+      "fecha_local": "2026-09-19",
+      "bytes": 58329,
+      "cifrado": true,
+      "sha256": "f405252025ba1dee4ad41a387cf01a8f6e005e04483db730547a697e8785bf1f",
+      "destino_externo": null,
+      "subido_externo": false,
+      "manual": false,
+      "usuario_id": null
+    },
+    {
+      "archivo": "chronit_2026-09-18_2026-09-18T16-29-16-734Z.dump.gpg",
+      "ruta": "/app/backups/chronit_2026-09-18_2026-09-18T16-29-16-734Z.dump.gpg",
+      "fecha": "2026-09-18T16:29:17.868Z",
+      "fecha_local": "2026-09-18",
+      "bytes": 57138,
+      "cifrado": true,
+      "sha256": "dc7bc87de9b76da56306a7ed33f188cdd3dd8c492b8832a9ca75a49e0b1ec3ec",
+      "destino_externo": null,
+      "subido_externo": false,
+      "manual": false,
+      "usuario_id": null
+    },
+    {
+      "archivo": "chronit_2026-09-17_2026-09-18T01-20-44-689Z.dump.gpg",
+      "ruta": "/app/backups/chronit_2026-09-17_2026-09-18T01-20-44-689Z.dump.gpg",
+      "fecha": "2026-09-18T01:20:45.902Z",
+      "fecha_local": "2026-09-17",
+      "bytes": 1233529,
+      "cifrado": true,
+      "sha256": "b8251e95fd2adaa526a77e68f2baa0c23d01d4b9a9b4aebcbcaf4fd7fd5de6c0",
+      "destino_externo": null,
+      "subido_externo": false,
+      "manual": true,
+      "usuario_id": 1
+    },
+    {
+      "archivo": "chronit_2026-09-17_2026-09-18T00-46-09-281Z.dump.gpg",
+      "ruta": "/app/backups/chronit_2026-09-17_2026-09-18T00-46-09-281Z.dump.gpg",
+      "fecha": "2026-09-18T00:46:10.502Z",
+      "fecha_local": "2026-09-17",
+      "bytes": 959509,
+      "cifrado": true,
+      "sha256": "79a162c593b7d98255c6a86c621ff2462fbabfa2bea16add81bd79b4d5d14d7c",
+      "destino_externo": null,
+      "subido_externo": false,
+      "manual": true,
+      "usuario_id": 1
+    },
+    {
+      "archivo": "chronit_2026-09-17_2026-09-17T18-33-37-280Z.dump.gpg",
+      "ruta": "/app/backups/chronit_2026-09-17_2026-09-17T18-33-37-280Z.dump.gpg",
+      "fecha": "2026-09-17T18:33:38.695Z",
+      "fecha_local": "2026-09-17",
+      "bytes": 853223,
+      "cifrado": true,
+      "sha256": "41f874cecde3e333b7b93114322c3d83c15d844e1bb0f09c8c41ea385818b4f7",
+      "destino_externo": null,
+      "subido_externo": false,
+      "manual": false,
+      "usuario_id": null
+    }
+  ],
+  "ultimo_ok": {
+    "archivo": "chronit_2026-09-19_2026-09-19T06-46-13-248Z.dump.gpg",
+    "ruta": "/app/backups/chronit_2026-09-19_2026-09-19T06-46-13-248Z.dump.gpg",
+    "fecha": "2026-09-19T06:46:14.132Z",
+    "fecha_local": "2026-09-19",
+    "bytes": 58329,
+    "cifrado": true,
+    "sha256": "f405252025ba1dee4ad41a387cf01a8f6e005e04483db730547a697e8785bf1f",
+    "destino_externo": null,
+    "subido_externo": false,
+    "manual": false,
+    "usuario_id": null
+  },
+  "ultima_verificacion": {
+    "ok": true,
+    "archivo": "chronit_2026-09-17_2026-09-18T01-20-44-689Z.dump.gpg",
+    "tablas_detectadas": 60,
+    "verificado_en": "2026-09-18T01:20:46.079Z",
+    "sha256": "b8251e95fd2adaa526a77e68f2baa0c23d01d4b9a9b4aebcbcaf4fd7fd5de6c0"
+  }
+}

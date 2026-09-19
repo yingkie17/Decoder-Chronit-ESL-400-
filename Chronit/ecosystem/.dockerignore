@@ -1,0 +1,10 @@
+# Excluir artefactos y secretos del build de Docker en el ecosistema
+**/node_modules
+**/.next
+**/*.log
+**/.git
+**/.env
+**/.env.*
+!**/.env.example
+**/data
+**/target

@@ -1,0 +1,533 @@
+# =============================================================================
+# CHRONIT ECOSYSTEM — Orquestación de todos los servicios
+# -----------------------------------------------------------------------------
+# Este compose orquesta todos los servicios del ecosistema:
+#   - hardware            (Chronit Core — servicio de carrera, Python)
+#   - tickets-backend     (Node.js + Express + PostgreSQL)
+#   - contabilidad-backend (Node.js + Express — caja, ventas, reportes) :4100
+#   - tickets-frontend    (Next.js — web de pilotos + pantalla pública)
+#   - web-client          (Next.js — feed + cuenta del piloto)
+#   - postgres            (base de datos de la nube/kiosco)
+#   - valkey              (sesiones de usuario + caché)
+#   - sync                (sentinela de sincronización SQLite <-> PostgreSQL)
+#   - sqlite-web-*        (paneles de administración de la base SQLite)
+#
+# Uso:
+#   docker compose -f ecosystem/docker-compose.yml up --build
+# =============================================================================
+
+name: chronit-ecosystem-v2
+
+services:
+  # ---------------------------------------------------------------------------
+  # Núcleo de carrera (Chronit Core) — lector ESL-400 + API REST + dashboard
+  # Codigo fuente en ./services/carrera
+  # ---------------------------------------------------------------------------
+  hardware:
+    build:
+      context: ./services/carrera
+      dockerfile: Dockerfile
+    container_name: chronit-hardware
+    privileged: true
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    working_dir: /app/src
+    volumes:
+      - ../data:/app/data
+      - ./services/carrera/src:/app/src
+      - ./services/carrera/src/static/uploads:/app/static/uploads
+      - ./services/carrera/src/static:/app/static
+    environment:
+      - SERIAL_PORT=${SERIAL_PORT:-/dev/ttyUSB0}
+      - PYTHONUNBUFFERED=1
+      - DATABASE_PATH=/app/data/chronit.db
+      - HOST_IP=${HOST_IP}
+      # Conexión a PostgreSQL (modo 'gestionada' + sincronización de resultados).
+      - PGHOST=${PGHOST:-postgres}
+      - PGPORT=${PGPORT:-5432}
+      - PGDATABASE=${PGDATABASE:-chronit}
+      - PGUSER=${PGUSER:-chronit}
+      - PGPASSWORD=${PGPASSWORD:-chronit_secret}
+    devices:
+      - "${SERIAL_PORT:-/dev/ttyUSB0}:${SERIAL_PORT:-/dev/ttyUSB0}"
+    networks:
+      - chronit-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ---------------------------------------------------------------------------
+  # Panel web para chronit.db
+  # ---------------------------------------------------------------------------
+  sqlite-web-chronit:
+    image: coleifer/sqlite-web:latest
+    container_name: chronit-sqlite-web
+    restart: unless-stopped
+    ports:
+      - "8880:8080"
+    volumes:
+      - ../data:/data
+    environment:
+      - SQLITE_DATABASE=chronit.db
+    command: sqlite_web --host 0.0.0.0 /data/chronit.db
+    networks:
+      - chronit-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  # ---------------------------------------------------------------------------
+  # Panel web para users.db
+  # ---------------------------------------------------------------------------
+  sqlite-web-users:
+    image: coleifer/sqlite-web:latest
+    container_name: users-sqlite-web
+    restart: unless-stopped
+    ports:
+      - "8881:8080"
+    volumes:
+      - ../data:/data
+    environment:
+      - SQLITE_DATABASE=users.db
+    command: sqlite_web --host 0.0.0.0 /data/users.db
+    networks:
+      - chronit-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  # ---------------------------------------------------------------------------
+  # Panel web para respaldos
+  # ---------------------------------------------------------------------------
+  sqlite-web-temp:
+    image: coleifer/sqlite-web:latest
+    container_name: backups-temp-sqlite-web
+    restart: unless-stopped
+    ports:
+      - "8883:8080"
+    volumes:
+      - ../data/backups:/data
+    environment:
+      - SQLITE_DATABASE=_temp_view.db
+    command: sqlite_web --host 0.0.0.0 /data/_temp_view.db
+    networks:
+      - chronit-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  # ---------------------------------------------------------------------------
+  # Base de datos PostgreSQL (usuarios, roles, tickets, colas, palmarés)
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: chronit-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-chronit}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-chronit_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-chronit}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./services/database/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-chronit} -d ${POSTGRES_DB:-chronit}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chronit-network
+
+  # ---------------------------------------------------------------------------
+  # Valkey (antes Redis) — sesiones de usuario web + caché de pantalla pública
+  # ---------------------------------------------------------------------------
+  valkey:
+    image: valkey/valkey:8-alpine
+    container_name: chronit-valkey
+    restart: unless-stopped
+    command: valkey-server /etc/valkey/valkey.conf
+    ports:
+      - "${VALKEY_PORT:-6380}:6379"
+    volumes:
+      - valkey_data:/data
+      - ./services/database/valkey/valkey.conf:/etc/valkey/valkey.conf:ro
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chronit-network
+
+  # ---------------------------------------------------------------------------
+  # Backend de Tickets y Colas (Node.js + Express)
+  # ---------------------------------------------------------------------------
+  tickets-backend:
+    build:
+      context: ./services/tickets
+      dockerfile: backend/Dockerfile
+    container_name: chronit-tickets-backend
+    restart: unless-stopped
+    environment:
+      PORT: 4000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-chronit}:${POSTGRES_PASSWORD:-chronit_secret}@postgres:5432/${POSTGRES_DB:-chronit}
+      REDIS_URL: redis://valkey:6379
+      CARRERA_API: http://hardware:5000
+      JWT_SECRET: ${JWT_SECRET:-change_me_in_env}
+      # CORS: lista de orígenes permitidos. Vacío = reflejar origen (dev).
+      CORS_ORIGINS: ${CORS_ORIGINS:-}
+      # Seed de usuarios por defecto: se ejecuta en cada arranque tras migrate.
+      SEED_ENABLED: ${SEED_ENABLED:-true}
+      BCRYPT_ROUNDS: ${BCRYPT_ROUNDS:-10}
+      SEED_USERS_JSON: ${SEED_USERS_JSON:-}
+    ports:
+      - "4000:4000"
+    volumes:
+      # Carpeta compartida de uploads: el backend guarda aquí y el contenedor
+      # `images` (nginx :5001) sirve las fotos en modo offline.
+      - ../data/uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+    networks:
+      - chronit-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ---------------------------------------------------------------------------
+  # Backend de Contabilidad, Caja y Usuarios (Node.js + Express) — puerto 4100
+  # Comparte PostgreSQL, sesión de Valkey y JWT_SECRET con tickets-backend.
+  # ---------------------------------------------------------------------------
+  contabilidad-backend:
+    build:
+      context: ./services/contabilidad
+      dockerfile: Dockerfile
+    container_name: chronit-contabilidad-backend
+    restart: unless-stopped
+    environment:
+      PORT: 4100
+      DATABASE_URL: postgresql://${POSTGRES_USER:-chronit}:${POSTGRES_PASSWORD:-chronit_secret}@postgres:5432/${POSTGRES_DB:-chronit}
+      REDIS_URL: redis://valkey:6379
+      JWT_SECRET: ${JWT_SECRET:-change_me_in_env}
+      CORS_ORIGINS: ${CORS_ORIGINS:-}
+      # Toda fecha de negocio se resuelve en la zona horaria de Bolivia.
+      TZ: America/La_Paz
+      PGTZ: America/La_Paz
+      # Cola offline (SQLite) para seguir vendiendo si PostgreSQL cae.
+      OUTBOX_SQLITE_PATH: /app/data/conta_outbox.sqlite
+      OUTBOX_INTERVAL_MS: 15000
+      # Respaldo fiscal: directorio de respaldos y passphrase GPG (AES256).
+      BACKUP_DIR: /app/backups
+      BACKUP_GPG_PASSPHRASE: ${BACKUP_GPG_PASSPHRASE:-chronit_backup_local_pass}
+      BACKUP_INTERVAL_MS: 1800000
+    ports:
+      - "4100:4100"
+    volumes:
+      # Persiste la cola offline entre reinicios del contenedor.
+      - ../data/conta-outbox:/app/data
+      # Persiste los respaldos fiscales (pg_dump cifrado con GPG).
+      - ../data/conta-backups:/app/backups
+    depends_on:
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+    networks:
+      - chronit-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ---------------------------------------------------------------------------
+  # Frontend Web (Next.js) — portal de pilotos + pantalla pública + admin
+  # ---------------------------------------------------------------------------
+  tickets-frontend:
+    build:
+      context: ./services/tickets/frontend
+      dockerfile: Dockerfile
+    container_name: chronit-tickets-frontend
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
+      NEXT_PUBLIC_DISPLAY_MODE: ${NEXT_PUBLIC_DISPLAY_MODE:-public}
+      # Backend del módulo de contabilidad (caja, ventas, reportes, usuarios).
+      NEXT_PUBLIC_CONTA_API_URL: ${NEXT_PUBLIC_CONTA_API_URL:-http://localhost:4100}
+      NEXT_PUBLIC_CONTA_API_PORT: ${NEXT_PUBLIC_CONTA_API_PORT:-4100}
+      # Panel contable independiente (enlaces cruzados desde el sistema de tickets).
+      NEXT_PUBLIC_CONTA_FRONTEND_URL: ${NEXT_PUBLIC_CONTA_FRONTEND_URL:-http://localhost:3002}
+      NEXT_PUBLIC_CONTA_FRONTEND_PORT: ${NEXT_PUBLIC_CONTA_FRONTEND_PORT:-3002}
+    ports:
+      - "${TICKETS_FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      - tickets-backend
+      - contabilidad-backend
+    networks:
+      - chronit-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ---------------------------------------------------------------------------
+  # Panel Contable (Next.js) — PROYECTO INDEPENDIENTE (puerto 3002)
+  # Separado por seguridad del sistema de tickets: código fuente propio, sin
+  # archivos compartidos. Se comunica por API con ambos backends:
+  #   * tickets-backend (:4000)       -> autenticación (sesión compartida).
+  #   * contabilidad-backend (:4100)  -> datos financieros (/api/conta/*).
+  # ---------------------------------------------------------------------------
+  contabilidad-frontend:
+    build:
+      context: ./services/contabilidad/frontend
+      dockerfile: Dockerfile
+    container_name: chronit-contabilidad-frontend
+    restart: unless-stopped
+    environment:
+      PORT: 3002
+      HOSTNAME: 0.0.0.0
+      # Backend de autenticación (misma sesión que el sistema de tickets).
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
+      NEXT_PUBLIC_API_PORT: ${NEXT_PUBLIC_API_PORT:-4000}
+      # Backend del módulo contable (datos financieros).
+      NEXT_PUBLIC_CONTA_API_URL: ${NEXT_PUBLIC_CONTA_API_URL:-http://localhost:4100}
+      NEXT_PUBLIC_CONTA_API_PORT: ${NEXT_PUBLIC_CONTA_API_PORT:-4100}
+      # Sistema de tickets (enlaces cruzados: Caja de carreras, portal).
+      NEXT_PUBLIC_TICKETS_FRONTEND_URL: ${NEXT_PUBLIC_TICKETS_FRONTEND_URL:-http://localhost:3000}
+      NEXT_PUBLIC_TICKETS_FRONTEND_PORT: ${NEXT_PUBLIC_TICKETS_FRONTEND_PORT:-3000}
+    ports:
+      - "3002:3002"
+    depends_on:
+      - tickets-backend
+      - contabilidad-backend
+    networks:
+      - chronit-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ---------------------------------------------------------------------------
+  # Backend del CRM interno centralizado (Node.js + Express) — puerto 4200
+  # SOLO LECTURA: integra carreras, tickets, caja/contabilidad, usuarios y
+  # página web; deja preparada la arquitectura del módulo biométrico. Comparte
+  # PostgreSQL, sesión de Valkey y JWT_SECRET con el resto del ecosistema.
+  # ---------------------------------------------------------------------------
+  crm-backend:
+    build:
+      context: ./services/crm
+      dockerfile: Dockerfile
+    container_name: chronit-crm-backend
+    restart: unless-stopped
+    environment:
+      PORT: 4200
+      DATABASE_URL: postgresql://${POSTGRES_USER:-chronit}:${POSTGRES_PASSWORD:-chronit_secret}@postgres:5432/${POSTGRES_DB:-chronit}
+      REDIS_URL: redis://valkey:6379
+      JWT_SECRET: ${JWT_SECRET:-change_me_in_env}
+      CORS_ORIGINS: ${CORS_ORIGINS:-}
+      # Zona horaria de negocio (America/La_Paz) para todas las fechas.
+      TZ: America/La_Paz
+      PGTZ: America/La_Paz
+      # --- Seguridad de transporte ---
+      TRUST_PROXY: ${TRUST_PROXY:-1}
+    ports:
+      - "${CRM_BACKEND_PORT:-4200}:4200"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+    networks:
+      - chronit-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ---------------------------------------------------------------------------
+  # Frontend del CRM (Next.js) — PROYECTO INDEPENDIENTE (puerto 3003)
+  # Sólo consume el CRM por API. Autenticación: tickets-backend (:4000), misma
+  # sesión del ecosistema. Sólo lectura sobre todos los sistemas.
+  # ---------------------------------------------------------------------------
+  crm-frontend:
+    build:
+      context: ./services/crm/frontend
+      dockerfile: Dockerfile
+    container_name: chronit-crm-frontend
+    restart: unless-stopped
+    environment:
+      PORT: 3003
+      HOSTNAME: 0.0.0.0
+      # Backend de autenticación (misma sesión que el resto del ecosistema).
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
+      NEXT_PUBLIC_API_PORT: ${NEXT_PUBLIC_API_PORT:-4000}
+      # Backend del CRM (datos centralizados, solo lectura).
+      NEXT_PUBLIC_CRM_API_URL: ${NEXT_PUBLIC_CRM_API_URL:-http://localhost:4200}
+      NEXT_PUBLIC_CRM_API_PORT: ${NEXT_PUBLIC_CRM_API_PORT:-4200}
+      # Enlaces cruzados a los demás paneles.
+      NEXT_PUBLIC_TICKETS_FRONTEND_URL: ${NEXT_PUBLIC_TICKETS_FRONTEND_URL:-http://localhost:3000}
+      NEXT_PUBLIC_CONTA_FRONTEND_URL: ${NEXT_PUBLIC_CONTA_FRONTEND_URL:-http://localhost:3002}
+    ports:
+      - "3003:3003"
+    depends_on:
+      - tickets-backend
+      - crm-backend
+    networks:
+      - chronit-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ---------------------------------------------------------------------------
+  # Web de Cliente (Next.js) — feed + cuenta del piloto
+  # Conecta a PostgreSQL (base universal) y usa Valkey para la sesión.
+  # ---------------------------------------------------------------------------
+  web-client:
+    build:
+      context: ./services/web-client
+      dockerfile: Dockerfile
+    container_name: chronit-web-client
+    restart: unless-stopped
+    environment:
+      PORT: 3001
+      DATABASE_URL: postgresql://${POSTGRES_USER:-chronit}:${POSTGRES_PASSWORD:-chronit_secret}@postgres:5432/${POSTGRES_DB:-chronit}
+      REDIS_URL: redis://valkey:6379
+    ports:
+      - "3001:3001"
+    volumes:
+      # Misma carpeta de uploads que sirve el contenedor `images` (nginx :5001),
+      # para que las fotos subidas por la web se sirvan en modo offline.
+      - ../data/uploads:/app/data/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+    networks:
+      - chronit-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ---------------------------------------------------------------------------
+  # Servidor de imágenes (modo offline) — nginx sirve data/uploads en :5001
+  # En modo online, PUBLIC_IMAGE_URL apunta al dominio público configurado.
+  # ---------------------------------------------------------------------------
+  images:
+    image: nginx:alpine
+    container_name: chronit-images
+    restart: unless-stopped
+    volumes:
+      - ../data/uploads:/usr/share/nginx/html/uploads
+    ports:
+      - "5001:80"
+    networks:
+      - chronit-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  # ---------------------------------------------------------------------------
+  # pgAdmin — interfaz web para explorar PostgreSQL (puerto 5050)
+  # En pgAdmin registra el servidor con host "chronit-postgres", puerto 5432.
+  # ---------------------------------------------------------------------------
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: chronit-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@chronit.dev}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-chronit_pgadmin}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "5050:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - chronit-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  # ---------------------------------------------------------------------------
+  # Redis Insight — interfaz web para explorar Valkey (puerto 8001)
+  # Conecta a "chronit-valkey:6379" sin contraseña.
+  # ---------------------------------------------------------------------------
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: chronit-redis-insight
+    restart: unless-stopped
+    ports:
+      - "8001:5540"
+    depends_on:
+      valkey:
+        condition: service_healthy
+    networks:
+      - chronit-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  # ---------------------------------------------------------------------------
+  # Sentinela de sincronización (SQLite <-> PostgreSQL)
+  # ---------------------------------------------------------------------------
+  sync:
+    build:
+      context: ./services/sync
+      dockerfile: Dockerfile
+    container_name: chronit-sync
+    restart: unless-stopped
+    environment:
+      SQLITE_DATABASE: /app/data/chronit.db
+      DATABASE_URL: postgresql://${POSTGRES_USER:-chronit}:${POSTGRES_PASSWORD:-chronit_secret}@postgres:5432/${POSTGRES_DB:-chronit}
+      SYNC_INTERVAL: ${SYNC_INTERVAL:-30}
+    volumes:
+      - ../data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - chronit-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  postgres_data:
+  valkey_data:
+
+networks:
+  chronit-network:
+    driver: bridge

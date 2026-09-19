@@ -1,0 +1,8 @@
+# Esta carpeta es el punto de montaje del certificado TLS del borde (services/edge).
+#
+# - Si colocas aquí `server.crt` (cadena completa) y `server.key` (clave privada),
+#   el borde los usa tal cual (certificado real de Let's Encrypt o CA interna).
+# - Si NO existen, el borde genera un certificado autofirmado al arrancar
+#   (solo para desarrollo / red interna).
+#
+# Los ficheros .crt/.key NO deben subirse al repositorio.

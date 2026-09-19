@@ -1,0 +1,509 @@
+[21:05:11] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[21:05:11] [MANUAL] Vuelta manual marcada para Kart 4 (transponder 25223)
+[21:05:11] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[21:05:12] [FILTRADO] Fantasma: 0.64s < 2.0s | Transponder: 25223
+[21:05:12] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[21:05:12] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[21:05:12] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[21:05:13] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:05:13] [MANUAL] Vuelta manual marcada para Kart 4 (transponder 25223)
+[21:05:15] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[21:05:15] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[21:05:17] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[21:05:17] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[21:05:17] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:05:17] [MANUAL] Vuelta manual marcada para Kart 4 (transponder 25223)
+[21:05:18] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[21:05:18] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[21:05:18] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[21:05:19] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[21:05:19] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[21:05:19] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:05:19] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[21:05:19] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[21:05:19] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:05:20] [MANUAL] Vuelta manual marcada para Kart 4 (transponder 25223)
+[21:05:21] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[21:05:21] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[21:05:24] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[21:05:25] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[21:05:26] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[21:05:48] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:05:48] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:05:48] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:05:48] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:05:49] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:05:49] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:05:49] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:05:49] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:05:50] [MANUAL] Vuelta manual marcada para Kart 4 (transponder 25223)
+[21:05:51] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[21:05:52] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[21:05:52] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[21:05:52] [FILTRADO] Fantasma: 1.92s < 2.0s | Transponder: 25223
+[21:05:53] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[21:05:54] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[21:05:54] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[21:05:55] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[21:05:55] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[21:05:55] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[21:05:55] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[21:05:55] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[21:05:55] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[21:05:56] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[21:05:56] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[21:05:56] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[21:05:57] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[21:05:57] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[21:05:57] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[21:05:59] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[21:05:59] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[21:06:00] [MANUAL] Vuelta manual marcada para Kart 4 (transponder 25223)
+[21:06:00] [MANUAL] Vuelta manual marcada para Kart 4 (transponder 25223)
+[21:06:01] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:06:01] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:06:03] [MANUAL] Vuelta manual marcada para Kart 4 (transponder 25223)
+[21:06:04] [MANUAL] Vuelta manual marcada para Kart 4 (transponder 25223)
+[21:06:08] 🔄 Escucha del decoder desactivada
+[21:06:08] 🏆 CARRERA FINALIZADA
+[21:06:27] 🔄 Escucha del decoder desactivada
+[21:08:33] 🔄 Escucha del decoder desactivada
+[21:08:33] 🔄 Escucha del decoder desactivada
+[21:14:12] 🏁 CARRERA INICIADA
+[21:14:27] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:14:27] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[21:14:28] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[21:14:59] [MANUAL] Vuelta manual marcada para Kart 4 (transponder 25223)
+[21:15:03] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[21:15:38] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[21:15:48] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[21:15:57] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:16:40] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[21:17:00] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[21:17:05] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:17:33] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[21:17:55] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:18:06] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[21:18:21] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[21:18:35] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:19:03] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[21:19:07] [MANUAL] Vuelta manual marcada para Kart 4 (transponder 25223)
+[21:19:09] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[21:19:21] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:19:52] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:19:54] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[21:19:56] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[21:20:07] 🔄 Escucha del decoder desactivada
+[21:20:07] 🏆 CARRERA FINALIZADA
+[21:22:02] 🔄 Escucha del decoder desactivada
+[21:22:02] 🔄 Escucha del decoder desactivada
+[21:22:14] 🔄 Escucha del decoder desactivada
+[21:24:46] 🏁 CARRERA INICIADA
+[21:25:10] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[21:25:11] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:26:50] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:27:30] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[21:28:22] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:28:33] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[21:28:35] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:29:33] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:29:45] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[21:30:42] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[21:31:05] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[21:31:05] 🏆 Invitado #005 (1118) COMPLETÓ LA CARRERA!
+[21:31:13] 🔄 Escucha del decoder desactivada
+[21:31:13] 🏆 CARRERA FINALIZADA
+[21:54:02] 🔄 Escucha del decoder desactivada
+[21:55:54] 🏁 CARRERA INICIADA
+[21:56:00] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[21:56:00] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:00:29] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:00:31] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:00:35] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:00:36] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:02:22] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:02:23] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:02:24] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:02:25] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:02:25] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:02:25] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:02:26] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:02:27] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:02:27] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:02:29] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:02:30] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:02:31] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:02:31] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:02:32] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:03:09] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:03:10] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:14] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:16] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:17] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:18] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:18] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:19] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:19] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:19] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:20] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:20] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:21] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:21] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:21] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:22] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:23] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:23] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:24] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:33] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:33] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:34] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:34] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:34] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:34] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:35] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:35] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:36] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:36] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:36] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:36] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:37] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:37] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:38] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:38] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:38] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:38] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:39] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:39] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:39] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:40] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:41] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:41] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:42] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:42] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:42] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:43] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:43] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:43] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:43] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:43] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:04:44] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:44] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:45] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:45] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:45] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:45] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:46] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:46] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:46] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:46] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:47] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:47] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:48] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:49] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:49] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:49] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:49] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:49] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:50] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:51] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:51] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:51] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:51] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:04:51] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:05:18] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:05:18] 🏆 Invitado #006 (24421) COMPLETÓ LA CARRERA!
+[22:05:20] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:05:20] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[22:05:23] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:05:23] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:05:23] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:05:23] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:05:30] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:06:21] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:06:21] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:06:21] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:06:22] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:06:22] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:06:22] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:06:22] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:06:22] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:06:23] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:06:23] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:06:23] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:06:23] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[22:06:27] 🔄 Escucha del decoder desactivada
+[22:06:27] 🏆 CARRERA FINALIZADA
+[22:10:06] 🔄 Escucha del decoder desactivada
+[22:10:41] 🏁 CARRERA INICIADA
+[22:16:33] 🔄 Escucha del decoder desactivada
+[22:16:33] 🏆 CARRERA FINALIZADA
+[22:23:58] 🔄 Escucha del decoder desactivada
+[22:24:08] 🔄 Escucha del decoder desactivada
+[22:26:02] 🔄 Escucha del decoder desactivada
+[22:26:40] 🏁 CARRERA INICIADA
+[22:26:50] [MANUAL] Vuelta manual marcada para Kart 2 (transponder 24516)
+[22:29:00] 🔄 Escucha del decoder desactivada
+[22:29:00] 🏆 CARRERA FINALIZADA
+[22:29:09] 🔄 Escucha del decoder desactivada
+[22:31:00] 🏁 CARRERA INICIADA
+[22:31:37] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:31:38] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:31:39] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:31:43] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:32:07] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:32:37] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:33:07] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:33:48] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:33:48] 🏆 Invitado #001 (1117) COMPLETÓ LA CARRERA!
+[22:33:52] 🏆 Invitado #005 (24516) COMPLETÓ LA CARRERA!
+[22:33:57] 🏆 Invitado #003 (25223) COMPLETÓ LA CARRERA!
+[22:33:59] 🏆 Invitado #007 (24413) COMPLETÓ LA CARRERA!
+[22:33:59] 🔄 Escucha del decoder desactivada
+[22:33:59] 👑 GANADOR OFICIAL: Invitado #001
+[22:49:30] 🔄 Escucha del decoder desactivada
+[22:49:40] 🏁 CARRERA INICIADA
+[22:52:19] 🏆 Invitado #003 (25223) COMPLETÓ LA CARRERA!
+[22:52:28] 🏆 Invitado #007 (24413) COMPLETÓ LA CARRERA!
+[22:52:36] 🏆 Invitado #005 (24516) COMPLETÓ LA CARRERA!
+[22:52:44] 🔄 Escucha del decoder desactivada
+[22:52:44] 🏆 CARRERA FINALIZADA
+[22:54:42] 🔄 Escucha del decoder desactivada
+[22:56:57] 🏁 CARRERA INICIADA
+[22:58:16] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:58:30] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:58:30] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:58:31] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:58:31] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:58:31] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:58:31] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:58:31] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:58:32] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:58:32] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:58:32] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:58:33] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:58:33] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:58:33] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:58:33] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:58:34] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:58:34] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:58:35] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:58:35] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:58:49] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:59:18] 🏆 Invitado #003 (25223) COMPLETÓ LA CARRERA!
+[22:59:31] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:59:32] 🏆 Invitado #001 (1117) COMPLETÓ LA CARRERA!
+[22:59:32] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[22:59:33] [MANUAL] Vuelta manual marcada para Kart 2 (transponder 24516)
+[22:59:33] [MANUAL] Vuelta manual marcada para Kart 2 (transponder 24516)
+[22:59:33] [MANUAL] Vuelta manual marcada para Kart 2 (transponder 24516)
+[22:59:34] [MANUAL] Vuelta manual marcada para Kart 24 (transponder 24413)
+[22:59:34] 🏆 Invitado #007 (24413) COMPLETÓ LA CARRERA!
+[23:00:05] 🏆 Invitado #005 (24516) COMPLETÓ LA CARRERA!
+[23:00:05] 🔄 Escucha del decoder desactivada
+[23:00:05] 👑 GANADOR OFICIAL: Invitado #003
+[23:03:31] 🔄 Escucha del decoder desactivada
+[23:03:42] 🏁 CARRERA INICIADA
+[23:04:22] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[23:04:25] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[23:04:52] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[23:05:25] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[23:05:53] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[23:06:17] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[23:06:17] 🏆 Invitado #001 (1117) COMPLETÓ LA CARRERA!
+[23:06:22] [MANUAL] Vuelta manual marcada para Kart 4 (transponder 25223)
+[23:06:22] 🏆 Invitado #003 (25223) COMPLETÓ LA CARRERA!
+[23:06:26] [MANUAL] Vuelta manual marcada para Kart 24 (transponder 24413)
+[23:06:26] 🏆 Invitado #007 (24413) COMPLETÓ LA CARRERA!
+[23:06:32] 🔄 Escucha del decoder desactivada
+[23:06:32] 🏆 CARRERA FINALIZADA
+[23:07:49] 🔄 Escucha del decoder desactivada
+[23:08:01] 🔄 Escucha del decoder desactivada
+[23:08:45] 🏁 CARRERA INICIADA
+[23:08:53] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[23:09:16] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[23:09:48] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[23:10:20] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[23:10:50] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[23:11:22] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[23:11:54] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[23:12:29] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[23:12:55] [MANUAL] Vuelta manual marcada para Kart 4 (transponder 25223)
+[23:12:55] 🏆 Invitado #003 (25223) COMPLETÓ LA CARRERA!
+[23:12:59] 🔄 Escucha del decoder desactivada
+[23:12:59] 🏆 CARRERA FINALIZADA
+[23:43:26] 🔄 Escucha del decoder desactivada
+[23:45:34] 🔄 Escucha del decoder desactivada
+[23:47:07] 🏁 CARRERA INICIADA
+[23:47:11] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[23:47:12] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[23:47:41] [MANUAL] Vuelta manual marcada para Kart 4 (transponder 25223)
+[23:47:43] [FILTRADO] Fantasma: 1.44s < 2.0s | Transponder: 25223
+[23:48:00] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[23:48:18] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[23:48:30] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[23:48:57] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[23:49:10] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[23:49:35] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[23:49:45] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[23:50:26] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[23:51:01] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[23:51:19] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[23:51:41] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[23:52:05] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[23:52:23] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[23:53:00] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[23:53:05] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[23:53:11] 🔄 Escucha del decoder desactivada
+[23:53:11] 🏆 CARRERA FINALIZADA
+[00:01:31] 🔄 Escucha del decoder desactivada
+[00:01:47] 🔄 Escucha del decoder desactivada
+[00:02:51] 🏁 CARRERA INICIADA
+[00:03:00] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[00:03:02] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[00:03:03] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[00:03:05] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[00:03:06] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[00:03:34] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[00:03:48] [MANUAL] Vuelta manual marcada para Kart 2 (transponder 24516)
+[00:03:49] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[00:03:49] [FILTRADO] Fantasma: 1.14s < 2.0s | Transponder: 24516
+[00:03:49] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[00:03:51] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[00:03:52] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[00:04:00] [MANUAL] Vuelta manual marcada para Kart 2 (transponder 24516)
+[00:04:00] [MANUAL] Vuelta manual marcada para Kart 3 (transponder 24421)
+[00:04:01] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[00:04:02] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[00:04:04] [MANUAL] Vuelta manual marcada para Kart 21 (transponder 1118)
+[00:04:16] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[00:04:19] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[00:04:19] [MANUAL] Vuelta manual marcada para Kart 2 (transponder 24516)
+[00:04:22] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[00:05:59] 🔄 Escucha del decoder desactivada
+[00:05:59] 🏆 CARRERA FINALIZADA
+[00:07:18] 🔄 Escucha del decoder desactivada
+[00:07:50] 🏁 CARRERA INICIADA
+[00:11:11] 🔄 Escucha del decoder desactivada
+[00:11:11] 🏆 CARRERA FINALIZADA
+[00:14:40] 🔄 Escucha del decoder desactivada
+[00:18:00] 🏁 CARRERA INICIADA
+[00:24:21] 🔄 Escucha del decoder desactivada
+[00:24:21] 🏆 CARRERA FINALIZADA
+[00:36:30] 🔄 Escucha del decoder desactivada
+[00:36:43] 🏁 CARRERA INICIADA
+[00:40:32] 🔄 Escucha del decoder desactivada
+[00:40:32] 🏆 CARRERA FINALIZADA
+[00:40:40] 🔄 Escucha del decoder desactivada
+[00:40:51] 🏁 CARRERA INICIADA
+[00:45:10] 🔄 Escucha del decoder desactivada
+[00:45:10] 🏆 CARRERA FINALIZADA
+[00:45:15] 🔄 Escucha del decoder desactivada
+[01:07:11] 🔄 Escucha del decoder desactivada
+[01:13:34] 🏁 CARRERA INICIADA
+[01:14:48] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[01:14:49] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[01:14:50] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[01:15:01] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[01:15:02] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[01:15:04] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[01:15:21] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[01:15:26] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[01:15:37] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[01:15:45] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[01:15:47] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[01:15:50] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[01:16:08] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[01:16:09] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[01:16:11] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[01:16:40] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[01:16:42] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[01:16:58] 🔄 Escucha del decoder desactivada
+[01:16:58] 🏆 CARRERA FINALIZADA
+[01:17:35] 🔄 Escucha del decoder desactivada
+[01:19:03] 🏁 CARRERA INICIADA
+[01:20:01] 🔄 Escucha del decoder desactivada
+[01:20:01] 🏆 CARRERA FINALIZADA
+[01:20:06] 🔄 Escucha del decoder desactivada
+[01:20:21] 🏁 CARRERA INICIADA
+[01:20:56] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[01:21:00] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[01:21:04] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[01:21:14] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[01:21:15] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[01:21:17] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[01:21:27] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[01:21:33] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[01:21:55] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[01:21:57] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[01:22:02] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[01:22:07] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[01:22:33] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[01:22:36] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[01:22:38] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[01:22:57] [MANUAL] Vuelta manual marcada para Kart 24 (transponder 24413)
+[01:23:10] [MANUAL] Vuelta manual marcada para Kart 6 (transponder 1117)
+[01:23:15] [MANUAL] Vuelta manual marcada para Kart 1 (transponder 1114)
+[01:23:17] [MANUAL] Vuelta manual marcada para Kart 5 (transponder 24630)
+[01:23:40] 🔄 Escucha del decoder desactivada
+[01:23:40] 🏆 CARRERA FINALIZADA
+[01:39:30] 🔄 Escucha del decoder desactivada
+[01:39:30] 🔄 Escucha del decoder desactivada
+[03:16:16] [DECODER] Comando START (CR+LF) - Transmisión activada
+[03:37:10] 🏁 CARRERA INICIADA
+[03:38:55] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[03:39:07] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:39:13] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[03:39:16] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:39:18] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:39:20] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[03:39:22] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:39:24] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[03:39:26] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[03:39:26] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[03:39:26] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:39:27] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[03:39:27] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:39:28] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[03:39:28] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:39:28] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:39:28] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[03:39:28] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:39:29] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[03:39:29] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:39:29] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[03:39:29] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:39:29] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[03:39:30] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:39:30] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[03:39:30] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:39:31] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[03:39:31] 🏆 Invitado #008 (1111) COMPLETÓ LA CARRERA!
+[03:39:31] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:39:31] 🏆 Dilan (1113) COMPLETÓ LA CARRERA!
+[03:39:31] 🔄 Escucha del decoder desactivada
+[03:39:31] 👑 GANADOR OFICIAL: Invitado #008
+[03:40:00] 🔄 Escucha del decoder desactivada
+[03:40:00] 🔄 Escucha del decoder desactivada
+[03:40:32] 🏁 CARRERA INICIADA
+[03:40:46] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[03:40:47] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:40:51] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[03:40:54] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:40:55] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:41:01] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[03:41:03] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:41:05] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:41:07] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[03:41:08] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:41:11] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:41:12] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[03:41:14] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[03:41:15] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:41:16] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:41:19] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:41:19] 🏆 Dilan (1113) COMPLETÓ LA CARRERA!
+[03:41:22] [MANUAL] Vuelta manual marcada para Kart 16 (transponder 1113)
+[03:41:23] [MANUAL] Vuelta manual marcada para Kart 12 (transponder 1111)
+[03:41:23] 🏆 Invitado #008 (1111) COMPLETÓ LA CARRERA!
+[03:41:23] 🔄 Escucha del decoder desactivada
+[03:41:23] 👑 GANADOR OFICIAL: Dilan

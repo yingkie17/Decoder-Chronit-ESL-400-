@@ -1,0 +1,27 @@
+# CHRONIT - Versión Estable v2.0
+Fecha: 2026-06-15
+Commit: (se llenará automáticamente)
+Tag: v2.0-estable
+Branch backup: estable-v2.0-backup
+
+# CAMBIOS INCLUIDOS EN ESTA VERSIÓN
+- Position Race funcionando correctamente
+- GAP/Dif. Líder en todos los paneles
+- Tiempo total individual calculado correctamente
+- Rotador de vueltas funcionando
+- Velocidad con largo de pista 0.33km por defecto
+- Slider de simulación con orientación correcta
+- Reinicio forzado con respaldo automático
+- Backup de pilotos funcionando
+
+
+para recuperar la version estable: 
+# Opción 1: Volver al tag
+git checkout v2.0-estable
+
+# Opción 2: Volver a la rama de respaldo
+git checkout estable-v2.0-backup
+
+# Opción 3: Ver todos los puntos guardados
+git tag -l
+git branch -a

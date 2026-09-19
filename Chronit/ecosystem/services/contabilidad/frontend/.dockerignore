@@ -1,0 +1,12 @@
+# Dependencias y artefactos
+node_modules
+.next
+*.log
+
+# Entorno
+.env
+.env.*
+!.env.example
+
+# Imágenes de pilotos (no versionar)
+public/uploads

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gokart/carrera</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <!-- Se reutiliza dashboard.css para conservar el mismo diseño visual -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}?v={{ asset_version }}">
+    <!-- Estilos de la card de detección (compartida con el tablero público) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/detection_card.css') }}?v={{ asset_version }}">
+    <!-- Escalado para pantallas grandes (LED 2 m x 1 m) + vistas pista -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pantalla_pista.css') }}?v={{ asset_version }}">
+</head>
+
+<body class="pantalla-pista">
+
+    <!-- ============================================================
+         VISTA LIMPIA: sin navbar, sin menús, sin barra de usuario.
+         Contiene 3 vistas: Tabla, Podio y Clasificación por grupos.
+         ============================================================ -->
+    <div class="chronit-tv-container">
+
+        <!-- ===================== VISTA: TABLA ===================== -->
+        <div class="pista-view" id="view-tabla">
+
+            <div class="tablero-header">
+                <div class="event-tag">
+                    <span id="publicRaceNameDisplay">Go Karting Sport Bar - Carrera</span>
+                    <span id="raceStatusBadge" class="race-status-badge status-pending">Carrera Pendiente</span>
+                </div>
+                <div id="publicRaceModeDisplay" style="font-size:0.85rem; color:#a4adbc;">--</div>
+                <div id="publicRaceDescriptionDisplay" style="font-size:0.82rem; color:#a4adbc;">--</div>
+
+                <div class="timer-play-group">
+                    <div class="race-timer-box" id="total_time">00:00.000</div>
+                </div>
+            </div>
+
+            <div class="karting-leaderboard">
+
+                <div class="k-header">
+                    <div class="k-col-pos">Pos</div>
+                    <div class="k-col-name">Nombre</div>
+                    <div class="k-col-vueltas">Vueltas</div>
+                    <div class="k-col-dif">Dif.</div>
+                    <div class="k-col-mejor">Mejor</div>
+                    <div class="k-col-tiempo">Tiempo</div>
+                    <div class="k-col-tiempo-individual">T.Total</div>
+                    <div class="k-col-velocidad">Vel.</div>
+                    <div class="k-col-kart">Kart</div>
+                </div>
+
+                <div id="lista-pilotos"></div>
+
+            </div>
+
+        </div>
+
+        <!-- ===================== VISTA: PODIO ===================== -->
+        <div class="pista-view" id="view-podio" style="display:none;">
+            <div class="pista-view-title">🏆 PODIO</div>
+            <div class="pista-podium" id="pistaPodium">
+                <!-- Se genera desde JavaScript -->
+            </div>
+        </div>
+
+        <!-- ================ VISTA: CLASIFICACIÓN POR GRUPOS ================ -->
+        <div class="pista-view" id="view-grupos" style="display:none;">
+            <div class="pista-view-title">📋 CLASIFICACIÓN POR GRUPOS</div>
+            <div class="pista-groups" id="pistaGroups">
+                <!-- Se genera desde JavaScript -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ============================================================
+         CONTROLES DISCRETOS (se aclaran al pasar el mouse)
+         ============================================================ -->
+    <div class="pista-controls" id="pistaControls">
+        <button type="button" class="pista-ctl-btn is-active" data-view="tabla" title="Tabla (T)">📊</button>
+        <button type="button" class="pista-ctl-btn" data-view="podio" title="Podio (P)">🏆</button>
+        <button type="button" class="pista-ctl-btn" data-view="grupos" title="Grupos (G)">📋</button>
+        <span class="pista-ctl-sep"></span>
+        <button type="button" class="pista-ctl-btn" id="pistaStartBtn" title="Iniciar cuenta regresiva (S)">▶</button>
+        <button type="button" class="pista-ctl-btn" id="pistaFullscreenBtn" title="Pantalla completa (F)">⛶</button>
+    </div>
+
+    <!-- ============================================================
+         OVERLAY DE CUENTA REGRESIVA (sincronizada por WebSocket)
+         ============================================================ -->
+    <div id="pistaCountdownOverlay" style="display:none;">
+        <div class="pista-countdown-content">
+            <div class="pista-countdown-label">SALIDA EN</div>
+            <div id="pistaCountdownNumber">10</div>
+            <div id="pistaCountdownHint">PREPÁRENSE</div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         SPLASH DE ALERTA: CARRERA FINALIZADA (bandera roja)
+         Mismo lenguaje visual que la cuenta regresiva. Se muestra
+         una única vez al finalizar la carrera y da paso al podio.
+         ============================================================ -->
+    <div id="pistaFinishOverlay" style="display:none;">
+        <div class="pista-finish-content">
+            <div class="pista-finish-header">
+                <svg class="pista-finish-flag" viewBox="0 0 150 110" aria-hidden="true" focusable="false">
+                    <defs>
+                        <pattern id="pistaCheckerLeft" width="20" height="20" patternUnits="userSpaceOnUse">
+                            <rect width="20" height="20" fill="#ffffff"></rect>
+                            <rect width="10" height="10" fill="#0b0d11"></rect>
+                            <rect x="10" y="10" width="10" height="10" fill="#0b0d11"></rect>
+                        </pattern>
+                    </defs>
+                    <rect x="4" y="6" width="7" height="98" rx="3.5" fill="#e5484d"></rect>
+                    <path d="M13 10 L146 6 L146 82 L13 90 Z" fill="url(#pistaCheckerLeft)" stroke="#e5484d" stroke-width="4" stroke-linejoin="round"></path>
+                </svg>
+                <span class="pista-finish-label">CARRERA FINALIZADA</span>
+                <svg class="pista-finish-flag is-mirror" viewBox="0 0 150 110" aria-hidden="true" focusable="false">
+                    <defs>
+                        <pattern id="pistaCheckerRight" width="20" height="20" patternUnits="userSpaceOnUse">
+                            <rect width="20" height="20" fill="#ffffff"></rect>
+                            <rect width="10" height="10" fill="#0b0d11"></rect>
+                            <rect x="10" y="10" width="10" height="10" fill="#0b0d11"></rect>
+                        </pattern>
+                    </defs>
+                    <rect x="4" y="6" width="7" height="98" rx="3.5" fill="#e5484d"></rect>
+                    <path d="M13 10 L146 6 L146 82 L13 90 Z" fill="url(#pistaCheckerRight)" stroke="#e5484d" stroke-width="4" stroke-linejoin="round"></path>
+                </svg>
+            </div>
+            <div class="pista-finish-title">¡PARE!</div>
+            <div class="pista-finish-hint">BANDERA ROJA · FIN DE CARRERA</div>
+        </div>
+    </div>
+
+    <!-- Cliente Socket.IO servido localmente (tiempo real) -->
+    <script src="{{ url_for('static', filename='js/socket.io.min.js') }}?v={{ asset_version }}"></script>
+    <!-- Card de detección (compartida) -->
+    <script src="{{ url_for('static', filename='js/detection_card.js') }}?v={{ asset_version }}"></script>
+    <!-- Datos y vistas de la pantalla en pista -->
+    <script src="{{ url_for('static', filename='js/pantalla_pista.js') }}?v={{ asset_version }}"></script>
+
+</body>
+
+</html>

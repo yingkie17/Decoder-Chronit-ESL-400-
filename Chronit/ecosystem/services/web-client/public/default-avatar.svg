@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="Foto de perfil por defecto">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#232b3a"/>
+      <stop offset="1" stop-color="#0e1117"/>
+    </linearGradient>
+    <clipPath id="helmet">
+      <circle cx="64" cy="50" r="27"/>
+    </clipPath>
+  </defs>
+  <rect width="128" height="128" fill="url(#bg)"/>
+  <path d="M18 128c0-25 21-42 46-42s46 17 46 42z" fill="#39435a"/>
+  <rect x="56" y="76" width="16" height="16" rx="7" fill="#2b3446"/>
+  <circle cx="64" cy="50" r="27" fill="#4a5670"/>
+  <g clip-path="url(#helmet)">
+    <rect x="30" y="23" width="68" height="10" fill="#e5484d"/>
+  </g>
+  <rect x="42" y="44" width="44" height="17" rx="8.5" fill="#0b0e14"/>
+  <circle cx="64" cy="50" r="27" fill="none" stroke="#5b6a86" stroke-width="2"/>
+</svg>

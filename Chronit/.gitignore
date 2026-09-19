@@ -1,0 +1,42 @@
+# Base de datos local (persistencia en data/)
+*.db
+*.sqlite
+*.sqlite3
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+
+# Archivos de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Archivos temporales del sistema
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.bak
+*.swp
+
+# IDE
+.vscode/
+.idea/
+
+# Variables de entorno locales
+.env
+.env.local
+
+# Archivos de comandos temporales del sistema
+race_command.txt
+restart.flag
+next_race_name.txt
+next_race_laps.txt
+
+# Docker
+*.pid
+*.flag
+
+# Artefactos sueltos
+docs/_legacy/cursor.appimage

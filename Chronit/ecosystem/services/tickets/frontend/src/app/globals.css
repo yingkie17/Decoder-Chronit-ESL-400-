@@ -1,0 +1,313 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+/* =============================================================================
+   IDENTIDAD CHRONIT — tokens de diseño (mismos valores que el panel contable)
+   Paleta oscura sobria, un único acento azul y estados con color funcional.
+   La jerarquía visual la dan el espaciado y el contraste, no los iconos.
+   ============================================================================= */
+:root {
+  --bg: #0f1117;
+  --bg-elev: #171a22;
+  --bg-elev-2: #1d2230;
+  --bg-activo: #1f2738;
+  --border: #2a2f3a;
+  --border-input: #2a2f3a;
+  --border-activo: #2f3a52;
+  --text: #e1ecff;
+  --text-dim: #a9bcd8;
+  --text-muted: #8aa4c7;
+  --text-faint: #6f86ab;
+  --brand: #3b82f6;
+  --brand-strong: #2f6fe0;
+  --ok: #16a34a;
+  --warn: #d97706;
+  --danger: #dc2626;
+  --radius-sm: 8px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: border-color 0.15s, background 0.15s, opacity 0.15s;
+}
+.btn:hover { border-color: var(--brand); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+.btn-primary:hover { background: var(--brand-strong); border-color: var(--brand-strong); }
+.btn-success { background: var(--ok); border-color: var(--ok); color: #fff; }
+.btn-danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+.btn-warn { background: var(--warn); border-color: var(--warn); color: #fff; }
+
+.input, select.input {
+  width: 100%;
+  padding: 0.6rem 0.7rem;
+  background: var(--bg);
+  border: 1px solid var(--border-input);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+.input:focus { outline: none; border-color: var(--brand); }
+
+.label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 10px 0 4px;
+}
+
+.row { display: flex; gap: 10px; flex-wrap: wrap; }
+.grid { display: grid; gap: 12px; }
+
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 20px;
+  background: var(--bg-elev);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  border: 1px solid var(--border);
+}
+
+/* ---- Barra de navegación ----
+   Jerarquía por texto y contraste; los iconos son escasos y decorativos.
+   Mismas clases y medidas que el panel contable para una identidad uniforme. */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 6px;
+}
+.brand-text {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--text);
+}
+.nav-group { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.nav-link {
+  padding: 0.45rem 0.7rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  border: 1px solid transparent;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+.nav-link:hover { color: var(--text); background: var(--bg-elev-2); }
+.nav-link.activo {
+  color: #ffffff;
+  background: var(--bg-activo);
+  border-color: var(--border-activo);
+}
+.nav-divisor {
+  width: 1px;
+  align-self: stretch;
+  margin: 4px 8px;
+  background: var(--border);
+}
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.nav-user { font-size: 0.8rem; color: var(--text-muted); display: inline-flex; align-items: center; gap: 6px; }
+.nav-rol {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-faint);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.05rem 0.35rem;
+}
+
+/* ---- Estructura de página: contenedor y encabezado uniformes ---- */
+.page { max-width: 1240px; margin: 0 auto; padding: 24px 20px 48px; }
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.page-title { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.01em; }
+.page-sub { margin-top: 4px; font-size: 0.82rem; color: var(--text-muted); }
+.seccion-titulo {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 22px 0 10px;
+}
+.acciones { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+table.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+table.tbl th, table.tbl td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #1e232e;
+}
+table.tbl th { color: var(--text-muted); font-weight: 600; }
+
+/* ---- Kiosco de cliente ---- */
+.kiosk-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: 14px;
+  border: 1px solid #2a2f3a;
+  background: #171a22;
+  color: #e1ecff;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 700;
+  transition: all 0.15s;
+}
+.kiosk-btn:hover { border-color: #3b82f6; transform: translateY(-1px); }
+.kiosk-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.kiosk-btn-primary { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+.kiosk-btn-primary:hover { background: #2f6fe0; }
+.kiosk-btn-accent { background: #f5b60a; border-color: #f5b60a; color: #191a1f; }
+.kiosk-btn-accent:hover { background: #ffca3a; }
+.kiosk-btn-success { background: #16a34a; border-color: #16a34a; color: #fff; }
+.kiosk-btn-success:hover { background: #128a3e; }
+.kiosk-btn-sm { padding: 8px 12px; font-size: 0.85rem; }
+
+/* Modal */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100; padding: 20px;
+}
+.modal {
+  background: #171a22; border: 1px solid #2a2f3a; border-radius: 18px;
+  width: 100%; max-height: 92vh; overflow: auto; padding: 24px;
+}
+.modal-box {
+  background: #171a22; border: 1px solid #2a2f3a; border-radius: 18px;
+  width: 100%; max-height: 92vh; overflow: auto; padding: 24px;
+}
+
+/* Animación sutil */
+.fade-in { animation: kioskFade 0.35s ease; }
+@keyframes kioskFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* Evento INCOMPLETO: parpadeo rojo en la card (faltan pilotos) */
+.evento-incompleto {
+  animation: chronitBlink 1s ease-in-out infinite;
+}
+@keyframes chronitBlink {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.55); }
+  50% { box-shadow: 0 0 22px 4px rgba(220, 38, 38, 0.95); }
+}
+
+/* Kiosco: contenedores con tope de altura + scroll interno. Evita que las
+   listas/tablas crezcan sin límite y desborden la página. */
+.kiosco-scroll {
+  max-height: 340px;
+  overflow: auto;
+}
+
+/* Grid de tarjetas de evento: máx 3 columnas × 5 filas visibles. Si hay más
+   eventos, el propio grid hace scroll vertical (la página no crece). */
+.eventos-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: 330px;
+  max-height: calc(5 * 330px + 4 * 18px);
+  overflow-y: auto;
+  padding-right: 6px;
+}
+.eventos-grid > section { overflow: hidden; }
+
+/* Botón de pantalla completa (oculta los marcos del navegador) */
+.fullscreen-btn {
+  position: fixed;
+  right: 14px;
+  bottom: 58px; /* por encima del indicador de servidor */
+  z-index: 9999;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(10, 12, 16, 0.75);
+  color: #ffffff;
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.18;
+  transition: opacity 0.2s ease, transform 0.15s ease, background 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+.fullscreen-btn:hover {
+  opacity: 1;
+  transform: scale(1.06);
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* Impresión: solo se imprime el ticket (texto + QR), sin botones ni foto */
+@media print {
+  body * { visibility: hidden; }
+  .ticket-print, .ticket-print * { visibility: visible; }
+  .ticket-print {
+    position: absolute; inset: 0; width: 100%; padding: 20px; background: #fff; color: #111;
+  }
+  .ticket-print .fade-in { background: #fff !important; border-color: #ccc !important; }
+  .no-print { display: none !important; }
+  .fullscreen-btn { display: none !important; }
+}

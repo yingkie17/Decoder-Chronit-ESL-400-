@@ -1,0 +1,23 @@
+=== ps -a ===
+chronit-tickets-frontend | Exited (0) 3 minutes ago | 
+chronit-pgadmin | Exited (0) 3 minutes ago | 
+chronit-web-client | Exited (0) 3 minutes ago | 
+chronit-sync | Exited (137) 2 minutes ago | 
+chronit-tickets-backend | Exited (137) 2 minutes ago | 
+chronit-redis-insight | Exited (0) 3 minutes ago | 
+chronit-postgres | Exited (0) 2 minutes ago | 
+chronit-images | Exited (0) 3 minutes ago | 
+chronit-valkey | Exited (0) 2 minutes ago | 
+backups-temp-sqlite-web | Exited (137) 2 minutes ago | 
+chronit-sqlite-web | Exited (137) 2 minutes ago | 
+chronit-hardware | Exited (0) 3 minutes ago | 
+users-sqlite-web | Exited (137) 2 minutes ago | 
+wizardly_shockley | Exited (1) 2 days ago | 
+sweet_newton | Exited (0) 2 days ago | 
+quizzical_morse | Exited (0) 3 days ago | 
+eloquent_tu | Exited (0) 3 days ago | 
+=== curl carrera ===
+000
+000
+=== curl tickets ===
+000
